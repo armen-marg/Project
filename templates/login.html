@@ -1,0 +1,391 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login — Pardon Studio</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            min-height: 100vh;
+            background: radial-gradient(circle at top, #96c0d2 0%, #f3f5f9 55%, #83b9c0 100%);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            font-family: cursive;
+            overflow-x: hidden;
+        }
+
+        .bg-q {
+            position: fixed;
+            font-family: cursive;
+            color: #b8cdd8;
+            opacity: 0.55;
+            user-select: none;
+            pointer-events: none;
+            line-height: 1;
+        }
+
+        .bg-q_A {
+            top: 6%;
+            left: 5%;
+            font-size: 80px;
+            animation: bgqDrift 11s ease-in-out 0s infinite;
+        }
+
+        .bg-q_B {
+            top: 65%;
+            left: 8%;
+            font-size: 110px;
+            animation: bgqDrift 14s ease-in-out 2s infinite;
+        }
+
+        .bg-q_C {
+            top: 15%;
+            right: 7%;
+            font-size: 90px;
+            animation: bgqDrift 16s ease-in-out 1s infinite;
+        }
+
+        .bg-q_D {
+            top: 75%;
+            right: 6%;
+            font-size: 65px;
+            animation: bgqDrift 10s ease-in-out 3.5s infinite;
+        }
+
+        .bg-q_E {
+            top: 42%;
+            left: 2%;
+            font-size: 50px;
+            animation: bgqDrift 18s ease-in-out 4s infinite;
+        }
+
+        .bg-q_F {
+            top: 50%;
+            right: 2%;
+            font-size: 75px;
+            animation: bgqDrift 13s ease-in-out 1.5s infinite;
+        }
+
+        @keyframes bgqDrift {
+
+            0%,
+            100% {
+                transform: translateY(0px) rotate(0deg);
+                opacity: 0.55;
+            }
+
+            50% {
+                transform: translateY(-10px) rotate(4deg);
+                opacity: 0.75;
+            }
+        }
+
+        .card {
+            width: 100%;
+            max-width: 420px;
+            padding: 52px 48px;
+            display: flex;
+            flex-direction: column;
+            gap: 22px;
+        }
+
+        .logo-wrap {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 6px;
+            margin-bottom: 8px;
+        }
+
+        .heading {
+            text-align: center;
+        }
+
+        .heading h1 {
+            font-size: 42px;
+            color: #1f2a44;
+            letter-spacing: 1px;
+            line-height: 1.1;
+        }
+
+        .heading p {
+            font-size: 13px;
+            color: #1f2a44;
+            opacity: 0.4;
+            letter-spacing: 1px;
+            margin-top: 6px;
+        }
+
+        /* flash messages */
+        .flash-msg {
+            background: rgba(220, 53, 69, 0.08);
+            border: 1px solid rgba(220, 53, 69, 0.25);
+            border-radius: 12px;
+            padding: 10px 16px;
+            font-size: 13px;
+            color: #c0392b;
+            text-align: center;
+            letter-spacing: 0.3px;
+        }
+
+        form {
+            display: flex;
+            flex-direction: column;
+            gap: 22px;
+        }
+
+        .input-group {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .input-group label {
+            font-size: 11px;
+            color: #1f2a44;
+            opacity: 0.5;
+            letter-spacing: 2.5px;
+            text-transform: uppercase;
+            padding-left: 2px;
+        }
+
+        .input-group input {
+            padding: 13px 18px;
+            font-size: 16px;
+            font-family: cursive;
+            color: #1f2a44;
+            background: transparent;
+            border: 1.4px solid rgba(31, 42, 68, 0.2);
+            border-radius: 14px;
+            outline: none;
+            transition: border-color 0.3s, background 0.3s;
+        }
+
+        .input-group input:focus {
+            border-color: #1f2a44;
+            background: rgba(31, 42, 68, 0.03);
+        }
+
+        .input-group input::placeholder {
+            color: rgba(31, 42, 68, 0.2);
+            font-family: cursive;
+        }
+
+        .forgot {
+            align-self: flex-end;
+            font-size: 12px;
+            color: #1f2a44;
+            opacity: 0.35;
+            text-decoration: none;
+            letter-spacing: 0.5px;
+            margin-top: -10px;
+            transition: opacity 0.3s;
+        }
+
+        .forgot:hover {
+            opacity: 0.7;
+        }
+
+        .btn-login {
+            padding: 14px;
+            font-size: 20px;
+            font-family: cursive;
+            color: white;
+            background: #1f2a44;
+            border: none;
+            border-radius: 40px;
+            cursor: pointer;
+            letter-spacing: 1.5px;
+            transition: background 0.3s, transform 0.2s;
+            animation: btnPulse 2.7s ease-in-out 1s infinite;
+        }
+
+        .btn-login:hover {
+            background: #2e3f66;
+            transform: scale(1.03);
+        }
+
+        .divider {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .divider::before,
+        .divider::after {
+            content: '';
+            flex: 1;
+            height: 1px;
+            background: rgba(31, 42, 68, 0.12);
+        }
+
+        .divider span {
+            font-size: 11px;
+            color: #1f2a44;
+            opacity: 0.3;
+            letter-spacing: 1px;
+        }
+
+        .register-row {
+            text-align: center;
+            font-size: 14px;
+            color: #1f2a44;
+        }
+
+        .register-row span {
+            opacity: 0.4;
+        }
+
+        .register-row a {
+            color: #1f2a44;
+            text-decoration: none;
+            border-bottom: 1px solid rgba(31, 42, 68, 0.3);
+            transition: border-color 0.3s;
+        }
+
+        .register-row a:hover {
+            border-color: #1f2a44;
+        }
+
+        .back-row {
+            text-align: center;
+        }
+
+        .back-row a {
+            font-size: 12px;
+            color: #1f2a44;
+            opacity: 0.35;
+            text-decoration: none;
+            letter-spacing: 1px;
+            transition: opacity 0.3s;
+        }
+
+        .back-row a:hover {
+            opacity: 0.7;
+        }
+
+        .reveal {
+            opacity: 0;
+            transform: translateY(24px);
+            transition: opacity 0.7s ease, transform 0.7s ease;
+        }
+
+        .reveal.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        @keyframes btnPulse {
+
+            0%,
+            100% {
+                box-shadow: 0 0 0 0px rgba(31, 42, 68, 0.25);
+            }
+
+            50% {
+                box-shadow: 0 0 0 10px rgba(31, 42, 68, 0);
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="bg-q bg-q_A">?</div>
+    <div class="bg-q bg-q_B">?</div>
+    <div class="bg-q bg-q_C">?</div>
+    <div class="bg-q bg-q_D">?</div>
+    <div class="bg-q bg-q_E">?</div>
+    <div class="bg-q bg-q_F">?</div>
+
+    <div class="card">
+
+        <div class="logo-wrap reveal">
+            <svg width="70" height="70" viewBox="0 0 320 320" xmlns="http://www.w3.org/2000/svg">
+                <circle cx="160" cy="160" r="152" fill="none" stroke="#1f2a44" stroke-width="1.5" opacity="0.15" />
+                <circle cx="160" cy="160" r="125" fill="#1f2a44" />
+                <rect x="100" y="88" width="28" height="144" rx="3" fill="#ffffff" />
+                <path d="M 128 88 L 128 168 Q 218 168 218 128 Q 218 88 128 88 Z" fill="#ffffff" />
+                <path d="M 128 103 L 128 153 Q 198 153 198 128 Q 198 103 128 103 Z" fill="#1f2a44" />
+                <circle cx="222" cy="245" r="7" fill="#4a90d9" />
+            </svg>
+            <svg width="100" height="18" viewBox="0 0 160 24" xmlns="http://www.w3.org/2000/svg">
+                <line x1="0" y1="12" x2="30" y2="12" stroke="#1f2a44" stroke-width="1" opacity="0.3" />
+                <text x="80" y="17" text-anchor="middle" font-family="sans-serif" font-size="12" font-weight="500"
+                    fill="#1f2a44" letter-spacing="5">STUDIO</text>
+                <line x1="130" y1="12" x2="160" y2="12" stroke="#1f2a44" stroke-width="1" opacity="0.3" />
+            </svg>
+        </div>
+
+        <div class="heading reveal">
+            <h1>Welcome back.</h1>
+            <p>Sign in to continue</p>
+        </div>
+
+        {% with messages = get_flashed_messages() %}
+        {% if messages %}
+        {% for msg in messages %}
+        <div class="flash-msg reveal">{{ msg }}</div>
+        {% endfor %}
+        {% endif %}
+        {% endwith %}
+
+        <form method="POST" action="/home/login">
+
+            <div class="input-group reveal">
+                <label>Username</label>
+                <input type="text" name="username" placeholder="your username" autocomplete="off" />
+            </div>
+
+            <div class="input-group reveal">
+                <label>Password</label>
+                <input type="password" name="password" placeholder="••••••••" />
+            </div>
+
+            <a href="{{ url_for('forgot_password') }}" class="forgot reveal">Forgot password?</a>
+
+            <button class="btn-login reveal" type="submit">Login</button>
+
+        </form>
+
+        <div class="divider reveal"><span>or</span></div>
+
+        <p class="register-row reveal">
+            <span>No account? </span>
+            <a href="/home/register">Register here</a>
+        </p>
+
+        <div class="back-row reveal">
+            <a href="/home">← Back to home</a>
+        </div>
+
+    </div>
+
+    <script>
+        const items = document.querySelectorAll('.reveal');
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach((entry, i) => {
+                if (entry.isIntersecting) {
+                    setTimeout(() => entry.target.classList.add('visible'), i * 80);
+                }
+            });
+        }, { threshold: 0.1 });
+
+        items.forEach(el => observer.observe(el));
+
+        
+    </script>
+
+</body>
+
+</html>

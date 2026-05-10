@@ -1,0 +1,613 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
+  <title>Настройки · Pardon</title>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Bebas+Neue&display=swap" rel="stylesheet"/>
+  <style>
+    :root {
+      --blue:   #4a90d9;
+      --purple: #7b5cfa;
+      --dark:   #0a0e1a;
+      --card:   #111827;
+      --border: rgba(255,255,255,0.07);
+      --text:   rgba(255,255,255,0.85);
+      --muted:  rgba(255,255,255,0.35);
+    }
+
+    * { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
+
+    html, body {
+      width:100%; min-height:100%;
+      background:var(--dark);
+      font-family:'Space Grotesk', sans-serif;
+      color:var(--text);
+      overflow-x:hidden;
+    }
+
+    /* ── Header ── */
+    .header {
+      position:fixed; top:0; left:0; right:0;
+      height:56px; display:flex; align-items:center;
+      padding:0 16px; z-index:100;
+      background:rgba(10,14,26,0.92);
+      backdrop-filter:blur(16px);
+      -webkit-backdrop-filter:blur(16px);
+      border-bottom:1px solid var(--border);
+      padding-top:env(safe-area-inset-top);
+    }
+    .header-back {
+      width:38px; height:38px; border-radius:50%;
+      background:rgba(255,255,255,.06); border:none; cursor:pointer;
+      display:flex; align-items:center; justify-content:center;
+      color:var(--text); transition:background .2s; flex-shrink:0;
+    }
+    .header-back:active { background:rgba(255,255,255,.12); }
+    .header-back svg { width:20px; height:20px; stroke:currentColor; fill:none; stroke-width:2; stroke-linecap:round; }
+    .header-title {
+      font-family:'Bebas Neue',sans-serif; font-size:22px;
+      color:#fff; letter-spacing:1px; margin-left:14px;
+    }
+    .header-logo {
+      margin-left:auto;
+    }
+    .header-logo svg { width:28px; height:28px; display:block; }
+
+    /* ── Scroll body ── */
+    .body {
+      padding:72px 0 40px;
+    }
+
+    /* ── Profile hero ── */
+    .profile-hero {
+      display:flex; align-items:center; gap:16px;
+      padding:24px 20px 20px;
+      border-bottom:1px solid var(--border);
+    }
+    .avatar-ring {
+      width:68px; height:68px; border-radius:50%;
+      padding:2.5px;
+      background:linear-gradient(135deg,var(--blue),var(--purple));
+      box-shadow:0 4px 20px rgba(74,144,217,0.3);
+      flex-shrink:0;
+    }
+    .avatar-inner {
+      width:100%; height:100%; border-radius:50%;
+      background:linear-gradient(135deg,#1a2550,#0d1b3e);
+      border:2px solid var(--dark);
+      display:flex; align-items:center; justify-content:center;
+      font-size:26px; font-weight:700; color:#fff;
+      font-family:'Bebas Neue',sans-serif;
+    }
+    .profile-text { flex:1; min-width:0; }
+    .profile-name {
+      font-family:'Bebas Neue',sans-serif; font-size:24px;
+      color:#fff; letter-spacing:0.5px; line-height:1.1;
+    }
+    .profile-email {
+      font-size:13px; color:var(--muted); margin-top:3px;
+      white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
+    }
+    .profile-badge {
+      background:rgba(74,144,217,.12); border:1px solid rgba(74,144,217,.25);
+      border-radius:20px; padding:4px 12px;
+      font-size:11px; font-weight:600; color:var(--blue);
+      letter-spacing:0.5px;
+    }
+
+    /* ── Section ── */
+    .section {
+      padding:24px 20px 0;
+    }
+    .section-label {
+      font-size:10.5px; font-weight:700; color:var(--muted);
+      letter-spacing:1.5px; text-transform:uppercase;
+      margin-bottom:10px; padding-left:2px;
+    }
+    .section-card {
+      background:rgba(255,255,255,.03);
+      border:1px solid var(--border);
+      border-radius:16px;
+      overflow:hidden;
+    }
+
+    /* ── Row ── */
+    .row {
+      display:flex; align-items:center; gap:14px;
+      padding:14px 16px;
+      cursor:pointer; transition:background .15s; position:relative;
+    }
+    .row:not(:last-child)::after {
+      content:''; position:absolute; bottom:0; left:52px; right:0;
+      height:1px; background:var(--border);
+    }
+    .row:active { background:rgba(255,255,255,.04); }
+
+    .row-icon {
+      width:36px; height:36px; border-radius:10px;
+      display:flex; align-items:center; justify-content:center;
+      flex-shrink:0;
+    }
+    .row-icon svg { width:18px; height:18px; stroke:#fff; fill:none; stroke-width:1.8; stroke-linecap:round; }
+
+    .row-content { flex:1; min-width:0; }
+    .row-title { font-size:14px; font-weight:600; color:#fff; }
+    .row-sub { font-size:12px; color:var(--muted); margin-top:2px; }
+
+    .row-right {
+      display:flex; align-items:center; gap:8px; flex-shrink:0;
+    }
+    .row-right svg { width:16px; height:16px; stroke:rgba(255,255,255,.25); fill:none; stroke-width:2; stroke-linecap:round; }
+    .row-value { font-size:13px; color:var(--muted); }
+
+    /* Toggle switch */
+    .toggle {
+      width:44px; height:26px; border-radius:13px;
+      background:rgba(255,255,255,.12);
+      position:relative; cursor:pointer;
+      transition:background .25s; flex-shrink:0;
+    }
+    .toggle.on { background:linear-gradient(135deg,var(--blue),var(--purple)); }
+    .toggle::after {
+      content:''; position:absolute;
+      width:20px; height:20px; border-radius:50%; background:#fff;
+      top:3px; left:3px; transition:transform .25s cubic-bezier(.32,.72,0,1);
+      box-shadow:0 2px 6px rgba(0,0,0,.3);
+    }
+    .toggle.on::after { transform:translateX(18px); }
+
+    /* Icon colors */
+    .ic-blue   { background:rgba(74,144,217,.15); }
+    .ic-purple { background:rgba(123,92,250,.15); }
+    .ic-pink   { background:rgba(255,45,85,.12); }
+    .ic-green  { background:rgba(34,197,94,.12); }
+    .ic-orange { background:rgba(251,146,60,.12); }
+    .ic-teal   { background:rgba(20,184,166,.12); }
+    .ic-red    { background:rgba(239,68,68,.12); }
+
+    .ic-blue   svg { stroke:var(--blue); }
+    .ic-purple svg { stroke:var(--purple); }
+    .ic-pink   svg { stroke:#ff2d55; }
+    .ic-green  svg { stroke:#22c55e; }
+    .ic-orange svg { stroke:#fb923c; }
+    .ic-teal   svg { stroke:#14b8a6; }
+    .ic-red    svg { stroke:#ef4444; }
+
+    /* Version footer */
+    .footer {
+      padding:36px 20px 24px;
+      display:flex; flex-direction:column; align-items:center; gap:12px;
+    }
+    .footer-logo {
+      display:flex; align-items:center; gap:10px; opacity:.3;
+    }
+    .footer-logo svg { width:24px; height:24px; }
+    .footer-logo span {
+      font-family:'Bebas Neue',sans-serif; font-size:18px;
+      letter-spacing:2px; color:#fff;
+    }
+    .footer-version {
+      font-size:11px; color:rgba(255,255,255,.2);
+    }
+
+    /* Danger row */
+    .row-danger .row-title { color:#ef4444; }
+    .row-danger .row-icon svg { stroke:#ef4444; }
+
+    /* Divider with label */
+    .divider-label {
+      padding:20px 20px 0;
+      font-size:10.5px; font-weight:700; color:var(--muted);
+      letter-spacing:1.5px; text-transform:uppercase;
+    }
+
+    /* Subtle glow on page */
+    .bg-glow {
+      position:fixed; top:-100px; right:-80px;
+      width:300px; height:300px; border-radius:50%;
+      background:radial-gradient(circle,rgba(74,144,217,0.07) 0%,transparent 70%);
+      pointer-events:none; z-index:0;
+    }
+    .bg-glow2 {
+      position:fixed; bottom:-60px; left:-60px;
+      width:250px; height:250px; border-radius:50%;
+      background:radial-gradient(circle,rgba(123,92,250,0.06) 0%,transparent 70%);
+      pointer-events:none; z-index:0;
+    }
+    .body { position:relative; z-index:1; }
+
+    /* Animations */
+    .section-card { animation:fadeUp .35s ease both; }
+    .section:nth-child(2) .section-card { animation-delay:.05s; }
+    .section:nth-child(3) .section-card { animation-delay:.1s; }
+    .section:nth-child(4) .section-card { animation-delay:.15s; }
+    .section:nth-child(5) .section-card { animation-delay:.2s; }
+    @keyframes fadeUp {
+      from { opacity:0; transform:translateY(12px); }
+      to   { opacity:1; transform:translateY(0); }
+    }
+
+    .profile-hero { animation:fadeUp .3s ease both; }
+  </style>
+</head>
+<body>
+
+  <div class="bg-glow"></div>
+  <div class="bg-glow2"></div>
+
+  <!-- Header -->
+  <div class="header">
+    <button class="header-back" onclick="history.back()">
+      <svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>
+    </button>
+    <div class="header-title">Настройки</div>
+    <div class="header-logo">
+      <svg viewBox="0 0 38 38" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="19" cy="19" r="19" fill="url(#slg1)"/>
+        <text x="19" y="26" text-anchor="middle" font-family="'Bebas Neue',sans-serif" font-size="22" fill="white">P</text>
+        <defs>
+          <linearGradient id="slg1" x1="0" y1="0" x2="38" y2="38" gradientUnits="userSpaceOnUse">
+            <stop stop-color="#4a90d9"/>
+            <stop offset="1" stop-color="#7b5cfa"/>
+          </linearGradient>
+        </defs>
+      </svg>
+    </div>
+  </div>
+
+  <div class="body">
+
+    <!-- Profile hero -->
+    <div class="profile-hero">
+      <div class="avatar-ring">
+        <div class="avatar-inner" id="settingsAvatar"></div>
+      </div>
+      <div class="profile-text">
+        <div class="profile-name" id="settingsUsername">USERNAME</div>
+        <div class="profile-email" id="settingsEmail">user@example.com</div>
+      </div>
+      <div class="profile-badge">Pardon</div>
+    </div>
+
+    <!-- Account -->
+    <div class="section">
+      <div class="section-label">Аккаунт</div>
+      <div class="section-card">
+        <div class="row" onclick="goTo('change-username')">
+          <div class="row-icon ic-blue">
+            <svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+          </div>
+          <div class="row-content">
+            <div class="row-title">Изменить имя</div>
+            <div class="row-sub">Поменять никнейм аккаунта</div>
+          </div>
+          <div class="row-right">
+            <svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg>
+          </div>
+        </div>
+        <div class="row" onclick="goTo('change-email')">
+          <div class="row-icon ic-purple">
+            <svg viewBox="0 0 24 24"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+          </div>
+          <div class="row-content">
+            <div class="row-title">Изменить email</div>
+            <div class="row-sub">Обновить адрес эл. почты</div>
+          </div>
+          <div class="row-right">
+            <svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg>
+          </div>
+        </div>
+        <div class="row" onclick="goTo('change-password')">
+          <div class="row-icon ic-orange">
+            <svg viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+          </div>
+          <div class="row-content">
+            <div class="row-title">Изменить пароль</div>
+            <div class="row-sub">Обновить пароль аккаунта</div>
+          </div>
+          <div class="row-right">
+            <svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Notifications -->
+    <div class="section">
+      <div class="section-label">Уведомления</div>
+      <div class="section-card">
+        <div class="row">
+          <div class="row-icon ic-pink">
+            <svg viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+          </div>
+          <div class="row-content">
+            <div class="row-title">Лайки</div>
+            <div class="row-sub">Уведомлять о новых лайках</div>
+          </div>
+          <div class="row-right">
+            <div class="toggle on" onclick="this.classList.toggle('on')"></div>
+          </div>
+        </div>
+        <div class="row">
+          <div class="row-icon ic-blue">
+            <svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+          </div>
+          <div class="row-content">
+            <div class="row-title">Комментарии</div>
+            <div class="row-sub">Уведомлять о новых комментариях</div>
+          </div>
+          <div class="row-right">
+            <div class="toggle on" onclick="this.classList.toggle('on')"></div>
+          </div>
+        </div>
+        <div class="row">
+          <div class="row-icon ic-teal">
+            <svg viewBox="0 0 24 24"><polyline points="17 1 21 5 17 9"/><path d="M3 11V9a4 4 0 0 1 4-4h14"/><polyline points="7 23 3 19 7 15"/><path d="M21 13v2a4 4 0 0 1-4 4H3"/></svg>
+          </div>
+          <div class="row-content">
+            <div class="row-title">Репосты</div>
+            <div class="row-sub">Уведомлять о репостах видео</div>
+          </div>
+          <div class="row-right">
+            <div class="toggle on" onclick="this.classList.toggle('on')"></div>
+          </div>
+        </div>
+        <div class="row">
+          <div class="row-icon ic-purple">
+            <svg viewBox="0 0 24 24"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+          </div>
+          <div class="row-content">
+            <div class="row-title">Push-уведомления</div>
+            <div class="row-sub">Системные уведомления браузера</div>
+          </div>
+          <div class="row-right">
+            <div class="toggle" onclick="requestPush(this)"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Privacy -->
+    <div class="section">
+      <div class="section-label">Приватность</div>
+      <div class="section-card">
+        <div class="row">
+          <div class="row-icon ic-green">
+            <svg viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+          </div>
+          <div class="row-content">
+            <div class="row-title">Приватный аккаунт</div>
+            <div class="row-sub">Только подписчики видят видео</div>
+          </div>
+          <div class="row-right">
+            <div class="toggle" onclick="this.classList.toggle('on')"></div>
+          </div>
+        </div>
+        <div class="row">
+          <div class="row-icon ic-blue">
+            <svg viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+          </div>
+          <div class="row-content">
+            <div class="row-title">Кто видит мои лайки</div>
+            <div class="row-sub">Все</div>
+          </div>
+          <div class="row-right">
+            <svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg>
+          </div>
+        </div>
+        <div class="row">
+          <div class="row-icon ic-orange">
+            <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+          </div>
+          <div class="row-content">
+            <div class="row-title">История просмотров</div>
+            <div class="row-sub">Сохранять просмотренные видео</div>
+          </div>
+          <div class="row-right">
+            <div class="toggle on" onclick="this.classList.toggle('on')"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Content -->
+    <div class="section">
+      <div class="section-label">Контент</div>
+      <div class="section-card">
+        <div class="row">
+          <div class="row-icon ic-teal">
+            <svg viewBox="0 0 24 24"><polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2" ry="2"/></svg>
+          </div>
+          <div class="row-content">
+            <div class="row-title">Автовоспроизведение</div>
+            <div class="row-sub">Запускать видео автоматически</div>
+          </div>
+          <div class="row-right">
+            <div class="toggle on" onclick="this.classList.toggle('on')"></div>
+          </div>
+        </div>
+        <div class="row">
+          <div class="row-icon ic-purple">
+            <svg viewBox="0 0 24 24"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/></svg>
+          </div>
+          <div class="row-content">
+            <div class="row-title">Звук по умолчанию</div>
+            <div class="row-sub">Включать звук при открытии</div>
+          </div>
+          <div class="row-right">
+            <div class="toggle" onclick="this.classList.toggle('on')"></div>
+          </div>
+        </div>
+        <div class="row" onclick="">
+          <div class="row-icon ic-blue">
+            <svg viewBox="0 0 24 24"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
+          </div>
+          <div class="row-content">
+            <div class="row-title">Качество видео</div>
+            <div class="row-sub">Авто</div>
+          </div>
+          <div class="row-right">
+            <svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Support -->
+    <div class="section">
+      <div class="section-label">Поддержка</div>
+      <div class="section-card">
+        <div class="row" onclick="goTo('help')">
+          <div class="row-icon ic-blue">
+            <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+          </div>
+          <div class="row-content">
+            <div class="row-title">Помощь и FAQ</div>
+            <div class="row-sub">Ответы на частые вопросы</div>
+          </div>
+          <div class="row-right">
+            <svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg>
+          </div>
+        </div>
+        <div class="row" onclick="goTo('feedback')">
+          <div class="row-icon ic-green">
+            <svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+          </div>
+          <div class="row-content">
+            <div class="row-title">Обратная связь</div>
+            <div class="row-sub">Написать нам</div>
+          </div>
+          <div class="row-right">
+            <svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg>
+          </div>
+        </div>
+        <div class="row" onclick="goTo('about')">
+          <div class="row-icon ic-teal">
+            <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+          </div>
+          <div class="row-content">
+            <div class="row-title">О приложении</div>
+            <div class="row-sub">Версия 1.0.0</div>
+          </div>
+          <div class="row-right">
+            <svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Danger zone -->
+    <div class="section">
+      <div class="section-label">Аккаунт</div>
+      <div class="section-card">
+        <div class="row" onclick="window.location.href='/logout'">
+          <div class="row-icon ic-orange">
+            <svg viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+          </div>
+          <div class="row-content">
+            <div class="row-title">Выйти из аккаунта</div>
+            <div class="row-sub">Завершить текущую сессию</div>
+          </div>
+          <div class="row-right">
+            <svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg>
+          </div>
+        </div>
+        <div class="row row-danger" onclick="confirmDelete()">
+          <div class="row-icon ic-red">
+            <svg viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg>
+          </div>
+          <div class="row-content">
+            <div class="row-title">Удалить аккаунт</div>
+            <div class="row-sub">Это действие необратимо</div>
+          </div>
+          <div class="row-right">
+            <svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Footer -->
+    <div class="footer">
+      <div class="footer-logo">
+        <svg viewBox="0 0 320 320" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <circle cx="160" cy="160" r="125" fill="#fff"/>
+          <rect x="100" y="88" width="28" height="144" rx="3" fill="#1f2a44"/>
+          <path d="M 128 88 L 128 168 Q 218 168 218 128 Q 218 88 128 88 Z" fill="#1f2a44"/>
+          <path d="M 128 103 L 128 153 Q 198 153 198 128 Q 198 103 128 103 Z" fill="#fff"/>
+        </svg>
+        <span>PARDON</span>
+      </div>
+      <div class="footer-version">Версия 1.0.0 · © 2026 Pardon Studio</div>
+    </div>
+
+  </div>
+
+  <script>
+    // Load user info
+    async function loadUserInfo() {
+      try {
+        const res  = await fetch('/api/profile');
+        const data = await res.json();
+        const initial = data.username.charAt(0).toUpperCase();
+        document.getElementById('settingsAvatar').textContent   = initial;
+        document.getElementById('settingsUsername').textContent = data.username;
+        document.getElementById('settingsEmail').textContent    = data.email || `@${data.username}`;
+      } catch(e) {
+        const el = document.getElementById('settingsAvatar');
+        if (el) el.textContent = 'U';
+      }
+    }
+    loadUserInfo();
+
+    function goTo(page) {
+      // Placeholder for sub-settings pages
+      // Implement routes as needed:
+      // window.location.href = `/settings/${page}`;
+      showToast('Скоро будет доступно');
+    }
+
+    function requestPush(toggle) {
+      if ('Notification' in window) {
+        Notification.requestPermission().then(perm => {
+          if (perm === 'granted') toggle.classList.add('on');
+          else toggle.classList.remove('on');
+        });
+      } else {
+        showToast('Push-уведомления не поддерживаются');
+      }
+    }
+
+    function confirmDelete() {
+      if (confirm('Удалить аккаунт? Это действие необратимо.')) {
+        // window.location.href = '/delete-account';
+        showToast('Функция в разработке');
+      }
+    }
+
+    // Toast notification
+    function showToast(msg) {
+      const existing = document.querySelector('.toast');
+      if (existing) existing.remove();
+      const toast = document.createElement('div');
+      toast.className = 'toast';
+      toast.textContent = msg;
+      toast.style.cssText = `
+        position:fixed; bottom:24px; left:50%; transform:translateX(-50%);
+        background:rgba(255,255,255,.1); backdrop-filter:blur(12px);
+        border:1px solid rgba(255,255,255,.15);
+        color:#fff; font-size:13px; font-weight:500;
+        padding:10px 20px; border-radius:20px;
+        z-index:9999; white-space:nowrap;
+        animation:toastIn .3s ease;
+      `;
+      const style = document.createElement('style');
+      style.textContent = `@keyframes toastIn { from { opacity:0; transform:translateX(-50%) translateY(10px); } to { opacity:1; transform:translateX(-50%) translateY(0); } }`;
+      document.head.appendChild(style);
+      document.body.appendChild(toast);
+      setTimeout(() => { toast.style.opacity = '0'; toast.style.transition = 'opacity .3s'; setTimeout(() => toast.remove(), 300); }, 2500);
+    }
+  </script>
+</body>
+</html>

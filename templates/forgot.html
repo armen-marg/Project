@@ -1,0 +1,818 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Forgot Password — Pardon Studio</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      min-height: 100vh;
+      background: radial-gradient(circle at top, #96c0d2 0%, #f3f5f9 55%, #83b9c0 100%);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding-top: 40px;
+      font-family: cursive;
+      overflow-x: hidden;
+    }
+
+    .bg-q {
+      position: fixed;
+      font-family: cursive;
+      color: #b8cdd8;
+      opacity: 0.55;
+      user-select: none;
+      pointer-events: none;
+      line-height: 1;
+    }
+
+    .bg-q_A {
+      top: 6%;
+      left: 5%;
+      font-size: 80px;
+      animation: bgqDrift 11s ease-in-out 0s infinite;
+    }
+
+    .bg-q_B {
+      top: 65%;
+      left: 8%;
+      font-size: 110px;
+      animation: bgqDrift 14s ease-in-out 2s infinite;
+    }
+
+    .bg-q_C {
+      top: 15%;
+      right: 7%;
+      font-size: 90px;
+      animation: bgqDrift 16s ease-in-out 1s infinite;
+    }
+
+    .bg-q_D {
+      top: 75%;
+      right: 6%;
+      font-size: 65px;
+      animation: bgqDrift 10s ease-in-out 3.5s infinite;
+    }
+
+    .bg-q_E {
+      top: 42%;
+      left: 2%;
+      font-size: 50px;
+      animation: bgqDrift 18s ease-in-out 4s infinite;
+    }
+
+    .bg-q_F {
+      top: 50%;
+      right: 2%;
+      font-size: 75px;
+      animation: bgqDrift 13s ease-in-out 1.5s infinite;
+    }
+
+    @keyframes bgqDrift {
+
+      0%,
+      100% {
+        transform: translateY(0px) rotate(0deg);
+        opacity: 0.55;
+      }
+
+      50% {
+        transform: translateY(-10px) rotate(4deg);
+        opacity: 0.75;
+      }
+    }
+
+    .card {
+      width: 100%;
+      max-width: 420px;
+      padding: 52px 48px;
+      display: flex;
+      flex-direction: column;
+      gap: 22px;
+      margin-top: -40px;
+    }
+
+    .logo-wrap {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 6px;
+      margin-bottom: 8px;
+    }
+
+    .heading {
+      text-align: center;
+    }
+
+    .heading h1 {
+      font-size: 38px;
+      color: #1f2a44;
+      letter-spacing: 1px;
+      line-height: 1.1;
+    }
+
+    .heading p {
+      font-size: 13px;
+      color: #1f2a44;
+      opacity: 0.4;
+      letter-spacing: 1px;
+      margin-top: 6px;
+    }
+
+    .step-indicator {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+
+    .step-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: rgba(31, 42, 68, 0.15);
+      transition: background 0.4s;
+    }
+
+    .step-dot.active {
+      background: #1f2a44;
+    }
+
+    .step-dot.done {
+      background: rgba(31, 42, 68, 0.4);
+    }
+
+    form {
+      display: flex;
+      flex-direction: column;
+      gap: 22px;
+    }
+
+    .input-group {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .input-group label {
+      font-size: 11px;
+      color: #1f2a44;
+      opacity: 0.5;
+      letter-spacing: 2.5px;
+      text-transform: uppercase;
+      padding-left: 2px;
+    }
+
+    .input-group input {
+      padding: 13px 18px;
+      font-size: 16px;
+      font-family: cursive;
+      color: #1f2a44;
+      background: transparent;
+      border: 1.4px solid rgba(31, 42, 68, 0.2);
+      border-radius: 14px;
+      outline: none;
+      transition: border-color 0.3s, background 0.3s;
+    }
+
+    .input-group input:focus {
+      border-color: #1f2a44;
+      background: rgba(31, 42, 68, 0.03);
+    }
+
+    .input-group input::placeholder {
+      color: rgba(31, 42, 68, 0.2);
+      font-family: cursive;
+    }
+
+    .hint-text {
+      font-size: 12px;
+      color: #1f2a44;
+      opacity: 0.4;
+      text-align: center;
+      letter-spacing: 0.4px;
+      line-height: 1.6;
+    }
+
+    .btn-primary {
+      padding: 14px;
+      font-size: 20px;
+      font-family: cursive;
+      color: white;
+      background: #1f2a44;
+      border: none;
+      border-radius: 40px;
+      cursor: pointer;
+      letter-spacing: 1.5px;
+      transition: background 0.3s, transform 0.2s;
+      animation: btnPulse 2.7s ease-in-out 1s infinite;
+    }
+
+    .btn-primary:hover {
+      background: #2e3f66;
+      transform: scale(1.03);
+    }
+
+    .btn-primary:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+      transform: none;
+      animation: none;
+    }
+
+    .otp-row {
+      display: flex;
+      gap: 10px;
+      justify-content: center;
+    }
+
+    .otp-row input {
+      width: 52px;
+      height: 58px;
+      text-align: center;
+      font-size: 22px;
+      font-family: cursive;
+      color: #1f2a44;
+      background: transparent;
+      border: 1.4px solid rgba(31, 42, 68, 0.2);
+      border-radius: 14px;
+      outline: none;
+      transition: border-color 0.3s, background 0.3s;
+    }
+
+    .otp-row input:focus {
+      border-color: #1f2a44;
+      background: rgba(31, 42, 68, 0.03);
+    }
+
+    .resend-row {
+      text-align: center;
+      font-size: 12px;
+      color: #1f2a44;
+      opacity: 0.4;
+      letter-spacing: 0.5px;
+    }
+
+    .resend-row a {
+      color: #1f2a44;
+      text-decoration: none;
+      border-bottom: 1px solid rgba(31, 42, 68, 0.3);
+      cursor: pointer;
+    }
+
+    .resend-row a:hover {
+      opacity: 0.8;
+    }
+
+    .password-wrap {
+      position: relative;
+    }
+
+    .password-wrap input {
+      width: 100%;
+      padding-right: 50px;
+    }
+
+    .toggle-eye {
+      position: absolute;
+      right: 14px;
+      top: 50%;
+      transform: translateY(-50%);
+      background: none;
+      border: none;
+      cursor: pointer;
+      padding: 4px;
+      color: rgba(31, 42, 68, 0.3);
+      font-size: 18px;
+      transition: color 0.3s;
+    }
+
+    .toggle-eye:hover {
+      color: rgba(31, 42, 68, 0.7);
+    }
+
+    .strength-bar {
+      display: flex;
+      gap: 4px;
+      margin-top: 6px;
+    }
+
+    .strength-seg {
+      flex: 1;
+      height: 3px;
+      border-radius: 2px;
+      background: rgba(31, 42, 68, 0.1);
+      transition: background 0.3s;
+    }
+
+    .strength-label {
+      font-size: 11px;
+      color: #1f2a44;
+      opacity: 0.4;
+      margin-top: 4px;
+      letter-spacing: 1px;
+    }
+
+    .divider {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .divider::before,
+    .divider::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: rgba(31, 42, 68, 0.12);
+    }
+
+    .divider span {
+      font-size: 11px;
+      color: #1f2a44;
+      opacity: 0.3;
+      letter-spacing: 1px;
+    }
+
+    .back-row {
+      text-align: center;
+    }
+
+    .back-row a {
+      font-size: 12px;
+      color: #1f2a44;
+      opacity: 0.35;
+      text-decoration: none;
+      letter-spacing: 1px;
+      transition: opacity 0.3s;
+    }
+
+    .back-row a:hover {
+      opacity: 0.7;
+    }
+
+    /* --- Стабильная анимация появления --- */
+    .reveal {
+      opacity: 0;
+      transform: translateY(20px);
+      transition: opacity 0.6s ease, transform 0.6s ease;
+      will-change: opacity, transform;
+    }
+
+    .reveal.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    @keyframes btnPulse {
+
+      0%,
+      100% {
+        box-shadow: 0 0 0 0px rgba(31, 42, 68, 0.25);
+      }
+
+      50% {
+        box-shadow: 0 0 0 10px rgba(31, 42, 68, 0);
+      }
+    }
+
+    .success-icon {
+      width: 64px;
+      height: 64px;
+      border-radius: 50%;
+      background: rgba(39, 174, 96, 0.12);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto;
+      animation: popIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+
+    @keyframes popIn {
+      0% {
+        transform: scale(0);
+        opacity: 0;
+      }
+
+      100% {
+        transform: scale(1);
+        opacity: 1;
+      }
+    }
+
+    /* Шаги скрыты через класс, не inline style — стабильнее */
+    .step {
+      display: none;
+      flex-direction: column;
+      gap: 22px;
+    }
+
+    .step.active {
+      display: flex;
+    }
+
+    #step1 {
+      display: flex;
+    }
+
+    /* первый шаг открыт по умолчанию */
+  </style>
+</head>
+
+<body>
+
+  <div class="bg-q bg-q_A">?</div>
+  <div class="bg-q bg-q_B">?</div>
+  <div class="bg-q bg-q_C">?</div>
+  <div class="bg-q bg-q_D">?</div>
+  <div class="bg-q bg-q_E">?</div>
+  <div class="bg-q bg-q_F">?</div>
+
+  <div class="card">
+
+    <!-- Logo -->
+    <div class="logo-wrap reveal">
+      <svg width="70" height="70" viewBox="0 0 320 320" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="160" cy="160" r="152" fill="none" stroke="#1f2a44" stroke-width="1.5" opacity="0.15" />
+        <circle cx="160" cy="160" r="125" fill="#1f2a44" />
+        <rect x="100" y="88" width="28" height="144" rx="3" fill="#ffffff" />
+        <path d="M 128 88 L 128 168 Q 218 168 218 128 Q 218 88 128 88 Z" fill="#ffffff" />
+        <path d="M 128 103 L 128 153 Q 198 153 198 128 Q 198 103 128 103 Z" fill="#1f2a44" />
+        <circle cx="222" cy="245" r="7" fill="#4a90d9" />
+      </svg>
+      <svg width="100" height="18" viewBox="0 0 160 24" xmlns="http://www.w3.org/2000/svg">
+        <line x1="0" y1="12" x2="30" y2="12" stroke="#1f2a44" stroke-width="1" opacity="0.3" />
+        <text x="80" y="17" text-anchor="middle" font-family="sans-serif" font-size="12" font-weight="500"
+          fill="#1f2a44" letter-spacing="5">STUDIO</text>
+        <line x1="130" y1="12" x2="160" y2="12" stroke="#1f2a44" stroke-width="1" opacity="0.3" />
+      </svg>
+    </div>
+
+    <!-- Step dots -->
+    <div class="step-indicator reveal" id="stepDots">
+      <div class="step-dot active" id="dot0"></div>
+      <div class="step-dot" id="dot1"></div>
+      <div class="step-dot" id="dot2"></div>
+    </div>
+
+    <!-- STEP 1: Email -->
+    <div id="step1" class="step">
+      <div class="heading reveal">
+        <h1>Forgot password?</h1>
+        <p>We'll send a code to your email</p>
+      </div>
+      <form id="emailForm">
+        <div class="input-group reveal">
+          <label>Email address</label>
+          <input type="email" id="emailInput" placeholder="your@email.com" autocomplete="off" />
+        </div>
+        <p class="hint-text reveal">Enter the email linked to your account and we'll send you a verification code.</p>
+        <button class="btn-primary reveal" type="submit">Send code</button>
+      </form>
+      <div class="divider reveal"><span>or</span></div>
+      <div class="back-row reveal"><a href="/home/login">← Back to login</a></div>
+    </div>
+
+    <!-- STEP 2: OTP -->
+    <div id="step2" class="step">
+      <div class="heading reveal">
+        <h1>Check your inbox.</h1>
+        <p id="otpSubtitle">Code sent to your email</p>
+      </div>
+      <form id="otpForm">
+        <div class="input-group reveal" style="align-items:center;">
+          <label>Verification code</label>
+          <div class="otp-row">
+            <input class="otp-input" type="text" maxlength="1" inputmode="numeric" />
+            <input class="otp-input" type="text" maxlength="1" inputmode="numeric" />
+            <input class="otp-input" type="text" maxlength="1" inputmode="numeric" />
+            <input class="otp-input" type="text" maxlength="1" inputmode="numeric" />
+            <input class="otp-input" type="text" maxlength="1" inputmode="numeric" />
+          </div>
+        </div>
+        <p class="hint-text reveal" id="timerText">Code expires in <span id="countdown">05:00</span></p>
+        <button class="btn-primary reveal" type="submit">Verify code</button>
+      </form>
+      <div class="resend-row reveal">Didn't receive it? <a id="resendBtn">Resend code</a></div>
+      <div class="back-row reveal"><a id="backToEmail">← Change email</a></div>
+    </div>
+
+    <!-- STEP 3: New Password -->
+    <div id="step3" class="step">
+      <div class="heading reveal">
+        <h1>New password.</h1>
+        <p>Make it strong this time</p>
+      </div>
+      <form id="passwordForm">
+        <div class="input-group reveal">
+          <label>New password</label>
+          <div class="password-wrap">
+            <input type="password" id="newPass" placeholder="••••••••" autocomplete="new-password" />
+            <button type="button" class="toggle-eye" id="toggleNew">👁</button>
+          </div>
+          <div class="strength-bar">
+            <div class="strength-seg" id="seg0"></div>
+            <div class="strength-seg" id="seg1"></div>
+            <div class="strength-seg" id="seg2"></div>
+            <div class="strength-seg" id="seg3"></div>
+          </div>
+          <span class="strength-label" id="strengthLabel"></span>
+        </div>
+        <div class="input-group reveal">
+          <label>Confirm password</label>
+          <div class="password-wrap">
+            <input type="password" id="confirmPass" placeholder="••••••••" autocomplete="new-password" />
+            <button type="button" class="toggle-eye" id="toggleConfirm">👁</button>
+          </div>
+          <span class="strength-label" id="matchLabel"></span>
+        </div>
+        <button class="btn-primary reveal" type="submit">Reset password</button>
+      </form>
+      <div class="back-row reveal"><a href="/home/login">← Back to login</a></div>
+    </div>
+
+    <!-- STEP 4: Success -->
+    <div id="step4" class="step" style="align-items:center; text-align:center;">
+      <div class="success-icon reveal">
+        <svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M6 16l7 7 13-13" stroke="#1e8449" stroke-width="2.5" stroke-linecap="round"
+            stroke-linejoin="round" />
+        </svg>
+      </div>
+      <div class="heading reveal">
+        <h1>All done!</h1>
+        <p>Your password has been reset</p>
+      </div>
+      <p class="hint-text reveal">You can now sign in with your new password. Keep it somewhere safe.</p>
+      <a href="/home/login" style="width:100%">
+        <button class="btn-primary reveal" style="width:100%">Go to login</button>
+      </a>
+    </div>
+
+  </div>
+
+  <script>
+    let currentStep = 1;
+    let timerInterval = null;
+    let resetToken = null;  // токен придёт с сервера после OTP
+
+    function goToStep(n) {
+      document.getElementById('step' + currentStep).classList.remove('active');
+      document.getElementById('step' + currentStep).style.display = 'none';
+      currentStep = n;
+      const el = document.getElementById('step' + n);
+      el.style.display = 'flex';
+      el.classList.add('active');
+      updateDots(n);
+      el.querySelectorAll('.reveal').forEach(item => item.classList.remove('visible'));
+      setTimeout(() => {
+        el.querySelectorAll('.reveal').forEach((item, i) => {
+          setTimeout(() => item.classList.add('visible'), i * 90);
+        });
+      }, 60);
+    }
+
+    function updateDots(step) {
+      for (let i = 0; i < 3; i++) {
+        const dot = document.getElementById('dot' + i);
+        dot.className = 'step-dot';
+        if (i < step - 1) dot.classList.add('done');
+        else if (i === step - 1) dot.classList.add('active');
+      }
+      if (step === 4) document.getElementById('stepDots').style.display = 'none';
+    }
+
+    function showError(msg) {
+      // Показываем ошибку — можно заменить на свой UI
+      alert(msg);
+    }
+
+    window.addEventListener('load', () => {
+      const el = document.getElementById('step1');
+      el.querySelectorAll('.reveal').forEach((item, i) => {
+        setTimeout(() => item.classList.add('visible'), i * 90);
+      });
+      document.querySelectorAll('.logo-wrap.reveal, .step-indicator.reveal').forEach((item, i) => {
+        setTimeout(() => item.classList.add('visible'), i * 90);
+      });
+    });
+
+    // ========== STEP 1: отправить email ==========
+    document.getElementById('emailForm').addEventListener('submit', async function (e) {
+      e.preventDefault();
+      const email = document.getElementById('emailInput').value.trim();
+      if (!email.includes('@')) return;
+
+      const btn = this.querySelector('button[type=submit]');
+      btn.disabled = true;
+      btn.textContent = 'Sending...';
+
+      try {
+        const res = await fetch('/emailForm', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+          body: 'email=' + encodeURIComponent(email)
+        });
+        const data = await res.json();
+
+        if (data.ok) {
+          document.getElementById('otpSubtitle').textContent = 'Code sent to ' + email;
+          goToStep(2);
+          startTimer(300);
+          setTimeout(() => document.querySelector('.otp-input').focus(), 200);
+        } else {
+          showError(data.error || 'Something went wrong');
+        }
+      } catch (err) {
+        showError('Network error');
+      } finally {
+        btn.disabled = false;
+        btn.textContent = 'Send code';
+      }
+    });
+
+    // ========== OTP inputs ==========
+    const otpInputs = document.querySelectorAll('.otp-input');
+    otpInputs.forEach((inp, idx) => {
+      inp.addEventListener('input', function () {
+        this.value = this.value.replace(/[^0-9]/g, '');
+        if (this.value && idx < otpInputs.length - 1) otpInputs[idx + 1].focus();
+      });
+      inp.addEventListener('keydown', function (e) {
+        if (e.key === 'Backspace' && !this.value && idx > 0) otpInputs[idx - 1].focus();
+      });
+      inp.addEventListener('paste', function (e) {
+        const paste = (e.clipboardData || window.clipboardData).getData('text').replace(/[^0-9]/g, '');
+        if (paste.length >= otpInputs.length) {
+          otpInputs.forEach((inp, i) => { inp.value = paste[i] || ''; });
+          otpInputs[otpInputs.length - 1].focus();
+          e.preventDefault();
+        }
+      });
+    });
+
+    // ========== STEP 2: проверить OTP ==========
+    document.getElementById('otpForm').addEventListener('submit', async function (e) {
+      e.preventDefault();
+      const code = Array.from(otpInputs).map(i => i.value).join('');
+      if (code.length < 5) return;
+
+      const btn = this.querySelector('button[type=submit]');
+      btn.disabled = true;
+      btn.textContent = 'Verifying...';
+
+      try {
+        const res = await fetch('/verify-otp', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+          body: 'otp=' + encodeURIComponent(code)
+            + '&email=' + encodeURIComponent(document.getElementById('emailInput').value.trim())
+        });
+        const data = await res.json();
+
+        if (data.ok) {
+          resetToken = data.token;  // сохраняем токен для step 3
+          clearInterval(timerInterval);
+          goToStep(3);
+          setTimeout(() => document.getElementById('newPass').focus(), 200);
+        } else {
+          showError(data.error || 'Invalid code');
+        }
+      } catch (err) {
+        showError('Network error');
+      } finally {
+        btn.disabled = false;
+        btn.textContent = 'Verify code';
+      }
+    });
+
+    document.getElementById('backToEmail').addEventListener('click', function () {
+      clearInterval(timerInterval);
+      goToStep(1);
+    });
+
+    // ========== Resend ==========
+    document.getElementById('resendBtn').addEventListener('click', async function () {
+      const email = document.getElementById('emailInput').value.trim();
+      otpInputs.forEach(i => i.value = '');
+      otpInputs[0].focus();
+      clearInterval(timerInterval);
+
+      await fetch('/emailForm', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body: 'email=' + encodeURIComponent(email)
+      });
+
+      startTimer(300);
+    });
+
+    // ========== Timer ==========
+    function startTimer(seconds) {
+      let s = seconds;
+      updateCountdown(s);
+      timerInterval = setInterval(() => {
+        s--;
+        updateCountdown(s);
+        if (s <= 0) {
+          clearInterval(timerInterval);
+          document.getElementById('timerText').innerHTML =
+            'Code expired. <span style="color:#c0392b">Request a new one.</span>';
+        }
+      }, 1000);
+    }
+    function updateCountdown(s) {
+      const m = Math.floor(s / 60);
+      const sec = s % 60;
+      document.getElementById('countdown').textContent =
+        String(m).padStart(2, '0') + ':' + String(sec).padStart(2, '0');
+    }
+
+    // ========== Password strength ==========
+    document.getElementById('newPass').addEventListener('input', function () {
+      const v = this.value;
+      let score = 0;
+      if (v.length >= 8) score++;
+      if (/[A-Z]/.test(v)) score++;
+      if (/[0-9]/.test(v)) score++;
+      if (/[^A-Za-z0-9]/.test(v)) score++;
+      const colors = ['', '#e74c3c', '#e67e22', '#f1c40f', '#27ae60'];
+      const labels = ['', 'Weak', 'Fair', 'Good', 'Strong'];
+      for (let i = 0; i < 4; i++) {
+        document.getElementById('seg' + i).style.background =
+          i < score ? colors[score] : 'rgba(31,42,68,0.1)';
+      }
+      document.getElementById('strengthLabel').textContent = v.length ? labels[score] : '';
+      checkMatch();
+    });
+
+    document.getElementById('confirmPass').addEventListener('input', checkMatch);
+    function checkMatch() {
+      const np = document.getElementById('newPass').value;
+      const cp = document.getElementById('confirmPass').value;
+      const lbl = document.getElementById('matchLabel');
+      if (!cp) { lbl.textContent = ''; return; }
+      if (np === cp) {
+        lbl.textContent = 'Passwords match ✓';
+        lbl.style.color = '#27ae60';
+        document.getElementById('confirmPass').style.borderColor = 'rgba(39,174,96,0.5)';
+      } else {
+        lbl.textContent = 'Passwords do not match';
+        lbl.style.color = '#e74c3c';
+        document.getElementById('confirmPass').style.borderColor = 'rgba(231,76,60,0.5)';
+      }
+    }
+
+    function makeToggle(btnId, inputId) {
+      document.getElementById(btnId).addEventListener('click', function () {
+        const inp = document.getElementById(inputId);
+        inp.type = inp.type === 'password' ? 'text' : 'password';
+      });
+    }
+    makeToggle('toggleNew', 'newPass');
+    makeToggle('toggleConfirm', 'confirmPass');
+
+    // ========== STEP 3: сменить пароль ==========
+    document.getElementById('passwordForm').addEventListener('submit', async function (e) {
+      e.preventDefault();
+      const np = document.getElementById('newPass').value;
+      const cp = document.getElementById('confirmPass').value;
+      if (np.length < 8 || np !== cp) return;
+
+      const btn = this.querySelector('button[type=submit]');
+      btn.disabled = true;
+      btn.textContent = 'Saving...';
+
+      try {
+        const res = await fetch('/reset-password/' + resetToken, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+          body: 'password=' + encodeURIComponent(np)
+            + '&confirm=' + encodeURIComponent(cp)
+        });
+        const data = await res.json();
+
+        if (data.ok) {
+          goToStep(4);
+        } else {
+          showError(data.error || 'Something went wrong');
+        }
+      } catch (err) {
+        showError('Network error');
+      } finally {
+        btn.disabled = false;
+        btn.textContent = 'Reset password';
+      }
+    });
+  </script>
+</body>
+
+</html>

@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>?_Pardon_?</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      background:
+        radial-gradient(circle at top, #96c0d2 0%, #f3f5f9 55%, #83b9c0 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      font-family: sans-serif;
+      overflow: hidden;
+    }
+
+    .logo-wrap {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 22px;
+      animation: floatWrap 5s ease-in-out infinite;
+      transform-origin: center;
+    }
+
+    .logo-main {
+      filter: drop-shadow(0 18px 40px rgba(31, 42, 68, 0.18));
+    }
+
+    .ring-outer {
+      transform-origin: 160px 160px;
+      animation: spinSlow 18s linear infinite;
+    }
+
+    .ring-inner {
+      transform-origin: 160px 160px;
+      animation: spinReverse 26s linear infinite;
+    }
+
+    .badge {
+      transform-origin: 160px 160px;
+      animation: badgePulse 4s ease-in-out infinite;
+    }
+
+    .p-stem,
+    .p-bowl,
+    .p-cutout {
+      transform-origin: 160px 160px;
+    }
+
+    .p-stem {
+      animation: popIn 1s cubic-bezier(.2,.9,.2,1.1) both;
+    }
+
+    .p-bowl {
+      animation: popIn 1s cubic-bezier(.2,.9,.2,1.1) 0.12s both;
+    }
+
+    .p-cutout {
+      animation: popIn 1s cubic-bezier(.2,.9,.2,1.1) 0.18s both;
+    }
+
+    .accent-dot {
+      transform-origin: 222px 245px;
+      animation: dotPulse 1.8s ease-in-out infinite;
+    }
+
+    .studio {
+      opacity: 0;
+      transform: translateY(12px);
+      animation: studioReveal 1s ease forwards 0.55s;
+    }
+
+    .studio line {
+      stroke-dasharray: 30;
+      stroke-dashoffset: 30;
+      animation: lineDraw 1s ease forwards 0.75s;
+    }
+
+    .studio text {
+      letter-spacing: 5px;
+      user-select: none;
+    }
+
+    .shine {
+      position: absolute;
+      width: 420px;
+      height: 420px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(74,144,217,0.12) 0%, rgba(74,144,217,0.05) 30%, transparent 70%);
+      filter: blur(8px);
+      animation: shineMove 6s ease-in-out infinite;
+      pointer-events: none;
+    }
+
+    @keyframes floatWrap {
+      0%, 100% { transform: translateY(0px) scale(1); }
+      50% { transform: translateY(-10px) scale(1.01); }
+    }
+
+    @keyframes spinSlow {
+      from { transform: rotate(0deg); }
+      to { transform: rotate(360deg); }
+    }
+
+    @keyframes spinReverse {
+      from { transform: rotate(0deg); }
+      to { transform: rotate(-360deg); }
+    }
+
+    @keyframes badgePulse {
+      0%, 100% {
+        transform: scale(1);
+        filter: brightness(1);
+      }
+      50% {
+        transform: scale(1.015);
+        filter: brightness(1.08);
+      }
+    }
+
+    @keyframes dotPulse {
+      0%, 100% { transform: scale(1); opacity: 0.9; }
+      50% { transform: scale(1.4); opacity: 1; }
+    }
+
+    @keyframes popIn {
+      0% {
+        opacity: 0;
+        transform: scale(0.72);
+      }
+      70% {
+        opacity: 1;
+        transform: scale(1.04);
+      }
+      100% {
+        opacity: 1;
+        transform: scale(1);
+      }
+    }
+
+    @keyframes studioReveal {
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    @keyframes lineDraw {
+      to {
+        stroke-dashoffset: 0;
+      }
+    }
+
+    @keyframes shineMove {
+      0%, 100% { transform: translate(-10px, -6px) scale(1); }
+      50% { transform: translate(10px, 8px) scale(1.05); }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .logo-wrap,
+      .ring-outer,
+      .ring-inner,
+      .badge,
+      .p-stem,
+      .p-bowl,
+      .p-cutout,
+      .accent-dot,
+      .studio,
+      .studio line,
+      .shine {
+        animation: none !important;
+      }
+      .studio {
+        opacity: 1;
+        transform: none;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="shine"></div>
+
+  <div class="logo-wrap">
+    <svg class="logo-main" width="320" height="320" viewBox="0 0 320 320" xmlns="http://www.w3.org/2000/svg">
+      
+
+      <!-- Outer decorative rings -->
+      <g class="ring-outer">
+        <circle cx="160" cy="160" r="152" fill="none" stroke="#1f2a44" stroke-width="1.5" opacity="0.15"/>
+      </g>
+
+      <g class="ring-inner">
+        <circle cx="160" cy="160" r="138" fill="none" stroke="#1f2a44" stroke-width="1" opacity="0.07"/>
+      </g>
+
+      <!-- Main badge -->
+      <g class="badge">
+        <circle cx="160" cy="160" r="125" fill="#1f2a44"/>
+        <circle cx="160" cy="160" r="113" fill="none" stroke="#ffffff" stroke-width="1" opacity="0.07"/>
+      </g>
+
+      <!-- P letter -->
+      <rect class="p-stem" x="100" y="88" width="28" height="144" rx="3" fill="#ffffff"/>
+
+      <path class="p-bowl" d="
+        M 128 88
+        L 128 168
+        Q 218 168 218 128
+        Q 218 88 128 88
+        Z
+      " fill="#ffffff"/>
+
+      <path class="p-cutout" d="
+        M 128 103
+        L 128 153
+        Q 198 153 198 128
+        Q 198 103 128 103
+        Z
+      " fill="#1f2a44"/>
+
+      <circle class="accent-dot" cx="222" cy="245" r="7" fill="#4a90d9"/>
+    </svg>
+
+    <svg class="studio" width="160" height="24" viewBox="0 0 160 24" xmlns="http://www.w3.org/2000/svg">
+      <line x1="0" y1="12" x2="30" y2="12" stroke="#1f2a44" stroke-width="1" opacity="0.3"/>
+      <text x="80" y="17" text-anchor="middle"
+        font-family="sans-serif" font-size="12" font-weight="500"
+        fill="#1f2a44" letter-spacing="5">STUDIO</text>
+      <line x1="130" y1="12" x2="160" y2="12" stroke="#1f2a44" stroke-width="1" opacity="0.3"/>
+    </svg>
+  </div>
+
+  <script>
+    setTimeout(function(){
+        window.location.href = "/home";
+    }, 2750);
+  </script>
+</body>
+</html>

@@ -1,0 +1,1080 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Register — Pardon Studio</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      background: radial-gradient(circle at top, #96c0d2 0%, #f3f5f9 55%, #83b9c0 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      font-family: sans-serif;
+      overflow: hidden;
+    }
+
+    .shine {
+      position: fixed;
+      width: 500px;
+      height: 500px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(74, 144, 217, 0.13) 0%, transparent 70%);
+      filter: blur(10px);
+      pointer-events: none;
+      animation: shineMove 6s ease-in-out infinite;
+      top: -100px;
+      left: 50%;
+      transform: translateX(-50%);
+    }
+
+    .fq {
+      position: fixed;
+      font-family: cursive;
+      color: #1f2a44;
+      user-select: none;
+      pointer-events: none;
+      opacity: 0.07;
+    }
+
+    .card {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      width: 380px;
+      position: relative;
+      z-index: 2;
+      animation: cardIn 0.9s cubic-bezier(.2, .9, .2, 1) both;
+    }
+
+    /* Logo */
+    .logo-wrap {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 20px;
+      animation: floatWrap 5s ease-in-out infinite;
+    }
+
+    .ring-outer {
+      transform-origin: 160px 160px;
+      animation: spinSlow 18s linear infinite;
+    }
+
+    .ring-inner {
+      transform-origin: 160px 160px;
+      animation: spinReverse 26s linear infinite;
+    }
+
+    .badge {
+      transform-origin: 160px 160px;
+      animation: badgePulse 4s ease-in-out infinite;
+    }
+
+    .p-stem {
+      animation: popIn 1s cubic-bezier(.2, .9, .2, 1.1) 0s both;
+      transform-origin: 160px 160px;
+    }
+
+    .p-bowl {
+      animation: popIn 1s cubic-bezier(.2, .9, .2, 1.1) 0.12s both;
+      transform-origin: 160px 160px;
+    }
+
+    .p-cutout {
+      animation: popIn 1s cubic-bezier(.2, .9, .2, 1.1) 0.18s both;
+      transform-origin: 160px 160px;
+    }
+
+    .accent-dot {
+      transform-origin: 222px 245px;
+      animation: dotPulse 1.8s ease-in-out infinite;
+    }
+
+    .studio {
+      opacity: 0;
+      transform: translateY(10px);
+      animation: studioReveal 0.8s ease forwards 0.5s;
+    }
+
+    .studio line {
+      stroke-dasharray: 30;
+      stroke-dashoffset: 30;
+      animation: lineDraw 0.8s ease forwards 0.7s;
+    }
+
+    /* Step indicator */
+    .step-indicator {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      margin-bottom: 18px;
+    }
+
+    .step-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: rgba(31, 42, 68, 0.15);
+      transition: background 0.4s;
+    }
+
+    .step-dot.active {
+      background: #1f2a44;
+    }
+
+    .step-dot.done {
+      background: rgba(31, 42, 68, 0.4);
+    }
+
+    /* Steps */
+    .step {
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      width: 100%;
+      gap: 14px;
+    }
+
+    .step.active {
+      display: flex;
+    }
+
+    #step1 {
+      display: flex;
+    }
+
+    /* Inputs */
+    .form-wrap {
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 14px;
+    }
+
+    form {
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 14px;
+    }
+
+    .input-wrap {
+      position: relative;
+      width: 100%;
+      opacity: 0;
+    }
+
+    .input-wrap:nth-child(1) {
+      animation: fadeUp 0.5s ease 0.30s forwards;
+    }
+
+    .input-wrap:nth-child(2) {
+      animation: fadeUp 0.5s ease 0.42s forwards;
+    }
+
+    .input-wrap:nth-child(3) {
+      animation: fadeUp 0.5s ease 0.54s forwards;
+    }
+
+    .input-wrap:nth-child(4) {
+      animation: fadeUp 0.5s ease 0.66s forwards;
+    }
+
+    .input-wrap input {
+      width: 100%;
+      padding: 20px 18px 8px 18px;
+      font-size: 16px;
+      font-family: cursive;
+      color: #1f2a44;
+      background: rgba(255, 255, 255, 0.38);
+      border: none;
+      border-bottom: 1.5px solid rgba(31, 42, 68, 0.25);
+      border-radius: 6px 6px 0 0;
+      outline: none;
+      backdrop-filter: blur(4px);
+      transition: border-color 0.3s, background 0.3s;
+    }
+
+    .input-wrap input:focus {
+      border-bottom-color: #1f2a44;
+      background: rgba(255, 255, 255, 0.55);
+    }
+
+    .input-wrap label {
+      position: absolute;
+      top: 14px;
+      left: 18px;
+      font-size: 15px;
+      font-family: cursive;
+      color: rgba(31, 42, 68, 0.45);
+      pointer-events: none;
+      transition: top .22s, font-size .22s, color .22s, letter-spacing .22s;
+    }
+
+    .input-wrap input:focus~label,
+    .input-wrap input:not(:placeholder-shown)~label {
+      top: 4px;
+      font-size: 10px;
+      color: rgba(31, 42, 68, 0.65);
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+    }
+
+    .input-wrap::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 0;
+      height: 1.5px;
+      background: #1f2a44;
+      transition: width 0.35s ease;
+    }
+
+    .input-wrap:focus-within::after {
+      width: 100%;
+    }
+
+    /* Email status indicator */
+    .email-status {
+      position: absolute;
+      right: 14px;
+      top: 50%;
+      transform: translateY(-50%);
+      font-size: 16px;
+      transition: opacity 0.3s;
+      opacity: 0;
+    }
+
+    .email-status.show {
+      opacity: 1;
+    }
+
+    /* Password strength */
+    .strength-bar {
+      height: 2px;
+      background: rgba(31, 42, 68, 0.1);
+      border-radius: 2px;
+      overflow: hidden;
+    }
+
+    .strength-fill {
+      height: 100%;
+      width: 0%;
+      border-radius: 2px;
+      transition: width 0.4s ease, background 0.4s ease;
+    }
+
+    /* Inline validation message */
+    .msg {
+      min-height: 18px;
+      font-size: 12px;
+      font-family: cursive;
+      letter-spacing: 0.4px;
+      text-align: center;
+      opacity: 0;
+      transition: opacity 0.3s;
+      width: 100%;
+    }
+
+    .msg.show {
+      opacity: 1;
+    }
+
+    .msg.error {
+      color: #b03030;
+    }
+
+    .msg.ok {
+      color: #2a6e3f;
+    }
+
+    /* Buttons */
+    .btn-register {
+      padding: 13px 48px;
+      font-size: 22px;
+      font-family: cursive;
+      color: white;
+      background: #1f2a44;
+      border: none;
+      border-radius: 40px;
+      cursor: pointer;
+      letter-spacing: 1.5px;
+      opacity: 0;
+      position: relative;
+      overflow: hidden;
+      animation: fadeUp 0.6s ease 0.8s forwards, btnPulse 2.8s ease-in-out 1.6s infinite;
+      transition: background 0.3s, transform 0.2s;
+    }
+
+    .btn-register:hover {
+      background: #2e3f66;
+      transform: scale(1.05);
+    }
+
+    .btn-register:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+      transform: none;
+      animation: none;
+    }
+
+    .btn-primary {
+      width: 100%;
+      padding: 14px;
+      font-size: 20px;
+      font-family: cursive;
+      color: white;
+      background: #1f2a44;
+      border: none;
+      border-radius: 40px;
+      cursor: pointer;
+      letter-spacing: 1.5px;
+      transition: background 0.3s, transform 0.2s;
+      animation: btnPulse 2.7s ease-in-out 1s infinite;
+    }
+
+    .btn-primary:hover {
+      background: #2e3f66;
+      transform: scale(1.03);
+    }
+
+    .btn-primary:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+      transform: none;
+      animation: none;
+    }
+
+    .ripple {
+      position: absolute;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.32);
+      transform: scale(0);
+      animation: rippleOut 0.6s linear forwards;
+      pointer-events: none;
+    }
+
+    /* OTP */
+    .otp-row {
+      display: flex;
+      gap: 10px;
+      justify-content: center;
+    }
+
+    .otp-row input {
+      width: 52px;
+      height: 58px;
+      text-align: center;
+      font-size: 22px;
+      font-family: cursive;
+      color: #1f2a44;
+      background: transparent;
+      border: 1.4px solid rgba(31, 42, 68, 0.2);
+      border-radius: 14px;
+      outline: none;
+      transition: border-color 0.3s, background 0.3s;
+    }
+
+    .otp-row input:focus {
+      border-color: #1f2a44;
+      background: rgba(31, 42, 68, 0.03);
+    }
+
+    .hint-text {
+      font-size: 12px;
+      color: #1f2a44;
+      opacity: 0.4;
+      text-align: center;
+      letter-spacing: 0.4px;
+      line-height: 1.6;
+    }
+
+    .resend-row {
+      text-align: center;
+      font-size: 12px;
+      color: #1f2a44;
+      opacity: 0.4;
+      letter-spacing: 0.5px;
+    }
+
+    .resend-row a {
+      color: #1f2a44;
+      text-decoration: none;
+      border-bottom: 1px solid rgba(31, 42, 68, 0.3);
+      cursor: pointer;
+    }
+
+    .login-link {
+      font-size: 13px;
+      font-family: cursive;
+      color: rgba(31, 42, 68, 0.5);
+      text-align: center;
+      opacity: 0;
+      animation: fadeUp 0.6s ease 0.95s forwards;
+    }
+
+    .login-link a {
+      color: #1f2a44;
+      text-decoration: underline;
+      text-underline-offset: 3px;
+      transition: opacity 0.2s;
+    }
+
+    .login-link a:hover {
+      opacity: 0.55;
+    }
+
+    .back-row {
+      text-align: center;
+    }
+
+    .back-row a {
+      font-size: 12px;
+      color: #1f2a44;
+      opacity: 0.35;
+      text-decoration: none;
+      letter-spacing: 1px;
+      transition: opacity 0.3s;
+    }
+
+    .back-row a:hover {
+      opacity: 0.7;
+    }
+
+    /* Success */
+    .success-icon {
+      width: 64px;
+      height: 64px;
+      border-radius: 50%;
+      background: rgba(39, 174, 96, 0.12);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto;
+      animation: popInBig 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+
+    .heading {
+      text-align: center;
+    }
+
+    .heading h1 {
+      font-size: 38px;
+      color: #1f2a44;
+      letter-spacing: 1px;
+      line-height: 1.1;
+      font-family: cursive;
+    }
+
+    .heading p {
+      font-size: 13px;
+      color: #1f2a44;
+      opacity: 0.4;
+      letter-spacing: 1px;
+      margin-top: 6px;
+      font-family: cursive;
+    }
+
+    /* Reveal */
+    .reveal {
+      opacity: 0;
+      transform: translateY(20px);
+      transition: opacity 0.6s ease, transform 0.6s ease;
+    }
+
+    .reveal.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    /* Keyframes */
+    @keyframes cardIn {
+      from {
+        opacity: 0;
+        transform: translateY(28px) scale(0.97);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+      }
+    }
+
+    @keyframes fadeUp {
+      from {
+        opacity: 0;
+        transform: translateY(16px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    @keyframes floatWrap {
+
+      0%,
+      100% {
+        transform: translateY(0);
+      }
+
+      50% {
+        transform: translateY(-8px);
+      }
+    }
+
+    @keyframes spinSlow {
+      to {
+        transform: rotate(360deg);
+      }
+    }
+
+    @keyframes spinReverse {
+      to {
+        transform: rotate(-360deg);
+      }
+    }
+
+    @keyframes badgePulse {
+
+      0%,
+      100% {
+        transform: scale(1);
+        filter: brightness(1);
+      }
+
+      50% {
+        transform: scale(1.015);
+        filter: brightness(1.08);
+      }
+    }
+
+    @keyframes dotPulse {
+
+      0%,
+      100% {
+        transform: scale(1);
+        opacity: 0.9;
+      }
+
+      50% {
+        transform: scale(1.4);
+        opacity: 1;
+      }
+    }
+
+    @keyframes popIn {
+      0% {
+        opacity: 0;
+        transform: scale(0.72);
+      }
+
+      70% {
+        opacity: 1;
+        transform: scale(1.04);
+      }
+
+      100% {
+        opacity: 1;
+        transform: scale(1);
+      }
+    }
+
+    @keyframes popInBig {
+      0% {
+        transform: scale(0);
+        opacity: 0;
+      }
+
+      100% {
+        transform: scale(1);
+        opacity: 1;
+      }
+    }
+
+    @keyframes studioReveal {
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    @keyframes lineDraw {
+      to {
+        stroke-dashoffset: 0;
+      }
+    }
+
+    @keyframes shineMove {
+
+      0%,
+      100% {
+        transform: translateX(-50%) translate(-10px, -6px);
+      }
+
+      50% {
+        transform: translateX(-50%) translate(10px, 8px);
+      }
+    }
+
+    @keyframes btnPulse {
+
+      0%,
+      100% {
+        box-shadow: 0 0 0 0px rgba(31, 42, 68, 0.3);
+      }
+
+      50% {
+        box-shadow: 0 0 0 10px rgba(31, 42, 68, 0);
+      }
+    }
+
+    @keyframes rippleOut {
+      to {
+        transform: scale(4);
+        opacity: 0;
+      }
+    }
+
+    @keyframes floatDrift {
+
+      0%,
+      100% {
+        transform: translateY(0) rotate(0deg);
+      }
+
+      50% {
+        transform: translateY(-16px) rotate(8deg);
+      }
+    }
+
+    @keyframes shakeTiny {
+
+      0%,
+      100% {
+        transform: translateX(0);
+      }
+
+      20% {
+        transform: translateX(-5px);
+      }
+
+      40% {
+        transform: translateX(5px);
+      }
+
+      60% {
+        transform: translateX(-4px);
+      }
+
+      80% {
+        transform: translateX(4px);
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="shine"></div>
+  <div class="fq" style="top:6%;  left:5%;  font-size:64px; animation:floatDrift 6s ease-in-out 0s   infinite;">?</div>
+  <div class="fq" style="top:70%; left:7%;  font-size:88px; animation:floatDrift 7s ease-in-out 1s   infinite;">?</div>
+  <div class="fq" style="top:20%; right:6%; font-size:72px; animation:floatDrift 8s ease-in-out 0.5s infinite;">?</div>
+  <div class="fq" style="top:78%; right:5%; font-size:52px; animation:floatDrift 5s ease-in-out 1.8s infinite;">?</div>
+  <div class="fq" style="top:45%; left:2%;  font-size:44px; animation:floatDrift 9s ease-in-out 2s   infinite;">?</div>
+
+  <div class="card">
+
+    <!-- Logo -->
+    <div class="logo-wrap">
+      <svg class="logo-main" width="110" height="110" viewBox="0 0 320 320" xmlns="http://www.w3.org/2000/svg">
+        <g class="ring-outer">
+          <circle cx="160" cy="160" r="152" fill="none" stroke="#1f2a44" stroke-width="1.5" opacity="0.15" />
+        </g>
+        <g class="ring-inner">
+          <circle cx="160" cy="160" r="138" fill="none" stroke="#1f2a44" stroke-width="1" opacity="0.07" />
+        </g>
+        <g class="badge">
+          <circle cx="160" cy="160" r="125" fill="#1f2a44" />
+          <circle cx="160" cy="160" r="113" fill="none" stroke="#ffffff" stroke-width="1" opacity="0.07" />
+        </g>
+        <rect class="p-stem" x="100" y="88" width="28" height="144" rx="3" fill="#ffffff" />
+        <path class="p-bowl" d="M 128 88  L 128 168 Q 218 168 218 128 Q 218 88  128 88  Z" fill="#ffffff" />
+        <path class="p-cutout" d="M 128 103 L 128 153 Q 198 153 198 128 Q 198 103 128 103 Z" fill="#1f2a44" />
+        <circle class="accent-dot" cx="222" cy="245" r="7" fill="#4a90d9" />
+      </svg>
+      <svg class="studio" width="140" height="22" viewBox="0 0 160 24" xmlns="http://www.w3.org/2000/svg">
+        <line x1="0" y1="12" x2="30" y2="12" stroke="#1f2a44" stroke-width="1" opacity="0.3" />
+        <text x="80" y="17" text-anchor="middle" font-family="sans-serif" font-size="12" font-weight="500"
+          fill="#1f2a44" letter-spacing="5">STUDIO</text>
+        <line x1="130" y1="12" x2="160" y2="12" stroke="#1f2a44" stroke-width="1" opacity="0.3" />
+      </svg>
+    </div>
+
+    <!-- Step dots -->
+    <div class="step-indicator" id="stepDots">
+      <div class="step-dot active" id="dot0"></div>
+      <div class="step-dot" id="dot1"></div>
+      <div class="step-dot" id="dot2"></div>
+    </div>
+
+    <!-- STEP 1: Fill form -->
+    <div id="step1" class="step">
+      <div class="heading reveal">
+        <h1>Create account.</h1>
+        <p>Join Pardon Studio</p>
+      </div>
+
+      <div class="form-wrap">
+        <form id="registerForm">
+          <div class="input-wrap">
+            <input type="text" name="username" id="username" placeholder=" " autocomplete="off">
+            <label for="username">Username</label>
+          </div>
+
+          <div class="input-wrap">
+            <input type="email" id="email" name="email" placeholder=" " autocomplete="off">
+            <label for="email">Email</label>
+            <span class="email-status" id="emailStatus"></span>
+          </div>
+
+          <div class="input-wrap">
+            <input type="password" id="password" name="password" placeholder=" " autocomplete="new-password">
+            <label for="password">Password</label>
+            <div class="strength-bar">
+              <div class="strength-fill" id="strengthFill"></div>
+            </div>
+          </div>
+
+          <div class="input-wrap">
+            <input type="password" id="confirm" name="confirm" placeholder=" " autocomplete="new-password">
+            <label for="confirm">Confirm Password</label>
+          </div>
+
+          <p class="msg" id="formMsg"></p>
+
+          <button class="btn-register" id="regBtn" type="button">
+            Continue
+          </button>
+
+          <p class="login-link">Already have an account? <a href="/home/login">Login</a></p>
+        </form>
+      </div>
+    </div>
+
+    <!-- STEP 2: OTP -->
+    <div id="step2" class="step">
+      <div class="heading reveal">
+        <h1>Check your inbox.</h1>
+        <p id="otpSubtitle">Code sent to your email</p>
+      </div>
+      <form id="otpForm" style="width:100%;">
+        <div style="display:flex;flex-direction:column;align-items:center;gap:8px;width:100%;" class="reveal">
+          <span
+            style="font-size:11px;color:rgba(31,42,68,0.5);letter-spacing:2px;text-transform:uppercase;">Verification
+            code</span>
+          <div class="otp-row">
+            <input class="otp-input" type="text" maxlength="1" inputmode="numeric" />
+            <input class="otp-input" type="text" maxlength="1" inputmode="numeric" />
+            <input class="otp-input" type="text" maxlength="1" inputmode="numeric" />
+            <input class="otp-input" type="text" maxlength="1" inputmode="numeric" />
+            <input class="otp-input" type="text" maxlength="1" inputmode="numeric" />
+          </div>
+        </div>
+        <p class="hint-text reveal" id="timerText">Code expires in <span id="countdown">05:00</span></p>
+        <button class="btn-primary reveal" type="submit">Verify &amp; Register</button>
+      </form>
+      <div class="resend-row reveal">Didn't receive it? <a id="resendBtn">Resend code</a></div>
+      <div class="back-row reveal"><a id="backToForm">← Edit details</a></div>
+    </div>
+
+    <!-- STEP 3: Success -->
+    <div id="step3" class="step" style="align-items:center;text-align:center;">
+      <div class="success-icon reveal">
+        <svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M6 16l7 7 13-13" stroke="#1e8449" stroke-width="2.5" stroke-linecap="round"
+            stroke-linejoin="round" />
+        </svg>
+      </div>
+      <div class="heading reveal">
+        <h1>You're in!</h1>
+        <p>Account created successfully</p>
+      </div>
+      <p class="hint-text reveal">Welcome to Pardon Studio. You can now sign in with your credentials.</p>
+      <a href="/home/login" style="width:100%">
+        <button class="btn-primary reveal" style="width:100%;margin-top:8px;">Go to login</button>
+      </a>
+    </div>
+
+  </div>
+
+  <script>
+    // ── State ──
+    let currentStep = 1;
+    let timerInterval = null;
+    let pendingData = {};   // username, email, password, confirm
+
+    // ── Step transitions ──
+    function goToStep(n) {
+      const prev = document.getElementById('step' + currentStep);
+      prev.classList.remove('active');
+      prev.style.display = 'none';
+      currentStep = n;
+      const el = document.getElementById('step' + n);
+      el.style.display = 'flex';
+      el.classList.add('active');
+      updateDots(n);
+      el.querySelectorAll('.reveal').forEach(item => item.classList.remove('visible'));
+      setTimeout(() => {
+        el.querySelectorAll('.reveal').forEach((item, i) => {
+          setTimeout(() => item.classList.add('visible'), i * 90);
+        });
+      }, 60);
+    }
+
+    function updateDots(step) {
+      for (let i = 0; i < 3; i++) {
+        const dot = document.getElementById('dot' + i);
+        dot.className = 'step-dot';
+        if (i < step - 1) dot.classList.add('done');
+        else if (i === step - 1) dot.classList.add('active');
+      }
+      if (step === 3) document.getElementById('stepDots').style.display = 'none';
+    }
+
+    // ── Messages ──
+    function showMsg(text, type) {
+      const el = document.getElementById('formMsg');
+      el.textContent = text;
+      el.className = 'msg ' + type + ' show';
+    }
+
+    function shakeForm() {
+      const f = document.getElementById('registerForm');
+      f.style.animation = 'shakeTiny 0.4s ease';
+      f.addEventListener('animationend', () => { f.style.animation = ''; }, { once: true });
+    }
+
+    // ── Password strength ──
+    document.getElementById('password').addEventListener('input', function () {
+      const v = this.value, fill = document.getElementById('strengthFill');
+      let s = 0;
+      if (v.length >= 8) s++;
+      if (/[A-Z]/.test(v)) s++;
+      if (/[0-9]/.test(v)) s++;
+      if (/[^A-Za-z0-9]/.test(v)) s++;
+      fill.style.width = v.length ? (['20%', '45%', '72%', '100%'][s - 1] || '10%') : '0%';
+      fill.style.background = v.length ? (['#c0392b', '#e67e22', '#f1c40f', '#27ae60'][s - 1] || '#c0392b') : '';
+    });
+
+    // ── Ripple ──
+    document.getElementById('regBtn').addEventListener('mousedown', function (e) {
+      const r = document.createElement('span');
+      r.className = 'ripple';
+      const rect = this.getBoundingClientRect(), sz = Math.max(rect.width, rect.height);
+      r.style.cssText = `width:${sz}px;height:${sz}px;left:${e.clientX - rect.left - sz / 2}px;top:${e.clientY - rect.top - sz / 2}px`;
+      this.appendChild(r);
+      setTimeout(() => r.remove(), 650);
+    });
+
+    // ── Step 1: validate → send OTP ──
+    document.getElementById('regBtn').addEventListener('click', async function () {
+      const u = document.getElementById('username').value.trim();
+      const em = document.getElementById('email').value.trim();
+      const pw = document.getElementById('password').value;
+      const cf = document.getElementById('confirm').value;
+
+      if (!u || !em || !pw || !cf) {
+        showMsg('⚠ All fields are required.', 'error'); shakeForm(); return;
+      }
+      if (!/^[a-zA-Z0-9_]{3,40}$/.test(u)) {
+        showMsg('⚠ Username: 3-40 chars, letters/digits/underscore.', 'error'); shakeForm(); return;
+      }
+      if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(em)) {
+        showMsg('⚠ Enter a valid email address.', 'error'); shakeForm(); return;
+      }
+      if (pw.length < 6) {
+        showMsg('⚠ Password must be at least 6 characters.', 'error'); shakeForm(); return;
+      }
+      if (pw !== cf) {
+        showMsg('⚠ Passwords do not match.', 'error'); shakeForm(); return;
+      }
+
+      this.disabled = true;
+      this.textContent = 'Sending...';
+
+      try {
+        const res = await fetch('/register-send-otp', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+          body: new URLSearchParams({ username: u, email: em, password: pw, confirm: cf })
+        });
+        const data = await res.json();
+
+        if (data.ok) {
+          pendingData = { username: u, email: em, password: pw, confirm: cf };
+          document.getElementById('otpSubtitle').textContent = 'Code sent to ' + em;
+          goToStep(2);
+          startTimer(300);
+          setTimeout(() => document.querySelector('.otp-input').focus(), 200);
+        } else {
+          showMsg('⚠ ' + (data.error || 'Something went wrong.'), 'error');
+          shakeForm();
+        }
+      } catch {
+        showMsg('⚠ Network error.', 'error'); shakeForm();
+      } finally {
+        this.disabled = false;
+        this.textContent = 'Continue';
+      }
+    });
+
+    // ── OTP inputs auto-focus ──
+    const otpInputs = document.querySelectorAll('.otp-input');
+    otpInputs.forEach((inp, idx) => {
+      inp.addEventListener('input', function () {
+        this.value = this.value.replace(/[^0-9]/g, '');
+        if (this.value && idx < otpInputs.length - 1) otpInputs[idx + 1].focus();
+      });
+      inp.addEventListener('keydown', function (e) {
+        if (e.key === 'Backspace' && !this.value && idx > 0) otpInputs[idx - 1].focus();
+      });
+      inp.addEventListener('paste', function (e) {
+        const paste = (e.clipboardData || window.clipboardData).getData('text').replace(/[^0-9]/g, '');
+        if (paste.length >= otpInputs.length) {
+          otpInputs.forEach((inp, i) => { inp.value = paste[i] || ''; });
+          otpInputs[otpInputs.length - 1].focus();
+          e.preventDefault();
+        }
+      });
+    });
+
+    // ── Enter key submit helper ──
+    document.addEventListener('keydown', function (e) {
+      if (e.key !== 'Enter') return;
+
+      const active = document.activeElement;
+      if (!active) return;
+
+      const step1 = document.getElementById('step1');
+      const step2 = document.getElementById('step2');
+
+      if (step1 && step1.contains(active)) {
+        e.preventDefault();
+        document.getElementById('regBtn').click();
+        return;
+      }
+
+      if (step2 && step2.contains(active)) {
+        e.preventDefault();
+        const otpForm = document.getElementById('otpForm');
+        if (otpForm.requestSubmit) {
+          otpForm.requestSubmit();
+        } else {
+          otpForm.dispatchEvent(new Event('submit', { cancelable: true, bubbles: true }));
+        }
+      }
+    });
+
+    // ── Step 2: verify OTP → register ──
+    document.getElementById('otpForm').addEventListener('submit', async function (e) {
+      e.preventDefault();
+      const code = Array.from(otpInputs).map(i => i.value).join('');
+      if (code.length < 5) return;
+
+      const btn = this.querySelector('button[type=submit]');
+      btn.disabled = true;
+      btn.textContent = 'Verifying...';
+
+      try {
+        const res = await fetch('/register-verify-otp', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+          body: new URLSearchParams({
+            otp: code,
+            email: pendingData.email,
+            username: pendingData.username,
+            password: pendingData.password,
+            confirm: pendingData.confirm
+          })
+        });
+        const data = await res.json();
+
+        if (data.ok) {
+          clearInterval(timerInterval);
+          goToStep(3);
+        } else {
+          alert(data.error || 'Invalid or expired code');
+        }
+      } catch {
+        alert('Network error');
+      } finally {
+        btn.disabled = false;
+        btn.textContent = 'Verify & Register';
+      }
+    });
+
+    // ── Back to form ──
+    document.getElementById('backToForm').addEventListener('click', () => {
+      clearInterval(timerInterval);
+      goToStep(1);
+    });
+
+    // ── Resend ──
+    document.getElementById('resendBtn').addEventListener('click', async () => {
+      otpInputs.forEach(i => i.value = '');
+      otpInputs[0].focus();
+      clearInterval(timerInterval);
+      await fetch('/register-send-otp', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body: new URLSearchParams(pendingData)
+      });
+      startTimer(300);
+    });
+
+    // ── Timer ──
+    function startTimer(seconds) {
+      let s = seconds;
+      updateCountdown(s);
+      timerInterval = setInterval(() => {
+        s--;
+        updateCountdown(s);
+        if (s <= 0) {
+          clearInterval(timerInterval);
+          document.getElementById('timerText').innerHTML =
+            'Code expired. <span style="color:#c0392b">Request a new one.</span>';
+        }
+      }, 1000);
+    }
+    function updateCountdown(s) {
+      const m = Math.floor(s / 60), sec = s % 60;
+      document.getElementById('countdown').textContent =
+        String(m).padStart(2, '0') + ':' + String(sec).padStart(2, '0');
+    }
+
+    // ── Initial reveal ──
+    window.addEventListener('load', () => {
+      document.getElementById('step1').querySelectorAll('.reveal').forEach((item, i) => {
+        setTimeout(() => item.classList.add('visible'), i * 90);
+      });
+    });
+  </script>
+</body>
+
+</html>
