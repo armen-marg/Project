@@ -10,18 +10,6 @@
     rel="stylesheet" />
   <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
   <style>
-    html,
-    body {
-      width: 100%;
-      height: 100%;
-    }
-
-    #profilePanel,
-    .profile-scroll,
-    .profile-videos {
-      width: 100% !important;
-    }
-
     :root {
       --blue: #4a90d9;
       --purple: #7b5cfa;
@@ -129,7 +117,6 @@
 
     .topbar-avatar:active {
       transform: scale(.9);
-      box-shadow: 0 1px 4px rgba(74, 144, 217, .3);
     }
 
     /* ── FEED ── */
@@ -154,6 +141,7 @@
       background: #000;
     }
 
+    /* FIX: cover заполняет весь экран */
     .slide video {
       position: absolute;
       inset: 0;
@@ -211,22 +199,22 @@
     @keyframes heartPop {
       0% {
         opacity: 1;
-        transform: scale(.4) translateY(0);
+        transform: scale(.4) translateY(0)
       }
 
       40% {
         opacity: 1;
-        transform: scale(1.5) translateY(-20px);
+        transform: scale(1.5) translateY(-20px)
       }
 
       70% {
         opacity: .7;
-        transform: scale(1.1) translateY(-44px);
+        transform: scale(1.1) translateY(-44px)
       }
 
       100% {
         opacity: 0;
-        transform: scale(.9) translateY(-80px);
+        transform: scale(.9) translateY(-80px)
       }
     }
 
@@ -244,6 +232,12 @@
       color: #fff;
       margin-bottom: 6px;
       text-shadow: 0 1px 6px rgba(0, 0, 0, .6);
+      cursor: pointer;
+      display: inline-block;
+    }
+
+    .meta .uname:hover {
+      text-decoration: underline;
     }
 
     .meta .caption {
@@ -255,6 +249,7 @@
 
     .meta .tag {
       color: var(--blue);
+      cursor: pointer;
     }
 
     .actions {
@@ -355,13 +350,13 @@
     .video-context-menu {
       position: fixed;
       z-index: 99999;
-      min-width: 170px;
-      background: rgba(20, 20, 20, 0.96);
-      border: 1px solid rgba(255, 255, 255, 0.12);
+      min-width: 190px;
+      background: rgba(15, 15, 15, 0.97);
+      border: 1px solid rgba(255, 255, 255, .12);
       border-radius: 14px;
-      box-shadow: 0 12px 30px rgba(0, 0, 0, .35);
+      box-shadow: 0 12px 30px rgba(0, 0, 0, .5);
       overflow: hidden;
-      backdrop-filter: blur(10px);
+      backdrop-filter: blur(16px);
       display: none;
     }
 
@@ -382,7 +377,17 @@
     }
 
     .video-context-menu button:hover {
+      background: rgba(255, 255, 255, .07);
+    }
+
+    .video-context-menu button.danger:hover {
       background: rgba(255, 45, 85, .18);
+    }
+
+    .video-context-menu .ctx-divider {
+      height: 1px;
+      background: rgba(255, 255, 255, .08);
+      margin: 2px 0;
     }
 
     .feed-loading {
@@ -572,7 +577,224 @@
       stroke-linecap: round;
     }
 
-    /* comments */
+    /* ── SEARCH ── */
+    .search-header-inner {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 60px 16px 16px;
+      border-bottom: 1px solid rgba(255, 255, 255, .07);
+      flex-shrink: 0;
+    }
+
+    .search-box {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      background: rgba(255, 255, 255, .07);
+      border-radius: 14px;
+      padding: 10px 14px;
+    }
+
+    .search-box svg {
+      width: 18px;
+      height: 18px;
+      stroke: rgba(255, 255, 255, .4);
+      fill: none;
+      stroke-width: 1.8;
+      stroke-linecap: round;
+      flex-shrink: 0;
+    }
+
+    .search-box input {
+      flex: 1;
+      background: none;
+      border: none;
+      outline: none;
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 15px;
+      color: #fff;
+    }
+
+    .search-box input::placeholder {
+      color: rgba(255, 255, 255, .3);
+    }
+
+    .search-cancel {
+      background: none;
+      border: none;
+      cursor: pointer;
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 14px;
+      color: var(--blue);
+      font-weight: 600;
+    }
+
+    .search-body {
+      flex: 1;
+      overflow-y: auto;
+      padding: 20px 16px;
+    }
+
+    .search-body::-webkit-scrollbar {
+      display: none;
+    }
+
+    .search-section {
+      font-size: 11px;
+      font-weight: 600;
+      color: rgba(255, 255, 255, .3);
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      margin-bottom: 12px;
+      margin-top: 16px;
+    }
+
+    .search-section:first-child {
+      margin-top: 0;
+    }
+
+    .search-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 8px;
+    }
+
+    .search-tag {
+      background: rgba(255, 255, 255, .07);
+      border-radius: 20px;
+      padding: 7px 15px;
+      font-size: 13.5px;
+      color: rgba(255, 255, 255, .8);
+      cursor: pointer;
+      transition: background .2s;
+    }
+
+    .search-tag:hover,
+    .search-tag:active {
+      background: rgba(74, 144, 217, .2);
+      color: var(--blue);
+    }
+
+    /* Search results */
+    .search-results {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .search-result-video {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 10px 0;
+      border-bottom: 1px solid rgba(255, 255, 255, .05);
+      cursor: pointer;
+      transition: opacity .15s;
+    }
+
+    .search-result-video:active {
+      opacity: .7;
+    }
+
+    .search-result-thumb {
+      width: 48px;
+      height: 72px;
+      border-radius: 8px;
+      background: rgba(255, 255, 255, .08);
+      flex-shrink: 0;
+      overflow: hidden;
+      position: relative;
+    }
+
+    .search-result-thumb video {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .search-result-info {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .search-result-user {
+      font-size: 12px;
+      color: var(--blue);
+      font-weight: 600;
+      margin-bottom: 2px;
+    }
+
+    .search-result-caption {
+      font-size: 13px;
+      color: rgba(255, 255, 255, .8);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .search-result-likes {
+      font-size: 11px;
+      color: rgba(255, 255, 255, .4);
+      margin-top: 3px;
+    }
+
+    .search-result-user-row {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 10px 0;
+      border-bottom: 1px solid rgba(255, 255, 255, .05);
+      cursor: pointer;
+      transition: opacity .15s;
+    }
+
+    .search-result-user-row:active {
+      opacity: .7;
+    }
+
+    .search-result-avatar {
+      width: 42px;
+      height: 42px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--blue), var(--purple));
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 16px;
+      font-weight: 700;
+      color: #fff;
+      flex-shrink: 0;
+    }
+
+    .search-result-uname {
+      font-size: 14px;
+      font-weight: 600;
+      color: #fff;
+    }
+
+    .search-result-handle {
+      font-size: 12px;
+      color: rgba(255, 255, 255, .4);
+    }
+
+    .search-empty {
+      text-align: center;
+      padding: 40px 0;
+      color: rgba(255, 255, 255, .25);
+      font-size: 14px;
+    }
+
+    .search-loading {
+      text-align: center;
+      padding: 24px 0;
+      color: rgba(255, 255, 255, .3);
+      font-size: 13px;
+    }
+
+    /* ── COMMENTS ── */
     .comments-list {
       flex: 1;
       overflow-y: auto;
@@ -679,7 +901,7 @@
       stroke-linecap: round;
     }
 
-    /* notifications */
+    /* ── NOTIFICATIONS ── */
     .notif-list {
       flex: 1;
       overflow-y: auto;
@@ -739,771 +961,6 @@
       font-size: 14px;
       text-align: center;
       padding: 60px 0;
-    }
-
-    /* search */
-    .search-header-inner {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      padding: 60px 16px 16px;
-      border-bottom: 1px solid rgba(255, 255, 255, .07);
-      flex-shrink: 0;
-    }
-
-    .search-box {
-      flex: 1;
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      background: rgba(255, 255, 255, .07);
-      border-radius: 14px;
-      padding: 10px 14px;
-    }
-
-    .search-box svg {
-      width: 18px;
-      height: 18px;
-      stroke: rgba(255, 255, 255, .4);
-      fill: none;
-      stroke-width: 1.8;
-      stroke-linecap: round;
-      flex-shrink: 0;
-    }
-
-    .search-box input {
-      flex: 1;
-      background: none;
-      border: none;
-      outline: none;
-      font-family: 'Space Grotesk', sans-serif;
-      font-size: 15px;
-      color: #fff;
-    }
-
-    .search-box input::placeholder {
-      color: rgba(255, 255, 255, .3);
-    }
-
-    .search-cancel {
-      background: none;
-      border: none;
-      cursor: pointer;
-      font-family: 'Space Grotesk', sans-serif;
-      font-size: 14px;
-      color: var(--blue);
-      font-weight: 600;
-    }
-
-    .search-body {
-      flex: 1;
-      overflow-y: auto;
-      padding: 20px 16px;
-    }
-
-    .search-section {
-      font-size: 11px;
-      font-weight: 600;
-      color: rgba(255, 255, 255, .3);
-      letter-spacing: 1px;
-      text-transform: uppercase;
-      margin-bottom: 12px;
-    }
-
-    .search-tags {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 8px;
-      margin-bottom: 24px;
-    }
-
-    .search-tag {
-      background: rgba(255, 255, 255, .07);
-      border-radius: 20px;
-      padding: 7px 15px;
-      font-size: 13.5px;
-      color: rgba(255, 255, 255, .8);
-      cursor: pointer;
-      transition: background .2s;
-    }
-
-    .search-tag:hover {
-      background: rgba(74, 144, 217, .15);
-      color: var(--blue);
-    }
-
-    /* ═══════════════════════════════════════════
-       ── PROFILE PANEL ──
-    ═══════════════════════════════════════════ */
-    #profilePanel {
-      background: radial-gradient(circle at top, #96c0d2 0%, #f3f5f9 55%, #83b9c0 100%);
-      overflow: hidden;
-    }
-
-    .profile-topbar {
-      position: absolute;
-      top: 0;
-      left: 0;
-      right: 0;
-      height: 56px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 0 14px;
-      padding-top: env(safe-area-inset-top);
-      z-index: 10;
-    }
-
-    .profile-topbar-btn {
-      width: 38px;
-      height: 38px;
-      border-radius: 12px;
-      background: rgba(255, 255, 255, .45);
-      border: 1px solid rgba(150, 192, 210, .4);
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      color: rgba(30, 60, 80, .7);
-      transition: background .2s, transform .15s;
-      text-decoration: none;
-      margin-top: 15px;
-      backdrop-filter: blur(8px);
-    }
-
-    .profile-topbar-btn:active {
-      background: rgba(255, 255, 255, .65);
-      transform: scale(.93);
-    }
-
-    .profile-topbar-btn svg {
-      width: 18px;
-      height: 18px;
-      stroke: currentColor;
-      fill: none;
-      stroke-width: 1.8;
-      stroke-linecap: round;
-    }
-
-    /* FIX: profile-scroll must fill full width */
-    .profile-scroll {
-      flex: 1;
-      overflow-y: auto;
-      width: 100%;
-      height: 100%;
-      background: radial-gradient(circle at top, #96c0d2 0%, #f3f5f9 55%, #83b9c0 100%);
-    }
-
-    .profile-scroll::-webkit-scrollbar {
-      display: none;
-    }
-
-    /* ── HERO ── */
-    .profile-hero {
-      position: relative;
-      height: 220px;
-      overflow: visible;
-      flex-shrink: 0;
-      background: transparent;
-      width: 100%;
-    }
-
-    .profile-hero-bg {
-      position: absolute;
-      inset: 0;
-      background:
-        radial-gradient(ellipse 80% 60% at 10% 20%, rgba(150, 192, 210, .55) 0%, transparent 60%),
-        radial-gradient(ellipse 60% 80% at 90% 80%, rgba(131, 185, 192, .45) 0%, transparent 60%),
-        radial-gradient(ellipse 50% 50% at 50% 50%, rgba(243, 245, 249, .6) 0%, transparent 70%);
-      animation: heroPulse 6s ease-in-out infinite alternate;
-    }
-
-    @keyframes heroPulse {
-      0% {
-        transform: scale(1) rotate(0deg);
-      }
-
-      100% {
-        transform: scale(1.08) rotate(2deg);
-      }
-    }
-
-    .profile-hero-grid {
-      position: absolute;
-      inset: 0;
-      background-image:
-        linear-gradient(rgba(100, 160, 190, .08) 1px, transparent 1px),
-        linear-gradient(90deg, rgba(100, 160, 190, .08) 1px, transparent 1px);
-      background-size: 32px 32px;
-      pointer-events: none;
-    }
-
-    .profile-avatar-wrap {
-      position: absolute;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -40%);
-      z-index: 4;
-    }
-
-    .profile-avatar-ring {
-      width: 104px;
-      height: 104px;
-      border-radius: 50%;
-      padding: 2.5px;
-      background: conic-gradient(from 0deg, #96c0d2, #7b5cfa, #83b9c0, #96c0d2);
-      animation: spinRing 4s linear infinite;
-      box-shadow: 0 0 40px rgba(150, 192, 210, .5), 0 0 80px rgba(131, 185, 192, .25);
-    }
-
-    @keyframes spinRing {
-      to {
-        filter: hue-rotate(360deg);
-      }
-    }
-
-    .profile-avatar-inner {
-      width: 100%;
-      height: 100%;
-      border-radius: 50%;
-      background: linear-gradient(135deg, #c8dfe8, #a8cdd8);
-      border: 3px solid #f3f5f9;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 42px;
-      font-weight: 700;
-      color: #1a3a4a;
-      font-family: 'Bebas Neue', sans-serif;
-    }
-
-    .profile-online-dot {
-      position: absolute;
-      bottom: 6px;
-      right: 6px;
-      width: 14px;
-      height: 14px;
-      border-radius: 50%;
-      background: #22c55e;
-      border: 2.5px solid #f3f5f9;
-      box-shadow: 0 0 8px rgba(34, 197, 94, .6);
-    }
-
-    /* ── IDENTITY ── */
-    .profile-identity {
-      padding: 66px 20px 0;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      text-align: center;
-      width: 100%;
-    }
-
-    .profile-name {
-      font-family: 'Bebas Neue', sans-serif;
-      font-size: 36px;
-      color: #1a2a3a;
-      letter-spacing: 2px;
-      line-height: 1;
-      margin-bottom: 6px;
-    }
-
-    .profile-handle-row {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      margin-bottom: 14px;
-    }
-
-    .profile-handle {
-      font-family: 'DM Sans', sans-serif;
-      font-size: 13px;
-      color: rgba(30, 60, 80, .55);
-      font-weight: 300;
-    }
-
-    .profile-verified-badge {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      width: 18px;
-      height: 18px;
-      border-radius: 50%;
-      background: linear-gradient(135deg, #4a90d9, #7b5cfa);
-      flex-shrink: 0;
-    }
-
-    .profile-verified-badge svg {
-      width: 10px;
-      height: 10px;
-      stroke: #fff;
-      fill: none;
-      stroke-width: 2.5;
-    }
-
-    .profile-joined-chip {
-      display: inline-flex;
-      align-items: center;
-      gap: 5px;
-      background: rgba(150, 192, 210, .25);
-      border: 1px solid rgba(150, 192, 210, .5);
-      border-radius: 999px;
-      padding: 4px 12px;
-      font-size: 11px;
-      color: rgba(30, 60, 80, .6);
-      font-family: 'DM Sans', sans-serif;
-      margin-bottom: 20px;
-    }
-
-    .profile-joined-chip::before {
-      content: '📅';
-      font-size: 10px;
-    }
-
-    /* ── FOLLOW ROW ── */
-    .profile-follow-row {
-      display: flex;
-      justify-content: center;
-      gap: 6px;
-      padding: 0 20px 20px;
-      width: 100%;
-    }
-
-    .follow-stat-btn {
-      background: rgba(255, 255, 255, .55);
-      border: 1px solid rgba(150, 192, 210, .45);
-      border-radius: 16px;
-      cursor: pointer;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      padding: 12px 24px;
-      color: #1a2a3a;
-      transition: background .2s, transform .15s;
-      flex: 1;
-      max-width: 140px;
-      backdrop-filter: blur(8px);
-    }
-
-    .follow-stat-btn:active {
-      background: rgba(150, 192, 210, .3);
-      transform: scale(.96);
-    }
-
-    .follow-stat-btn .fs-num {
-      font-family: 'Bebas Neue', sans-serif;
-      font-size: 26px;
-      color: #1a3a4a;
-      letter-spacing: 1px;
-      line-height: 1;
-    }
-
-    .follow-stat-btn .fs-label {
-      font-size: 11px;
-      color: rgba(30, 60, 80, .55);
-      font-weight: 500;
-      margin-top: 2px;
-      font-family: 'DM Sans', sans-serif;
-    }
-
-    /* ── STATS GRID ── */
-    .profile-stats {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 8px;
-      padding: 0 16px 16px;
-      width: 100%;
-    }
-
-    .stat-card {
-      background: rgba(255, 255, 255, .55);
-      border: 1px solid rgba(150, 192, 210, .4);
-      border-radius: 18px;
-      padding: 16px 10px;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 4px;
-      transition: background .2s, transform .15s;
-      position: relative;
-      overflow: hidden;
-      cursor: pointer;
-      backdrop-filter: blur(8px);
-    }
-
-    .stat-card::before {
-      content: '';
-      position: absolute;
-      top: 0;
-      left: 0;
-      right: 0;
-      height: 1px;
-      background: linear-gradient(90deg, transparent, rgba(150, 192, 210, .4), transparent);
-    }
-
-    .stat-card:hover {
-      background: rgba(150, 192, 210, .25);
-    }
-
-    .stat-card:active {
-      transform: scale(.96);
-    }
-
-    .stat-card:nth-child(1) .stat-num {
-      color: #1a3a4a;
-    }
-
-    .stat-card:nth-child(2) .stat-num {
-      color: #2a6090;
-    }
-
-    .stat-card:nth-child(3) .stat-num {
-      color: #b03060;
-    }
-
-    .stat-num {
-      font-family: 'Bebas Neue', sans-serif;
-      font-size: 30px;
-      letter-spacing: 1px;
-      line-height: 1;
-    }
-
-    .stat-label {
-      font-size: 10px;
-      color: rgba(30, 60, 80, .5);
-      font-weight: 600;
-      text-transform: uppercase;
-      letter-spacing: .8px;
-      font-family: 'DM Sans', sans-serif;
-    }
-
-    /* ── ACTION BUTTONS ── */
-    .profile-actions {
-      display: flex;
-      gap: 8px;
-      padding: 0 16px 10px;
-      width: 100%;
-    }
-
-    .profile-action-btn {
-      flex: 1;
-      padding: 13px;
-      border-radius: 16px;
-      border: none;
-      cursor: pointer;
-      font-family: 'Space Grotesk', sans-serif;
-      font-size: 13px;
-      font-weight: 600;
-      transition: transform .15s, opacity .2s;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 6px;
-    }
-
-    .profile-action-btn:active {
-      transform: scale(.96);
-    }
-
-    .profile-action-primary {
-      background: linear-gradient(135deg, #4a90d9, #7b5cfa);
-      color: #fff;
-      box-shadow: 0 4px 20px rgba(74, 144, 217, .3);
-    }
-
-    .profile-action-secondary {
-      background: rgba(255, 255, 255, .55);
-      border: 1px solid rgba(150, 192, 210, .45) !important;
-      color: rgba(30, 60, 80, .8);
-      backdrop-filter: blur(8px);
-    }
-
-    .profile-dm-btn {
-      margin: 0 16px 16px;
-      width: calc(100% - 32px);
-      padding: 13px;
-      border-radius: 16px;
-      border: 1px solid rgba(74, 144, 217, .35);
-      background: rgba(74, 144, 217, .1);
-      cursor: pointer;
-      font-family: 'Space Grotesk', sans-serif;
-      font-size: 13px;
-      font-weight: 600;
-      color: #1a5080;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 8px;
-      transition: background .2s, transform .15s;
-      backdrop-filter: blur(8px);
-    }
-
-    .profile-dm-btn:active {
-      transform: scale(.97);
-      background: rgba(74, 144, 217, .2);
-    }
-
-    .profile-dm-btn svg {
-      width: 15px;
-      height: 15px;
-      stroke: currentColor;
-      fill: none;
-      stroke-width: 2;
-      stroke-linecap: round;
-    }
-
-    .profile-divider {
-      display: none;
-    }
-
-    .profile-section-header {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 0 16px 10px;
-      width: 100%;
-    }
-
-    .profile-section-title {
-      font-size: 11px;
-      font-weight: 700;
-      color: rgba(30, 60, 80, .5);
-      letter-spacing: 2px;
-      text-transform: uppercase;
-      font-family: 'DM Sans', sans-serif;
-    }
-
-    .profile-section-count {
-      font-size: 12px;
-      color: rgba(30, 60, 80, .4);
-      font-weight: 500;
-    }
-
-    /* ── VIDEO GRID — FIX: full width, no gaps ── */
-    .profile-videos {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 2px;
-      width: 100%;
-      padding: 0 0 80px;
-    }
-
-    /* FIX: proper 9:16 aspect ratio for video thumbnails */
-    .profile-thumb {
-      width: 100%;
-      padding-bottom: 177.78%;
-      position: relative;
-      overflow: hidden;
-      cursor: pointer;
-      background: rgba(150, 192, 210, .2);
-    }
-
-    .profile-thumb video {
-      position: absolute;
-      inset: 0;
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-      pointer-events: none;
-    }
-
-    .profile-thumb-overlay {
-      position: absolute;
-      inset: 0;
-      background: linear-gradient(to top, rgba(0, 0, 0, .7) 0%, transparent 45%);
-      z-index: 1;
-    }
-
-    .profile-thumb::after {
-      content: '';
-      position: absolute;
-      inset: 0;
-      background: rgba(74, 144, 217, 0);
-      transition: background .2s;
-      z-index: 2;
-    }
-
-    .profile-thumb:active::after {
-      background: rgba(74, 144, 217, .12);
-    }
-
-    .profile-thumb-likes {
-      position: absolute;
-      bottom: 5px;
-      left: 5px;
-      font-size: 10px;
-      font-weight: 700;
-      color: #fff;
-      text-shadow: 0 1px 4px rgba(0, 0, 0, .8);
-      display: flex;
-      align-items: center;
-      gap: 2px;
-      z-index: 3;
-    }
-
-    .profile-thumb-repost {
-      position: absolute;
-      top: 5px;
-      right: 5px;
-      background: rgba(74, 144, 217, .85);
-      border-radius: 4px;
-      padding: 1px 5px;
-      font-size: 8px;
-      color: #fff;
-      font-weight: 700;
-      letter-spacing: .5px;
-      z-index: 3;
-    }
-
-    .profile-empty {
-      grid-column: span 3;
-      padding: 48px 20px;
-      text-align: center;
-      color: rgba(30, 60, 80, .35);
-      font-size: 14px;
-    }
-
-    .profile-empty-icon {
-      font-size: 40px;
-      display: block;
-      margin-bottom: 12px;
-    }
-
-    /* ── FOLLOWERS POPUP ── */
-    .followers-popup-overlay {
-      position: fixed;
-      inset: 0;
-      z-index: 600;
-      background: rgba(0, 0, 0, .6);
-      backdrop-filter: blur(6px);
-      display: flex;
-      align-items: flex-end;
-      justify-content: center;
-      opacity: 0;
-      pointer-events: none;
-      transition: opacity .25s;
-    }
-
-    .followers-popup-overlay.open {
-      opacity: 1;
-      pointer-events: all;
-    }
-
-    .followers-popup-sheet {
-      width: 100%;
-      max-width: 540px;
-      background: #131b2e;
-      border-radius: 22px 22px 0 0;
-      border-top: 1px solid rgba(255, 255, 255, .09);
-      max-height: 72vh;
-      display: flex;
-      flex-direction: column;
-      transform: translateY(100%);
-      transition: transform .32s cubic-bezier(.32, .72, 0, 1);
-    }
-
-    .followers-popup-overlay.open .followers-popup-sheet {
-      transform: translateY(0);
-    }
-
-    .fp-handle {
-      width: 36px;
-      height: 4px;
-      border-radius: 2px;
-      background: rgba(255, 255, 255, .18);
-      margin: 14px auto 0;
-      flex-shrink: 0;
-    }
-
-    .fp-header {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 14px 20px 10px;
-      flex-shrink: 0;
-      border-bottom: 1px solid rgba(255, 255, 255, .07);
-    }
-
-    .fp-title {
-      font-family: 'Bebas Neue', sans-serif;
-      font-size: 22px;
-      color: #fff;
-      letter-spacing: 1px;
-    }
-
-    .fp-close {
-      background: rgba(255, 255, 255, .07);
-      border: none;
-      border-radius: 50%;
-      width: 30px;
-      height: 30px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      cursor: pointer;
-      color: rgba(255, 255, 255, .6);
-      font-size: 16px;
-      transition: background .15s;
-    }
-
-    .fp-close:active {
-      background: rgba(255, 255, 255, .15);
-    }
-
-    .fp-list {
-      flex: 1;
-      overflow-y: auto;
-      padding: 8px 0 24px;
-    }
-
-    .fp-list::-webkit-scrollbar {
-      display: none;
-    }
-
-    .fp-user-row {
-      display: flex;
-      align-items: center;
-      gap: 14px;
-      padding: 12px 20px;
-      transition: background .15s;
-      cursor: pointer;
-    }
-
-    .fp-user-row:active {
-      background: rgba(255, 255, 255, .04);
-    }
-
-    .fp-user-avatar {
-      width: 44px;
-      height: 44px;
-      border-radius: 50%;
-      background: linear-gradient(135deg, var(--blue), var(--purple));
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 17px;
-      font-weight: 700;
-      color: #fff;
-      flex-shrink: 0;
-    }
-
-    .fp-user-name {
-      font-weight: 600;
-      font-size: 14px;
-      color: #fff;
-    }
-
-    .fp-user-handle {
-      font-size: 12px;
-      color: rgba(255, 255, 255, .4);
-      margin-top: 1px;
-    }
-
-    .fp-empty {
-      text-align: center;
-      padding: 40px 20px;
-      color: rgba(255, 255, 255, .3);
-      font-size: 14px;
     }
 
     /* ── UPLOAD MODAL ── */
@@ -1970,7 +1427,686 @@
       stroke-linecap: round;
     }
 
-    /* tutorial */
+    /* ══════════════════════════════════════════
+       ── PROFILE PANEL (ТЁМНАЯ ТЕМА) ──
+    ══════════════════════════════════════════ */
+    #profilePanel {
+      background: #0a0e1a;
+      overflow: hidden;
+    }
+
+    #userProfilePanel {
+      background: #0a0e1a;
+      overflow: hidden;
+      transform: translateX(100%);
+    }
+
+    #userProfilePanel.open {
+      transform: translateX(0);
+    }
+
+    .profile-topbar {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 56px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 14px;
+      padding-top: env(safe-area-inset-top);
+      z-index: 10;
+    }
+
+    .profile-topbar-btn {
+      width: 38px;
+      height: 38px;
+      border-radius: 12px;
+      background: rgba(255, 255, 255, .08);
+      border: 1px solid rgba(255, 255, 255, .1);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: rgba(255, 255, 255, .7);
+      transition: background .2s, transform .15s;
+      text-decoration: none;
+      margin-top: 15px;
+      backdrop-filter: blur(8px);
+    }
+
+    .profile-topbar-btn:active {
+      background: rgba(255, 255, 255, .15);
+      transform: scale(.93);
+    }
+
+    .profile-topbar-btn svg {
+      width: 18px;
+      height: 18px;
+      stroke: currentColor;
+      fill: none;
+      stroke-width: 1.8;
+      stroke-linecap: round;
+    }
+
+    .profile-scroll {
+      flex: 1;
+      overflow-y: auto;
+      width: 100%;
+      height: 100%;
+      background: #0a0e1a;
+    }
+
+    .profile-scroll::-webkit-scrollbar {
+      display: none;
+    }
+
+    /* HERO — тёмный */
+    .profile-hero {
+      position: relative;
+      height: 200px;
+      overflow: hidden;
+      flex-shrink: 0;
+      width: 100%;
+      background: #0a0e1a;
+    }
+
+    .profile-hero-bg {
+      position: absolute;
+      inset: 0;
+      background:
+        radial-gradient(ellipse 80% 60% at 20% 30%, rgba(74, 144, 217, .25) 0%, transparent 60%),
+        radial-gradient(ellipse 60% 80% at 80% 70%, rgba(123, 92, 250, .2) 0%, transparent 60%),
+        linear-gradient(135deg, #0d1220, #111827);
+      animation: heroPulse 6s ease-in-out infinite alternate;
+    }
+
+    @keyframes heroPulse {
+      0% {
+        transform: scale(1)
+      }
+
+      100% {
+        transform: scale(1.06)
+      }
+    }
+
+    .profile-hero-grid {
+      position: absolute;
+      inset: 0;
+      background-image: linear-gradient(rgba(74, 144, 217, .06) 1px, transparent 1px), linear-gradient(90deg, rgba(74, 144, 217, .06) 1px, transparent 1px);
+      background-size: 32px 32px;
+      pointer-events: none;
+    }
+
+    .profile-avatar-wrap {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -38%);
+      z-index: 4;
+    }
+
+    .profile-avatar-ring {
+      width: 96px;
+      height: 96px;
+      border-radius: 50%;
+      padding: 2.5px;
+      background: conic-gradient(from 0deg, var(--blue), var(--purple), var(--pink), var(--blue));
+      animation: spinRing 4s linear infinite;
+      box-shadow: 0 0 30px rgba(74, 144, 217, .4);
+    }
+
+    @keyframes spinRing {
+      to {
+        filter: hue-rotate(360deg)
+      }
+    }
+
+    .profile-avatar-inner {
+      width: 100%;
+      height: 100%;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #1a2540, #111827);
+      border: 3px solid #0a0e1a;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 38px;
+      font-weight: 700;
+      color: #fff;
+      font-family: 'Bebas Neue', sans-serif;
+    }
+
+    .profile-online-dot {
+      position: absolute;
+      bottom: 6px;
+      right: 6px;
+      width: 13px;
+      height: 13px;
+      border-radius: 50%;
+      background: #22c55e;
+      border: 2.5px solid #0a0e1a;
+      box-shadow: 0 0 8px rgba(34, 197, 94, .6);
+    }
+
+    /* IDENTITY — тёмный */
+    .profile-identity {
+      padding: 58px 20px 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      width: 100%;
+    }
+
+    .profile-name {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 34px;
+      color: #fff;
+      letter-spacing: 2px;
+      line-height: 1;
+      margin-bottom: 6px;
+    }
+
+    .profile-handle-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 12px;
+    }
+
+    .profile-handle {
+      font-family: 'DM Sans', sans-serif;
+      font-size: 13px;
+      color: rgba(255, 255, 255, .4);
+      font-weight: 300;
+    }
+
+    .profile-verified-badge {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--blue), var(--purple));
+      flex-shrink: 0;
+    }
+
+    .profile-verified-badge svg {
+      width: 10px;
+      height: 10px;
+      stroke: #fff;
+      fill: none;
+      stroke-width: 2.5;
+    }
+
+    .profile-joined-chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      background: rgba(74, 144, 217, .1);
+      border: 1px solid rgba(74, 144, 217, .25);
+      border-radius: 999px;
+      padding: 4px 12px;
+      font-size: 11px;
+      color: rgba(255, 255, 255, .5);
+      font-family: 'DM Sans', sans-serif;
+      margin-bottom: 18px;
+    }
+
+    /* FOLLOW ROW */
+    .profile-follow-row {
+      display: flex;
+      justify-content: center;
+      gap: 6px;
+      padding: 0 20px 18px;
+      width: 100%;
+    }
+
+    .follow-stat-btn {
+      background: rgba(255, 255, 255, .05);
+      border: 1px solid rgba(255, 255, 255, .1);
+      border-radius: 16px;
+      cursor: pointer;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 12px 24px;
+      color: #fff;
+      transition: background .2s, transform .15s;
+      flex: 1;
+      max-width: 140px;
+    }
+
+    .follow-stat-btn:active {
+      background: rgba(255, 255, 255, .1);
+      transform: scale(.96);
+    }
+
+    .follow-stat-btn .fs-num {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 26px;
+      color: #fff;
+      letter-spacing: 1px;
+      line-height: 1;
+    }
+
+    .follow-stat-btn .fs-label {
+      font-size: 11px;
+      color: rgba(255, 255, 255, .4);
+      font-weight: 500;
+      margin-top: 2px;
+      font-family: 'DM Sans', sans-serif;
+    }
+
+    /* STATS GRID */
+    .profile-stats {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 8px;
+      padding: 0 16px 16px;
+      width: 100%;
+    }
+
+    .stat-card {
+      background: rgba(255, 255, 255, .04);
+      border: 1px solid rgba(255, 255, 255, .08);
+      border-radius: 18px;
+      padding: 16px 10px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+      transition: background .2s, transform .15s;
+      position: relative;
+      overflow: hidden;
+      cursor: pointer;
+    }
+
+    .stat-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, rgba(74, 144, 217, .3), transparent);
+    }
+
+    .stat-card:hover {
+      background: rgba(74, 144, 217, .08);
+    }
+
+    .stat-card:active {
+      transform: scale(.96);
+    }
+
+    .stat-card:nth-child(1) .stat-num {
+      color: #4a90d9;
+    }
+
+    .stat-card:nth-child(2) .stat-num {
+      color: #7b5cfa;
+    }
+
+    .stat-card:nth-child(3) .stat-num {
+      color: #ff2d55;
+    }
+
+    .stat-num {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 30px;
+      letter-spacing: 1px;
+      line-height: 1;
+    }
+
+    .stat-label {
+      font-size: 10px;
+      color: rgba(255, 255, 255, .4);
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: .8px;
+      font-family: 'DM Sans', sans-serif;
+    }
+
+    /* ACTION BUTTONS */
+    .profile-actions {
+      display: flex;
+      gap: 8px;
+      padding: 0 16px 10px;
+      width: 100%;
+    }
+
+    .profile-action-btn {
+      flex: 1;
+      padding: 13px;
+      border-radius: 16px;
+      border: none;
+      cursor: pointer;
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 13px;
+      font-weight: 600;
+      transition: transform .15s, opacity .2s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+    }
+
+    .profile-action-btn:active {
+      transform: scale(.96);
+    }
+
+    .profile-action-primary {
+      background: linear-gradient(135deg, var(--blue), var(--purple));
+      color: #fff;
+      box-shadow: 0 4px 20px rgba(74, 144, 217, .25);
+    }
+
+    .profile-action-secondary {
+      background: rgba(255, 255, 255, .07);
+      border: 1px solid rgba(255, 255, 255, .12) !important;
+      color: rgba(255, 255, 255, .8);
+    }
+
+    .profile-dm-btn {
+      margin: 0 16px 16px;
+      width: calc(100% - 32px);
+      padding: 13px;
+      border-radius: 16px;
+      border: 1px solid rgba(74, 144, 217, .3);
+      background: rgba(74, 144, 217, .08);
+      cursor: pointer;
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 13px;
+      font-weight: 600;
+      color: rgba(74, 144, 217, .9);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      transition: background .2s, transform .15s;
+    }
+
+    .profile-dm-btn:active {
+      transform: scale(.97);
+      background: rgba(74, 144, 217, .15);
+    }
+
+    .profile-dm-btn svg {
+      width: 15px;
+      height: 15px;
+      stroke: currentColor;
+      fill: none;
+      stroke-width: 2;
+      stroke-linecap: round;
+    }
+
+    /* FOLLOW BUTTON for other users */
+    .follow-btn {
+      flex: 1;
+      padding: 13px;
+      border-radius: 16px;
+      border: none;
+      cursor: pointer;
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 13px;
+      font-weight: 600;
+      transition: transform .15s, opacity .2s, background .2s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      background: linear-gradient(135deg, var(--blue), var(--purple));
+      color: #fff;
+      box-shadow: 0 4px 20px rgba(74, 144, 217, .25);
+    }
+
+    .follow-btn:active {
+      transform: scale(.96);
+    }
+
+    .follow-btn.following {
+      background: rgba(255, 255, 255, .07);
+      border: 1px solid rgba(255, 255, 255, .15) !important;
+      color: rgba(255, 255, 255, .7);
+      box-shadow: none;
+    }
+
+    .profile-section-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 16px 10px;
+      width: 100%;
+    }
+
+    .profile-section-title {
+      font-size: 11px;
+      font-weight: 700;
+      color: rgba(255, 255, 255, .35);
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      font-family: 'DM Sans', sans-serif;
+    }
+
+    .profile-section-count {
+      font-size: 12px;
+      color: rgba(255, 255, 255, .3);
+      font-weight: 500;
+    }
+
+    /* VIDEO GRID */
+    .profile-videos {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 2px;
+      width: 100%;
+      padding: 0 0 80px;
+    }
+
+    .profile-thumb {
+      width: 100%;
+      padding-bottom: 177.78%;
+      position: relative;
+      overflow: hidden;
+      cursor: pointer;
+      background: rgba(255, 255, 255, .04);
+    }
+
+    .profile-thumb video {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      pointer-events: none;
+    }
+
+    .profile-thumb-overlay {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(to top, rgba(0, 0, 0, .7) 0%, transparent 45%);
+      z-index: 1;
+    }
+
+    .profile-thumb::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: rgba(74, 144, 217, 0);
+      transition: background .2s;
+      z-index: 2;
+    }
+
+    .profile-thumb:active::after {
+      background: rgba(74, 144, 217, .12);
+    }
+
+    .profile-thumb-likes {
+      position: absolute;
+      bottom: 5px;
+      left: 5px;
+      font-size: 10px;
+      font-weight: 700;
+      color: #fff;
+      text-shadow: 0 1px 4px rgba(0, 0, 0, .8);
+      display: flex;
+      align-items: center;
+      gap: 2px;
+      z-index: 3;
+    }
+
+    .profile-empty {
+      grid-column: span 3;
+      padding: 48px 20px;
+      text-align: center;
+      color: rgba(255, 255, 255, .2);
+      font-size: 14px;
+    }
+
+    .profile-empty-icon {
+      font-size: 40px;
+      display: block;
+      margin-bottom: 12px;
+    }
+
+    /* FOLLOWERS POPUP */
+    .followers-popup-overlay {
+      position: fixed;
+      inset: 0;
+      z-index: 600;
+      background: rgba(0, 0, 0, .6);
+      backdrop-filter: blur(6px);
+      display: flex;
+      align-items: flex-end;
+      justify-content: center;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity .25s;
+    }
+
+    .followers-popup-overlay.open {
+      opacity: 1;
+      pointer-events: all;
+    }
+
+    .followers-popup-sheet {
+      width: 100%;
+      max-width: 540px;
+      background: #131b2e;
+      border-radius: 22px 22px 0 0;
+      border-top: 1px solid rgba(255, 255, 255, .09);
+      max-height: 72vh;
+      display: flex;
+      flex-direction: column;
+      transform: translateY(100%);
+      transition: transform .32s cubic-bezier(.32, .72, 0, 1);
+    }
+
+    .followers-popup-overlay.open .followers-popup-sheet {
+      transform: translateY(0);
+    }
+
+    .fp-handle {
+      width: 36px;
+      height: 4px;
+      border-radius: 2px;
+      background: rgba(255, 255, 255, .18);
+      margin: 14px auto 0;
+      flex-shrink: 0;
+    }
+
+    .fp-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 14px 20px 10px;
+      flex-shrink: 0;
+      border-bottom: 1px solid rgba(255, 255, 255, .07);
+    }
+
+    .fp-title {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 22px;
+      color: #fff;
+      letter-spacing: 1px;
+    }
+
+    .fp-close {
+      background: rgba(255, 255, 255, .07);
+      border: none;
+      border-radius: 50%;
+      width: 30px;
+      height: 30px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      color: rgba(255, 255, 255, .6);
+      font-size: 16px;
+    }
+
+    .fp-list {
+      flex: 1;
+      overflow-y: auto;
+      padding: 8px 0 24px;
+    }
+
+    .fp-list::-webkit-scrollbar {
+      display: none;
+    }
+
+    .fp-user-row {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      padding: 12px 20px;
+      cursor: pointer;
+      transition: background .15s;
+    }
+
+    .fp-user-row:active {
+      background: rgba(255, 255, 255, .04);
+    }
+
+    .fp-user-avatar {
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--blue), var(--purple));
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 17px;
+      font-weight: 700;
+      color: #fff;
+      flex-shrink: 0;
+    }
+
+    .fp-user-name {
+      font-weight: 600;
+      font-size: 14px;
+      color: #fff;
+    }
+
+    .fp-user-handle {
+      font-size: 12px;
+      color: rgba(255, 255, 255, .4);
+      margin-top: 1px;
+    }
+
+    .fp-empty {
+      text-align: center;
+      padding: 40px 20px;
+      color: rgba(255, 255, 255, .3);
+      font-size: 14px;
+    }
+
+    /* TUTORIAL */
     .tutorial-overlay {
       position: fixed;
       inset: 0;
@@ -1978,11 +2114,11 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      background: rgba(0, 0, 0, .48);
-      backdrop-filter: blur(3px);
+      background: rgba(0, 0, 0, .7);
+      backdrop-filter: blur(4px);
       opacity: 0;
       pointer-events: none;
-      transition: opacity .25s ease;
+      transition: opacity .3s ease;
     }
 
     .tutorial-overlay.show {
@@ -1991,201 +2127,238 @@
     }
 
     .tutorial-spot {
-      width: min(86vw, 340px);
+      width: min(82vw, 300px);
       aspect-ratio: 9/16;
-      border-radius: 28px;
-      border: 1px solid rgba(255, 255, 255, .14);
-      background: linear-gradient(180deg, rgba(17, 24, 39, .92), rgba(10, 14, 26, .96));
-      box-shadow: 0 20px 60px rgba(0, 0, 0, .45);
+      border-radius: 30px;
+      border: 1.5px solid rgba(255, 255, 255, .15);
+      background: #0a0e1a;
       position: relative;
       overflow: hidden;
-      transform: translateY(12px) scale(.96);
-      transition: transform .35s cubic-bezier(.2, .8, .2, 1);
+      box-shadow: 0 30px 80px rgba(0, 0, 0, .6), 0 0 0 1px rgba(255, 255, 255, .05);
+      transform: translateY(16px) scale(.95);
+      transition: transform .4s cubic-bezier(.2, .8, .2, 1);
     }
 
     .tutorial-overlay.show .tutorial-spot {
       transform: translateY(0) scale(1);
     }
 
-    .tutorial-screen {
+    /* Фейковые слайды */
+    .tutorial-feed-card {
       position: absolute;
       inset: 0;
-      padding: 18px;
+      overflow: hidden;
+    }
+
+    .tut-fake-slide {
+      position: absolute;
+      inset: 0;
       display: flex;
       flex-direction: column;
       justify-content: flex-end;
-      gap: 14px;
-      background: radial-gradient(circle at 50% 18%, rgba(74, 144, 217, .18), transparent 26%), radial-gradient(circle at 50% 72%, rgba(123, 92, 250, .18), transparent 28%), linear-gradient(to top, rgba(0, 0, 0, .74), rgba(0, 0, 0, .1) 42%, transparent);
+      padding: 20px 16px;
+      transition: transform .5s cubic-bezier(.32, .72, 0, 1);
+    }
+
+    .tut-slide-1 {
+      background: linear-gradient(180deg, #1a2540 0%, #0d1220 50%, rgba(0, 0, 0, .9) 100%);
+      transform: translateY(0);
+    }
+
+    .tut-slide-2 {
+      background: linear-gradient(180deg, #1e1030 0%, #0d0a1a 50%, rgba(0, 0, 0, .9) 100%);
+      transform: translateY(100%);
+    }
+
+    /* Анимация свайпа */
+    .tut-fake-slide.swiping-out {
+      transform: translateY(-100%);
+      transition: transform .5s cubic-bezier(.32, .72, 0, 1);
+    }
+
+    .tut-fake-slide.swiping-in {
+      transform: translateY(0);
+      transition: transform .5s cubic-bezier(.32, .72, 0, 1);
+    }
+
+    .tut-fake-meta {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 14px;
+    }
+
+    .tut-fake-avatar {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #4a90d9, #7b5cfa);
+      flex-shrink: 0;
+      border: 2px solid rgba(255, 255, 255, .3);
+    }
+
+    .tut-fake-lines {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .tut-fake-line {
+      height: 8px;
+      border-radius: 4px;
+      background: rgba(255, 255, 255, .4);
+    }
+
+    .tut-fake-actions {
+      position: absolute;
+      right: 14px;
+      bottom: 80px;
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+    }
+
+    .tut-fake-btn {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, .12);
+      border: 1px solid rgba(255, 255, 255, .15);
+    }
+
+    /* Рука */
+    .tut-hand {
+      position: absolute;
+      left: 50%;
+      bottom: 30%;
+      transform: translateX(-50%);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      pointer-events: none;
+      animation: handSwipeUp 2s ease-in-out infinite;
+    }
+
+    .tut-hand-icon {
+      font-size: 36px;
+      filter: drop-shadow(0 4px 12px rgba(0, 0, 0, .5));
+    }
+
+    .tut-swipe-trail {
+      width: 2px;
+      height: 0px;
+      background: linear-gradient(to top, rgba(255, 255, 255, .6), transparent);
+      border-radius: 2px;
+      margin-top: 4px;
+      animation: trailGrow 2s ease-in-out infinite;
+    }
+
+    @keyframes handSwipeUp {
+      0% {
+        transform: translateX(-50%) translateY(0);
+        opacity: 0;
+      }
+
+      15% {
+        transform: translateX(-50%) translateY(0);
+        opacity: 1;
+      }
+
+      70% {
+        transform: translateX(-50%) translateY(-90px);
+        opacity: 1;
+      }
+
+      85% {
+        transform: translateX(-50%) translateY(-90px);
+        opacity: 0;
+      }
+
+      100% {
+        transform: translateX(-50%) translateY(0);
+        opacity: 0;
+      }
+    }
+
+    @keyframes trailGrow {
+      0% {
+        height: 0px;
+        opacity: 0;
+      }
+
+      15% {
+        height: 0px;
+        opacity: 0;
+      }
+
+      70% {
+        height: 70px;
+        opacity: 1;
+      }
+
+      85% {
+        height: 70px;
+        opacity: 0;
+      }
+
+      100% {
+        height: 0px;
+        opacity: 0;
+      }
+    }
+
+    /* Текст снизу */
+    .tutorial-screen {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      padding: 16px 18px 22px;
+      background: linear-gradient(to top, rgba(0, 0, 0, .95) 0%, rgba(0, 0, 0, .7) 60%, transparent 100%);
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      pointer-events: none;
     }
 
     .tutorial-chip {
       align-self: flex-start;
-      font-size: 11px;
+      font-size: 10px;
       letter-spacing: 1.4px;
       text-transform: uppercase;
       color: rgba(255, 255, 255, .55);
-      padding: 7px 10px;
+      padding: 5px 10px;
       border-radius: 999px;
-      background: rgba(255, 255, 255, .07);
-      border: 1px solid rgba(255, 255, 255, .08);
-      backdrop-filter: blur(8px);
+      background: rgba(255, 255, 255, .08);
+      border: 1px solid rgba(255, 255, 255, .1);
     }
 
     .tutorial-title {
       font-family: 'Bebas Neue', sans-serif;
-      font-size: 30px;
-      line-height: 1;
-      letter-spacing: 1px;
+      font-size: 28px;
       color: #fff;
+      letter-spacing: 1px;
+      line-height: 1;
     }
 
     .tutorial-text {
-      color: rgba(255, 255, 255, .72);
-      font-size: 14px;
-      line-height: 1.55;
-      max-width: 26ch;
-    }
-
-    .tutorial-feed-card {
-      position: absolute;
-      left: 14px;
-      right: 14px;
-      top: 18px;
-      height: 72%;
-      border-radius: 22px;
-      background: linear-gradient(180deg, rgba(255, 255, 255, .08), rgba(255, 255, 255, .02)), radial-gradient(circle at 50% 25%, rgba(74, 144, 217, .2), transparent 30%), linear-gradient(135deg, #111827, #0a0e1a);
-      border: 1px solid rgba(255, 255, 255, .08);
-      overflow: hidden;
-      animation: cardSwipe 2.2s ease-in-out infinite;
-      box-shadow: 0 12px 40px rgba(0, 0, 0, .35);
-    }
-
-    .tutorial-feed-card::before {
-      content: '';
-      position: absolute;
-      inset: 0;
-      background: linear-gradient(to top, rgba(0, 0, 0, .82), rgba(0, 0, 0, .08) 48%, transparent);
-    }
-
-    @keyframes cardSwipe {
-      0% {
-        transform: translateY(52px) scale(.94);
-        opacity: .35
-      }
-
-      18% {
-        transform: translateY(32px) scale(.96);
-        opacity: .7
-      }
-
-      40% {
-        transform: translateY(0) scale(1);
-        opacity: 1
-      }
-
-      60% {
-        transform: translateY(-18px) scale(1);
-        opacity: 1
-      }
-
-      78% {
-        transform: translateY(-54px) scale(.98);
-        opacity: .72
-      }
-
-      100% {
-        transform: translateY(-96px) scale(.95);
-        opacity: 0
-      }
-    }
-
-    .tutorial-hand {
-      position: absolute;
-      right: 26px;
-      top: 44%;
-      width: 64px;
-      height: 64px;
-      border-radius: 50%;
-      background: rgba(255, 255, 255, .1);
-      border: 1px solid rgba(255, 255, 255, .12);
-      display: grid;
-      place-items: center;
-      animation: handTap 2.2s ease-in-out infinite;
-      backdrop-filter: blur(8px);
-    }
-
-    .tutorial-hand span {
-      font-size: 26px;
-      transform: translateY(-1px);
-    }
-
-    @keyframes handTap {
-
-      0%,
-      100% {
-        transform: translateY(24px) scale(.95);
-        opacity: .3
-      }
-
-      25% {
-        transform: translateY(0) scale(1);
-        opacity: 1
-      }
-
-      50% {
-        transform: translateY(-34px) scale(1.02);
-        opacity: 1
-      }
-
-      75% {
-        transform: translateY(-8px) scale(.98);
-        opacity: .78
-      }
-    }
-
-    .tutorial-skip {
-      position: absolute;
-      top: 14px;
-      right: 14px;
-      border: none;
-      background: rgba(255, 255, 255, .08);
-      color: rgba(255, 255, 255, .8);
-      font-family: inherit;
       font-size: 13px;
-      padding: 9px 12px;
-      border-radius: 999px;
-      cursor: pointer;
-      z-index: 2;
-    }
-
-    .tutorial-note {
-      position: absolute;
-      left: 50%;
-      bottom: 34px;
-      transform: translateX(-50%);
-      font-size: 12px;
-      color: rgba(255, 255, 255, .42);
-      letter-spacing: .2px;
-      z-index: 2;
-      white-space: nowrap;
+      color: rgba(255, 255, 255, .65);
+      line-height: 1.5;
     }
 
     .tutorial-bullets {
-      position: absolute;
-      left: 50%;
-      bottom: 16px;
-      transform: translateX(-50%);
       display: flex;
-      gap: 8px;
-      z-index: 2;
+      gap: 6px;
+      margin-top: 4px;
     }
 
     .tutorial-bullets span {
-      width: 7px;
-      height: 7px;
+      width: 6px;
+      height: 6px;
       border-radius: 50%;
-      background: rgba(255, 255, 255, .22);
-      animation: dotPulse 2.2s ease-in-out infinite;
+      background: rgba(255, 255, 255, .25);
+      animation: dotPulse 2s ease-in-out infinite;
     }
 
     .tutorial-bullets span:nth-child(2) {
@@ -2201,16 +2374,33 @@
       0%,
       100% {
         transform: scale(.85);
-        background: rgba(255, 255, 255, .22)
+        background: rgba(255, 255, 255, .22);
       }
 
       50% {
         transform: scale(1.35);
-        background: rgba(255, 255, 255, .9)
+        background: rgba(255, 255, 255, .9);
       }
     }
 
-    /* Toast */
+    .tutorial-skip {
+      position: absolute;
+      top: 14px;
+      right: 14px;
+      border: none;
+      background: rgba(255, 255, 255, .1);
+      color: rgba(255, 255, 255, .85);
+      font-family: inherit;
+      font-size: 12px;
+      padding: 7px 12px;
+      border-radius: 999px;
+      cursor: pointer;
+      z-index: 10;
+      backdrop-filter: blur(8px);
+      border: 1px solid rgba(255, 255, 255, .15);
+    }
+
+    /* TOAST */
     .toast {
       position: fixed;
       bottom: calc(var(--nav-h) + 20px);
@@ -2250,6 +2440,356 @@
     #statModal .modal-sheet {
       background: #0e1525;
       border-top: 1px solid rgba(255, 255, 255, .08);
+    }
+
+    /* ── SHARE MODAL ── */
+    .share-overlay {
+      position: fixed;
+      inset: 0;
+      z-index: 500;
+      background: rgba(0, 0, 0, .75);
+      backdrop-filter: blur(8px);
+      display: flex;
+      align-items: flex-end;
+      justify-content: center;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity .3s;
+    }
+
+    .share-overlay.open {
+      opacity: 1;
+      pointer-events: all;
+    }
+
+    .share-sheet {
+      width: 100%;
+      max-width: 540px;
+      background: var(--card);
+      border-radius: 22px 22px 0 0;
+      padding: 20px 22px 36px;
+      transform: translateY(100%);
+      transition: transform .35s cubic-bezier(.32, .72, 0, 1);
+      border-top: 1px solid rgba(255, 255, 255, .09);
+      max-height: 75vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .share-overlay.open .share-sheet {
+      transform: translateY(0);
+    }
+
+    .share-handle {
+      width: 36px;
+      height: 4px;
+      border-radius: 2px;
+      background: rgba(255, 255, 255, .2);
+      margin: 0 auto 18px;
+      flex-shrink: 0;
+    }
+
+    .share-title {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 22px;
+      color: #fff;
+      margin-bottom: 14px;
+      letter-spacing: .5px;
+      flex-shrink: 0;
+    }
+
+    .share-search-box {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      background: rgba(255, 255, 255, .07);
+      border-radius: 14px;
+      padding: 10px 14px;
+      margin-bottom: 14px;
+      flex-shrink: 0;
+    }
+
+    .share-search-box svg {
+      width: 16px;
+      height: 16px;
+      stroke: rgba(255, 255, 255, .4);
+      fill: none;
+      stroke-width: 1.8;
+      stroke-linecap: round;
+      flex-shrink: 0;
+    }
+
+    .share-search-box input {
+      flex: 1;
+      background: none;
+      border: none;
+      outline: none;
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 14px;
+      color: #fff;
+    }
+
+    .share-search-box input::placeholder {
+      color: rgba(255, 255, 255, .3);
+    }
+
+    .share-list {
+      flex: 1;
+      overflow-y: auto;
+    }
+
+    .share-list::-webkit-scrollbar {
+      display: none;
+    }
+
+    .share-user-row {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      padding: 11px 0;
+      border-bottom: 1px solid rgba(255, 255, 255, .05);
+      cursor: pointer;
+      transition: opacity .15s;
+    }
+
+    .share-user-row:active {
+      opacity: .7;
+    }
+
+    .share-user-avatar {
+      width: 42px;
+      height: 42px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--blue), var(--purple));
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 16px;
+      font-weight: 700;
+      color: #fff;
+      flex-shrink: 0;
+    }
+
+    .share-user-name {
+      font-size: 14px;
+      font-weight: 600;
+      color: #fff;
+    }
+
+    .share-user-sub {
+      font-size: 12px;
+      color: rgba(255, 255, 255, .4);
+      margin-top: 1px;
+    }
+
+    .share-empty {
+      text-align: center;
+      padding: 30px 0;
+      color: rgba(255, 255, 255, .3);
+      font-size: 14px;
+    }
+
+    .share-loading {
+      text-align: center;
+      padding: 20px 0;
+      color: rgba(255, 255, 255, .3);
+      font-size: 13px;
+    }
+
+    /* ── ADMIN ── */
+    .adm-tab {
+      flex: 1;
+      padding: 10px 4px;
+      background: none;
+      border: none;
+      color: rgba(255, 255, 255, .4);
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 11px;
+      font-weight: 600;
+      cursor: pointer;
+      border-bottom: 2px solid transparent;
+      transition: color .15s, border-color .15s;
+    }
+
+    .adm-tab.active {
+      color: #fff;
+      border-bottom-color: var(--blue);
+    }
+
+    .adm-stat-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 10px;
+      margin-bottom: 18px;
+    }
+
+    .adm-stat-card {
+      background: rgba(255, 255, 255, .05);
+      border: 1px solid rgba(255, 255, 255, .08);
+      border-radius: 14px;
+      padding: 14px;
+      text-align: center;
+    }
+
+    .adm-stat-num {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 32px;
+      color: var(--blue);
+    }
+
+    .adm-stat-label {
+      font-size: 11px;
+      color: rgba(255, 255, 255, .4);
+      margin-top: 2px;
+    }
+
+    .adm-search {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      background: rgba(255, 255, 255, .07);
+      border-radius: 12px;
+      padding: 9px 14px;
+      margin-bottom: 12px;
+    }
+
+    .adm-search input {
+      flex: 1;
+      background: none;
+      border: none;
+      outline: none;
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 14px;
+      color: #fff;
+    }
+
+    .adm-search input::placeholder {
+      color: rgba(255, 255, 255, .3);
+    }
+
+    .adm-row {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 10px 0;
+      border-bottom: 1px solid rgba(255, 255, 255, .05);
+    }
+
+    .adm-row-info {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .adm-row-name {
+      font-size: 14px;
+      font-weight: 600;
+      color: #fff;
+    }
+
+    .adm-row-sub {
+      font-size: 11px;
+      color: rgba(255, 255, 255, .4);
+      margin-top: 2px;
+    }
+
+    .adm-avatar {
+      width: 38px;
+      height: 38px;
+      border-radius: 50%;
+      flex-shrink: 0;
+      background: linear-gradient(135deg, var(--blue), var(--purple));
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 15px;
+      font-weight: 700;
+      color: #fff;
+    }
+
+    .adm-badge-ban {
+      background: rgba(255, 45, 85, .2);
+      color: var(--pink);
+      border: 1px solid rgba(255, 45, 85, .4);
+      border-radius: 8px;
+      font-size: 10px;
+      padding: 2px 7px;
+      font-weight: 600;
+    }
+
+    .adm-btn {
+      padding: 6px 12px;
+      border-radius: 10px;
+      border: none;
+      cursor: pointer;
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 12px;
+      font-weight: 600;
+      transition: opacity .15s;
+    }
+
+    .adm-btn:active {
+      opacity: .7;
+    }
+
+    .adm-btn-red {
+      background: rgba(255, 45, 85, .15);
+      color: var(--pink);
+      border: 1px solid rgba(255, 45, 85, .3);
+    }
+
+    .adm-btn-green {
+      background: rgba(34, 197, 94, .15);
+      color: #22c55e;
+      border: 1px solid rgba(34, 197, 94, .3);
+    }
+
+    .adm-btn-blue {
+      background: rgba(74, 144, 217, .15);
+      color: var(--blue);
+      border: 1px solid rgba(74, 144, 217, .3);
+    }
+
+    .adm-broadcast-input {
+      width: 100%;
+      background: rgba(255, 255, 255, .07);
+      border: 1px solid rgba(255, 255, 255, .1);
+      border-radius: 14px;
+      padding: 12px 14px;
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 14px;
+      color: #fff;
+      outline: none;
+      resize: none;
+      min-height: 100px;
+      margin-bottom: 12px;
+    }
+
+    .adm-broadcast-input::placeholder {
+      color: rgba(255, 255, 255, .3);
+    }
+
+    .adm-broadcast-btn {
+      width: 100%;
+      padding: 14px;
+      border: none;
+      border-radius: 14px;
+      cursor: pointer;
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 18px;
+      letter-spacing: 1px;
+      color: #fff;
+      background: linear-gradient(135deg, var(--blue), var(--purple));
+    }
+
+    .adm-report-unread {
+      background: rgba(255, 45, 85, .05);
+    }
+
+    .adm-empty {
+      text-align: center;
+      padding: 40px 0;
+      color: rgba(255, 255, 255, .25);
+      font-size: 14px;
     }
   </style>
 </head>
@@ -2360,15 +2900,21 @@
       </div>
       <button class="search-cancel" onclick="closePanel('search')">Отмена</button>
     </div>
-    <div class="search-body">
+    <div class="search-body" id="searchBody">
       <div class="search-section">Популярные теги</div>
       <div class="search-tags">
-        <span class="search-tag">#пардон</span><span class="search-tag">#dev</span>
-        <span class="search-tag">#дизайн</span><span class="search-tag">#музыка</span>
-        <span class="search-tag">#авто</span><span class="search-tag">#юмор</span>
-        <span class="search-tag">#путешествия</span><span class="search-tag">#еда</span>
-        <span class="search-tag">#спорт</span><span class="search-tag">#tech</span>
-        <span class="search-tag">#кино</span><span class="search-tag">#животные</span>
+        <span class="search-tag" onclick="triggerTagSearch(this)">#пардон</span>
+        <span class="search-tag" onclick="triggerTagSearch(this)">#dev</span>
+        <span class="search-tag" onclick="triggerTagSearch(this)">#дизайн</span>
+        <span class="search-tag" onclick="triggerTagSearch(this)">#музыка</span>
+        <span class="search-tag" onclick="triggerTagSearch(this)">#авто</span>
+        <span class="search-tag" onclick="triggerTagSearch(this)">#юмор</span>
+        <span class="search-tag" onclick="triggerTagSearch(this)">#путешествия</span>
+        <span class="search-tag" onclick="triggerTagSearch(this)">#еда</span>
+        <span class="search-tag" onclick="triggerTagSearch(this)">#спорт</span>
+        <span class="search-tag" onclick="triggerTagSearch(this)">#tech</span>
+        <span class="search-tag" onclick="triggerTagSearch(this)">#кино</span>
+        <span class="search-tag" onclick="triggerTagSearch(this)">#животные</span>
       </div>
     </div>
   </div>
@@ -2394,7 +2940,7 @@
           <line x1="19" y1="12" x2="5" y2="12" />
           <polyline points="12 19 5 12 12 5" />
         </svg></button>
-      <h2 id="commentsPanelTitle">Комментарии</h2>
+      <h2>Комментарии</h2>
     </div>
     <div class="comments-list" id="commentsList"></div>
     <div class="comment-input-bar">
@@ -2447,7 +2993,7 @@
     </div>
   </div>
 
-  <!-- PROFILE PANEL -->
+  <!-- MY PROFILE PANEL -->
   <div class="panel" id="profilePanel">
     <div class="profile-topbar">
       <button class="profile-topbar-btn" onclick="closePanel('profile')">
@@ -2463,9 +3009,7 @@
         </svg>
       </a>
     </div>
-
     <div class="profile-scroll">
-      <!-- HERO -->
       <div class="profile-hero">
         <div class="profile-hero-bg"></div>
         <div class="profile-hero-grid"></div>
@@ -2476,34 +3020,24 @@
           <div class="profile-online-dot"></div>
         </div>
       </div>
-
-      <!-- IDENTITY -->
       <div class="profile-identity">
         <div class="profile-name" id="profileUsername"></div>
         <div class="profile-handle-row">
           <div class="profile-handle" id="profileSub"></div>
-          <div class="profile-verified-badge">
-            <svg viewBox="0 0 24 24">
+          <div class="profile-verified-badge"><svg viewBox="0 0 24 24">
               <polyline points="20 6 9 17 4 12" />
-            </svg>
-          </div>
+            </svg></div>
         </div>
-        <div class="profile-joined-chip" id="profileJoinedChip">участник</div>
+        <div class="profile-joined-chip" id="profileJoinedChip">📅 участник</div>
       </div>
-
-      <!-- FOLLOW ROW -->
       <div class="profile-follow-row">
         <button class="follow-stat-btn" onclick="openFollowersPopup('following')">
-          <span class="fs-num" id="statFollowing">0</span>
-          <span class="fs-label">Подписки</span>
+          <span class="fs-num" id="statFollowing">0</span><span class="fs-label">Подписки</span>
         </button>
         <button class="follow-stat-btn" onclick="openFollowersPopup('followers')">
-          <span class="fs-num" id="statFollowers">0</span>
-          <span class="fs-label">Подписчики</span>
+          <span class="fs-num" id="statFollowers">0</span><span class="fs-label">Подписчики</span>
         </button>
       </div>
-
-      <!-- STATS -->
       <div class="profile-stats">
         <div class="stat-card" onclick="openStatDetail('videos')">
           <div class="stat-num" id="statVideos">0</div>
@@ -2518,23 +3052,17 @@
           <div class="stat-label">Лайки</div>
         </div>
       </div>
-
-      <!-- ACTIONS -->
       <div class="profile-actions">
         <button class="profile-action-btn profile-action-primary" onclick="openPanel('home')">▶ Смотреть</button>
         <button class="profile-action-btn profile-action-secondary"
           onclick="closePanel('profile');document.getElementById('navUpload').click()">+ Загрузить</button>
       </div>
-
       <button class="profile-dm-btn" onclick="window.location.href='/messages'">
         <svg viewBox="0 0 24 24">
           <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
         </svg>
         Сообщения
       </button>
-
-      <div class="profile-divider"></div>
-
       <div class="profile-section-header">
         <div class="profile-section-title">Мои видео</div>
         <div class="profile-section-count" id="videoCountLabel"></div>
@@ -2544,7 +3072,77 @@
     </div>
   </div>
 
-  <!-- FOLLOWERS / FOLLOWING POPUP -->
+  <!-- USER PROFILE PANEL (чужой профиль) -->
+  <div class="panel panel-notif" id="userProfilePanel">
+    <div class="profile-topbar">
+      <button class="profile-topbar-btn" onclick="closeUserProfile()">
+        <svg viewBox="0 0 24 24">
+          <polyline points="15 18 9 12 15 6" />
+        </svg>
+      </button>
+      <div style="margin-top:15px;font-size:12px;color:rgba(255,255,255,.4);font-family:'DM Sans',sans-serif;"
+        id="upHandle"></div>
+      <div style="width:38px;margin-top:15px;"></div>
+    </div>
+    <div class="profile-scroll">
+      <div class="profile-hero">
+        <div class="profile-hero-bg"></div>
+        <div class="profile-hero-grid"></div>
+        <div class="profile-avatar-wrap">
+          <div class="profile-avatar-ring">
+            <div class="profile-avatar-inner" id="upAvatarBig"></div>
+          </div>
+        </div>
+      </div>
+      <div class="profile-identity">
+        <div class="profile-name" id="upUsername"></div>
+        <div class="profile-handle-row">
+          <div class="profile-handle" id="upSub"></div>
+        </div>
+        <div class="profile-joined-chip" id="upJoined">📅 участник</div>
+      </div>
+      <div class="profile-follow-row">
+        <div class="follow-stat-btn" style="cursor:default;">
+          <span class="fs-num" id="upFollowing">0</span><span class="fs-label">Подписки</span>
+        </div>
+        <div class="follow-stat-btn" style="cursor:default;">
+          <span class="fs-num" id="upFollowers">0</span><span class="fs-label">Подписчики</span>
+        </div>
+      </div>
+      <div class="profile-stats">
+        <div class="stat-card">
+          <div class="stat-num" id="upVideos">0</div>
+          <div class="stat-label">Видео</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-num" id="upReposts">0</div>
+          <div class="stat-label">Репосты</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-num" id="upLikes">0</div>
+          <div class="stat-label">Лайки</div>
+        </div>
+      </div>
+      <div class="profile-actions">
+        <button class="follow-btn" id="upFollowBtn" onclick="toggleFollowUser()">+ Подписаться</button>
+        <button class="profile-action-btn profile-action-secondary" id="upDmBtn" onclick="openDMWithUser()">
+          <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2"
+            stroke-linecap="round">
+            <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
+          </svg>
+          DM
+        </button>
+      </div>
+      <div class="profile-section-header">
+        <div class="profile-section-title">Видео</div>
+        <div class="profile-section-count" id="upVideoCount"></div>
+      </div>
+      <div class="profile-videos" id="upVideosGrid"></div>
+      <div style="height:20px"></div>
+    </div>
+  </div>
+
+  <!-- FOLLOWERS POPUP -->
   <div class="followers-popup-overlay" id="followersPopup" onclick="closeFollowersPopup(event)">
     <div class="followers-popup-sheet">
       <div class="fp-handle"></div>
@@ -2562,17 +3160,57 @@
   <div class="tutorial-overlay" id="tutorialOverlay" aria-hidden="true">
     <div class="tutorial-spot">
       <button class="tutorial-skip" id="tutorialSkip">Пропустить</button>
-      <div class="tutorial-feed-card"></div>
+
+      <!-- Симуляция телефона с лентой -->
+      <div class="tutorial-feed-card">
+        <!-- Фейковое видео 1 -->
+        <div class="tut-fake-slide tut-slide-1">
+          <div class="tut-fake-meta">
+            <div class="tut-fake-avatar"></div>
+            <div class="tut-fake-lines">
+              <div class="tut-fake-line" style="width:80px"></div>
+              <div class="tut-fake-line" style="width:120px;opacity:.5"></div>
+            </div>
+          </div>
+          <div class="tut-fake-actions">
+            <div class="tut-fake-btn"></div>
+            <div class="tut-fake-btn"></div>
+            <div class="tut-fake-btn"></div>
+          </div>
+        </div>
+        <!-- Фейковое видео 2 (следующее) -->
+        <div class="tut-fake-slide tut-slide-2">
+          <div class="tut-fake-meta">
+            <div class="tut-fake-avatar" style="background:linear-gradient(135deg,#ff2d55,#7b5cfa)"></div>
+            <div class="tut-fake-lines">
+              <div class="tut-fake-line" style="width:90px"></div>
+              <div class="tut-fake-line" style="width:140px;opacity:.5"></div>
+            </div>
+          </div>
+          <div class="tut-fake-actions">
+            <div class="tut-fake-btn"></div>
+            <div class="tut-fake-btn"></div>
+            <div class="tut-fake-btn"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Рука со свайпом -->
+      <div class="tut-hand" id="tutHand">
+        <div class="tut-hand-icon">👆</div>
+        <div class="tut-swipe-trail"></div>
+      </div>
+
+      <!-- Текст снизу -->
       <div class="tutorial-screen">
-        <div class="tutorial-chip">Обучение</div>
+        <div class="tutorial-chip">Как пользоваться</div>
         <div>
           <div class="tutorial-title">Свайпай вверх</div>
-          <div class="tutorial-text">Как в TikTok: тяни ленту вверх, чтобы переключать видео.</div>
+          <div class="tutorial-text">Проведи пальцем вверх чтобы увидеть следующее видео</div>
         </div>
-        <div class="tutorial-note">Двойной тап — лайк · кнопки справа — действия</div>
         <div class="tutorial-bullets"><span></span><span></span><span></span></div>
       </div>
-      <div class="tutorial-hand"><span>👆</span></div>
+
     </div>
   </div>
 
@@ -2584,10 +3222,35 @@
     </div>
   </div>
 
-  <!-- CONTEXT MENU -->
+  <!-- CONTEXT MENU (умное — своё/чужое видео) -->
   <div id="videoContextMenu" class="video-context-menu">
-    <button id="deleteVideoBtn">
-      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--pink)" stroke-width="2"
+    <button id="ctxCopyLink">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,.7)" stroke-width="2"
+        stroke-linecap="round">
+        <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71" />
+        <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71" />
+      </svg>
+      Копировать ссылку
+    </button>
+    <button id="ctxShare">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,.7)" stroke-width="2"
+        stroke-linecap="round">
+        <line x1="22" y1="2" x2="11" y2="13" />
+        <polygon points="22 2 15 22 11 13 2 9 22 2" />
+      </svg>
+      Поделиться
+    </button>
+    <button id="ctxOpenUser">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,.7)" stroke-width="2"
+        stroke-linecap="round">
+        <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
+        <circle cx="12" cy="7" r="4" />
+      </svg>
+      Профиль автора
+    </button>
+    <div class="ctx-divider" id="ctxDivider"></div>
+    <button id="ctxDeleteVideo" class="danger" style="color:var(--pink);">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="var(--pink)" stroke-width="2"
         stroke-linecap="round">
         <polyline points="3 6 5 6 21 6" />
         <path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6" />
@@ -2596,17 +3259,71 @@
       </svg>
       Удалить видео
     </button>
+    <button id="ctxReport" class="danger" style="color:var(--pink);display:none;">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="var(--pink)" stroke-width="2"
+        stroke-linecap="round">
+        <path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z" />
+        <line x1="4" y1="22" x2="4" y2="15" />
+      </svg>
+      Пожаловаться
+    </button>
+  </div>
+  <!-- SHARE MODAL -->
+
+  <div class="share-overlay" id="shareOverlay" onclick="closeShareModal(event)">
+    <div class="share-sheet">
+      <div class="share-handle"></div>
+      <div class="share-title">Отправить видео</div>
+      <div class="share-search-box">
+        <svg viewBox="0 0 24 24">
+          <circle cx="11" cy="11" r="8" />
+          <line x1="21" y1="21" x2="16.65" y2="16.65" />
+        </svg>
+        <input type="text" id="shareSearchInput" placeholder="Поиск пользователей..." />
+      </div>
+      <div class="share-list" id="shareList"></div>
+    </div>
   </div>
 
+  <!-- ADMIN PANEL -->
+  <div class="panel panel-notif" id="adminPanel">
+    <div class="panel-header" style="padding:60px 20px 14px;">
+      <button class="back-btn" onclick="closePanel('admin')">
+        <svg viewBox="0 0 24 24">
+          <line x1="19" y1="12" x2="5" y2="12" />
+          <polyline points="12 19 5 12 12 5" />
+        </svg>
+      </button>
+      <h2>⚙️ Админ</h2>
+    </div>
+
+    <!-- TABS -->
+    <div style="display:flex;gap:0;border-bottom:1px solid rgba(255,255,255,.07);flex-shrink:0;">
+      <button class="adm-tab active" data-tab="stats" onclick="admTab(this,'stats')">Стат</button>
+      <button class="adm-tab" data-tab="users" onclick="admTab(this,'users')">Юзеры</button>
+      <button class="adm-tab" data-tab="videos" onclick="admTab(this,'videos')">Видео</button>
+      <button class="adm-tab" data-tab="reports" onclick="admTab(this,'reports')">Жалобы</button>
+      <button class="adm-tab" data-tab="dms" onclick="admTab(this,'dms')">DM</button>
+      <button class="adm-tab" data-tab="broadcast" onclick="admTab(this,'broadcast')">Рассылка</button>
+    </div>
+
+    <!-- CONTENT -->
+    <div style="flex:1;overflow-y:auto;padding:16px;" id="admContent"></div>
+  </div>
   <!-- TOAST -->
   <div class="toast" id="toast"></div>
 
   <script>
-    // ═══════════════════════════════════════════════
-    // GLOBAL MUTE STATE
-    // ═══════════════════════════════════════════════
+    // ════════════════════════════════════════════════════════
+    // STATE
+    // ════════════════════════════════════════════════════════
     let globalMuted = false;
+    let myUserId = null;
+    let myUsername = null;
 
+    // ════════════════════════════════════════════════════════
+    // UTILS
+    // ════════════════════════════════════════════════════════
     let _toastTimer = null;
     function showToast(msg, type = '') {
       const t = document.getElementById('toast');
@@ -2615,12 +3332,11 @@
       clearTimeout(_toastTimer);
       _toastTimer = setTimeout(() => { t.className = 'toast'; }, 2800);
     }
-
     function escapeHTML(str) {
       return (str || '').toString()
         .replaceAll('&', '&amp;').replaceAll('<', '&lt;')
         .replaceAll('>', '&gt;').replaceAll('"', '&quot;')
-        .replaceAll("'", '&#039;');
+        .replaceAll("'", "&#039;");
     }
     function fmtNum(n) {
       n = parseInt(n) || 0;
@@ -2629,7 +3345,7 @@
       return n;
     }
     function formatCaption(txt) {
-      return (txt || '').replace(/#(\w+)/g, '<span class="tag">#$1</span>');
+      return (txt || '').replace(/#(\w+)/g, '<span class="tag" onclick="triggerTagSearch(this)">#$1</span>');
     }
     function destroyObservers() {
       if (globalObserver) { globalObserver.disconnect(); globalObserver = null; }
@@ -2644,57 +3360,343 @@
       if (label) label.textContent = 'Загрузка...';
     }
 
-    // CONTEXT MENU
-    let contextVideoId = null, contextSlideEl = null;
-    function showVideoContextMenu(x, y, videoId, slideEl) {
-      contextVideoId = videoId; contextSlideEl = slideEl;
+    // ════════════════════════════════════════════════════════
+    // CONTEXT MENU — умное: своё/чужое видео
+    // ════════════════════════════════════════════════════════
+    let contextVideoId = null, contextVideoOwner = null, contextVideoUsername = null;
+
+    function showVideoContextMenu(x, y, videoId, ownerId, username) {
+      contextVideoId = videoId;
+      contextVideoOwner = ownerId;
+      contextVideoUsername = username;
+
+      const isOwn = (parseInt(ownerId) === parseInt(myUserId));
       const menu = document.getElementById('videoContextMenu');
-      const mw = 180, mh = 50;
+
+      // Показать/скрыть кнопки
+      document.getElementById('ctxDeleteVideo').style.display = isOwn ? 'flex' : 'none';
+      document.getElementById('ctxReport').style.display = isOwn ? 'none' : 'flex';
+      document.getElementById('ctxDivider').style.display = 'block';
+      document.getElementById('ctxOpenUser').style.display = isOwn ? 'none' : 'flex';
+
+      const mw = 200, mh = 160;
       menu.style.left = Math.min(x, window.innerWidth - mw - 8) + 'px';
       menu.style.top = Math.min(y, window.innerHeight - mh - 8) + 'px';
       menu.style.display = 'block';
     }
     function hideVideoContextMenu() {
       document.getElementById('videoContextMenu').style.display = 'none';
-      contextVideoId = null; contextSlideEl = null;
+      contextVideoId = null; contextVideoOwner = null; contextVideoUsername = null;
     }
+
     document.addEventListener('click', e => { if (!e.target.closest('#videoContextMenu')) hideVideoContextMenu(); });
     document.addEventListener('scroll', hideVideoContextMenu, true);
     window.addEventListener('resize', hideVideoContextMenu);
-    document.getElementById('deleteVideoBtn').addEventListener('click', async () => {
+
+    document.getElementById('ctxDeleteVideo').addEventListener('click', async () => {
       if (!contextVideoId) return;
       const id = contextVideoId; hideVideoContextMenu();
       try {
         const res = await fetch(`/api/video/delete/${id}`, { method: 'DELETE' });
         const data = await res.json().catch(() => ({}));
         if (res.ok && data.ok) { removeVideoFromUI(id); showToast('Видео удалено', 'success'); }
-        else showToast(data.error || 'Не удалось удалить видео', 'error');
+        else showToast(data.error || 'Не удалось удалить', 'error');
       } catch (e) { showToast('Ошибка соединения', 'error'); }
     });
+
+    document.getElementById('ctxReport').addEventListener('click', () => {
+      const id = contextVideoId; hideVideoContextMenu();
+      const reason = prompt('Причина жалобы:');
+      if (!reason) return;
+      fetch('/api/admin/report', {
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ video_id: id, reason })
+      }).then(r => r.json()).then(d => {
+        showToast(d.ok ? 'Жалоба отправлена ✓' : (d.error || 'Ошибка'), d.ok ? 'success' : 'error');
+      }).catch(() => showToast('Ошибка', 'error'));
+    });
+
+    document.getElementById('ctxCopyLink').addEventListener('click', () => {
+      const id = contextVideoId; hideVideoContextMenu();
+      const url = `${location.origin}/video/${id}`;
+      navigator.clipboard?.writeText(url).then(() => showToast('Ссылка скопирована', 'success')).catch(() => showToast(url));
+    });
+
+    document.getElementById('ctxShare').addEventListener('click', () => {
+      const id = contextVideoId, u = contextVideoUsername; hideVideoContextMenu();
+      shareVideo(id, u);
+    });
+
+    document.getElementById('ctxOpenUser').addEventListener('click', () => {
+      const u = contextVideoUsername; hideVideoContextMenu();
+      if (u) openUserProfile(u);
+    });
+
     function removeVideoFromUI(videoId) {
       document.querySelector(`.slide[data-id="${videoId}"]`)?.remove();
       document.querySelector(`.profile-thumb[data-id="${videoId}"]`)?.remove();
     }
 
+    // ════════════════════════════════════════════════════════
     // PANELS
+    // ════════════════════════════════════════════════════════
     function openPanel(name) {
-      const map = { search: 'searchPanel', notif: 'notifPanel', comments: 'commentsPanel', profile: 'profilePanel', dm: 'dmPanel', chat: 'chatPanel' };
+      const map = { search: 'searchPanel', notif: 'notifPanel', comments: 'commentsPanel', profile: 'profilePanel', dm: 'dmPanel', chat: 'chatPanel', admin: 'adminPanel' };
       if (map[name]) document.getElementById(map[name]).classList.add('open');
+
+      // Ставим текущее видео на паузу при открытии любой панели
+      if (name !== 'home') {
+        const slides = document.querySelectorAll('.slide');
+        for (const s of slides) {
+          const rect = s.getBoundingClientRect();
+          if (rect.top >= -50 && rect.top < window.innerHeight * 0.5) {
+            const video = s.querySelector('video');
+            if (video && !video.paused) {
+              video.pause();
+              s.classList.add('paused');
+            }
+            break;
+          }
+        }
+      }
+
+      // Возобновляем при закрытии (home)
+      if (name === 'home') {
+        const slides = document.querySelectorAll('.slide');
+        for (const s of slides) {
+          const rect = s.getBoundingClientRect();
+          if (rect.top >= -50 && rect.top < window.innerHeight * 0.5) {
+            const video = s.querySelector('video');
+            if (video && s.classList.contains('paused')) {
+              video.play().catch(() => { });
+              s.classList.remove('paused');
+            }
+            break;
+          }
+        }
+      }
+
       document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
       if (name === 'home') { Object.values(map).forEach(id => document.getElementById(id)?.classList.remove('open')); document.getElementById('navHome').classList.add('active'); }
-      if (name === 'search') document.getElementById('navSearch').classList.add('active');
+      if (name === 'search') { document.getElementById('navSearch').classList.add('active'); setTimeout(() => document.getElementById('searchInput').focus(), 350); }
       if (name === 'notif') { document.getElementById('navNotif').classList.add('active'); loadNotifications(); }
       if (name === 'profile') { document.getElementById('navHome').classList.add('active'); loadProfile(); }
       if (name === 'dm') { document.getElementById('navDm').classList.add('active'); loadDMs(); }
     }
     function closePanel(name) {
-      const map = { search: 'searchPanel', notif: 'notifPanel', comments: 'commentsPanel', profile: 'profilePanel', dm: 'dmPanel', chat: 'chatPanel' };
+      const map = { search: 'searchPanel', notif: 'notifPanel', comments: 'commentsPanel', profile: 'profilePanel', dm: 'dmPanel', chat: 'chatPanel', admin: 'adminPanel' };
       document.getElementById(map[name])?.classList.remove('open');
       document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
       document.getElementById('navHome').classList.add('active');
     }
 
+    // ════════════════════════════════════════════════════════
+    // SEARCH — рабочий поиск
+    // ════════════════════════════════════════════════════════
+    let _searchTimer = null;
+    const searchInput = document.getElementById('searchInput');
+
+    searchInput.addEventListener('input', () => {
+      clearTimeout(_searchTimer);
+      const q = searchInput.value.trim();
+      if (!q) { showDefaultSearchBody(); return; }
+      _searchTimer = setTimeout(() => doSearch(q), 400);
+    });
+
+    searchInput.addEventListener('keydown', e => {
+      if (e.key === 'Enter') { clearTimeout(_searchTimer); doSearch(searchInput.value.trim()); }
+    });
+
+    function triggerTagSearch(el) {
+      const tag = el.textContent.trim();
+      searchInput.value = tag;
+      openPanel('search');
+      doSearch(tag);
+    }
+
+    function showDefaultSearchBody() {
+      document.getElementById('searchBody').innerHTML = `
+    <div class="search-section">Популярные теги</div>
+    <div class="search-tags">
+      ${['#пардон', '#dev', '#дизайн', '#музыка', '#авто', '#юмор', '#путешествия', '#еда', '#спорт', '#tech', '#кино', '#животные']
+          .map(t => `<span class="search-tag" onclick="triggerTagSearch(this)">${t}</span>`).join('')}
+    </div>`;
+    }
+
+    async function doSearch(q) {
+      if (!q) { showDefaultSearchBody(); return; }
+      const body = document.getElementById('searchBody');
+      body.innerHTML = '<div class="search-loading">🔍 Ищем...</div>';
+      try {
+        const res = await fetch(`/api/search?q=${encodeURIComponent(q)}`);
+        const data = await res.json();
+        renderSearchResults(data, q);
+      } catch (e) {
+        body.innerHTML = '<div class="search-empty">Ошибка поиска</div>';
+      }
+    }
+
+    function renderSearchResults(data, q) {
+      const body = document.getElementById('searchBody');
+      const videos = data.videos || [];
+      const users = data.users || [];
+
+      if (!videos.length && !users.length) {
+        body.innerHTML = `<div class="search-empty">Ничего не найдено по «${escapeHTML(q)}»</div>`;
+        return;
+      }
+
+      let html = '';
+
+      if (users.length) {
+        html += '<div class="search-section">Пользователи</div><div class="search-results">';
+        users.forEach(u => {
+          html += `<div class="search-result-user-row" onclick="openUserProfile('${escapeHTML(u.username)}')">
+        <div class="search-result-avatar">${escapeHTML(u.username[0].toUpperCase())}</div>
+        <div>
+          <div class="search-result-uname">@${escapeHTML(u.username)}</div>
+          <div class="search-result-handle">${escapeHTML(u.video_count || 0)} видео</div>
+        </div>
+      </div>`;
+        });
+        html += '</div>';
+      }
+
+      if (videos.length) {
+        html += '<div class="search-section">Видео</div><div class="search-results">';
+        videos.forEach(v => {
+          const src = v.video_url || `/video/${v.id}`;
+          html += `<div class="search-result-video" onclick="openSearchVideo(${v.id})">
+        <div class="search-result-thumb">
+          <video src="${escapeHTML(src)}" muted preload="none" playsinline></video>
+        </div>
+        <div class="search-result-info">
+          <div class="search-result-user" onclick="event.stopPropagation();openUserProfile('${escapeHTML(v.username)}')">@${escapeHTML(v.username)}</div>
+          <div class="search-result-caption">${escapeHTML(v.caption || '')}</div>
+          <div class="search-result-likes">❤ ${fmtNum(v.likes)}</div>
+        </div>
+      </div>`;
+        });
+        html += '</div>';
+      }
+
+      document.getElementById('searchBody').innerHTML = html;
+
+      // Hover preview for video thumbnails
+      document.querySelectorAll('.search-result-thumb video').forEach(v => {
+        v.parentElement.addEventListener('mouseenter', () => v.play().catch(() => { }));
+        v.parentElement.addEventListener('mouseleave', () => { v.pause(); v.currentTime = 0; });
+      });
+    }
+
+    function openSearchVideo(videoId) {
+      closePanel('search');
+      const slide = document.querySelector(`.slide[data-id="${videoId}"]`);
+      if (slide) { slide.scrollIntoView({ behavior: 'smooth' }); return; }
+      // Если видео нет в ленте — загрузим ленту и попробуем снова
+      showToast('Переход к видео...');
+      loadFeed(true);
+      setTimeout(() => {
+        document.querySelector(`.slide[data-id="${videoId}"]`)?.scrollIntoView({ behavior: 'smooth' });
+      }, 1500);
+    }
+
+    // ════════════════════════════════════════════════════════
+    // USER PROFILE (чужой)
+    // ════════════════════════════════════════════════════════
+    let currentViewUser = null;
+    let currentViewUserFollowing = false;
+
+    async function openUserProfile(username) {
+      if (username === myUsername) { openPanel('profile'); return; }
+      document.getElementById('userProfilePanel').classList.add('open');
+      document.getElementById('upHandle').textContent = '@' + username;
+      document.getElementById('upAvatarBig').textContent = username[0].toUpperCase();
+      document.getElementById('upUsername').textContent = username;
+      document.getElementById('upSub').textContent = '@' + username;
+      document.getElementById('upVideosGrid').innerHTML = '<div class="profile-empty"><span class="profile-empty-icon">⏳</span>Загрузка...</div>';
+
+      try {
+        const res = await fetch(`/api/user/${encodeURIComponent(username)}`);
+        const data = await res.json();
+        currentViewUser = data;
+        currentViewUserFollowing = data.is_following || false;
+
+        document.getElementById('upJoined').textContent = '📅 участник с ' + (data.joined || '');
+        document.getElementById('upFollowing').textContent = fmtNum(data.following_count || 0);
+        document.getElementById('upFollowers').textContent = fmtNum(data.followers_count || 0);
+        document.getElementById('upVideos').textContent = data.video_count || 0;
+        document.getElementById('upReposts').textContent = data.repost_count || 0;
+        const totalLikes = (data.videos || []).reduce((s, v) => s + v.likes, 0);
+        document.getElementById('upLikes').textContent = fmtNum(totalLikes);
+        document.getElementById('upVideoCount').textContent = (data.video_count || 0) + ' видео';
+
+        // Follow button state
+        updateFollowBtn(currentViewUserFollowing);
+
+        // Videos grid
+        const grid = document.getElementById('upVideosGrid');
+        grid.innerHTML = '';
+        if (!data.videos || !data.videos.length) {
+          grid.innerHTML = '<div class="profile-empty"><span class="profile-empty-icon">🎬</span>Нет видео</div>';
+          return;
+        }
+        data.videos.forEach(v => {
+          const div = document.createElement('div');
+          div.className = 'profile-thumb';
+          const src = v.video_url || `/video/${v.id}`;
+          div.innerHTML = `<video src="${escapeHTML(src)}" muted playsinline preload="none"></video><div class="profile-thumb-overlay"></div><div class="profile-thumb-likes">❤ ${fmtNum(v.likes)}</div>`;
+          div.addEventListener('mouseenter', () => div.querySelector('video').play().catch(() => { }));
+          div.addEventListener('mouseleave', () => { const vv = div.querySelector('video'); vv.pause(); vv.currentTime = 0; });
+          div.onclick = () => { closeUserProfile(); scrollToVideo(v.id); };
+          grid.appendChild(div);
+        });
+      } catch (e) {
+        document.getElementById('upVideosGrid').innerHTML = '<div class="profile-empty">Ошибка загрузки</div>';
+      }
+    }
+
+    function updateFollowBtn(isFollowing) {
+      const btn = document.getElementById('upFollowBtn');
+      if (isFollowing) {
+        btn.textContent = '✓ Подписан';
+        btn.classList.add('following');
+      } else {
+        btn.textContent = '+ Подписаться';
+        btn.classList.remove('following');
+      }
+    }
+
+    async function toggleFollowUser() {
+      if (!currentViewUser) return;
+      try {
+        const res = await fetch(`/api/follow/${encodeURIComponent(currentViewUser.username)}`, { method: 'POST' });
+        const data = await res.json();
+        if (data.ok) {
+          currentViewUserFollowing = data.following;
+          updateFollowBtn(currentViewUserFollowing);
+          const countEl = document.getElementById('upFollowers');
+          const cur = parseInt(countEl.textContent) || 0;
+          countEl.textContent = fmtNum(data.following ? cur + 1 : Math.max(0, cur - 1));
+          showToast(data.following ? 'Подписался!' : 'Отписался', 'success');
+        }
+      } catch (e) { showToast('Ошибка', 'error'); }
+    }
+
+    function openDMWithUser() {
+      if (!currentViewUser) return;
+      closeUserProfile();
+      window.location.href = `/messages?user=${encodeURIComponent(currentViewUser.username)}`;
+    }
+
+    function closeUserProfile() {
+      document.getElementById('userProfilePanel').classList.remove('open');
+      currentViewUser = null;
+    }
+
+    // ════════════════════════════════════════════════════════
     // FOLLOWERS POPUP
+    // ════════════════════════════════════════════════════════
     let _followersData = { followers: [], following: [] };
     function openFollowersPopup(type) {
       const overlay = document.getElementById('followersPopup');
@@ -2708,13 +3710,16 @@
       users.forEach(u => {
         const row = document.createElement('div'); row.className = 'fp-user-row';
         row.innerHTML = `<div class="fp-user-avatar">${(u.username || '?')[0].toUpperCase()}</div><div><div class="fp-user-name">@${escapeHTML(u.username)}</div><div class="fp-user-handle">${escapeHTML(u.display_name || '')}</div></div>`;
+        row.onclick = () => { closeFollowersPopupForce(); openUserProfile(u.username); };
         list.appendChild(row);
       });
     }
     function closeFollowersPopup(e) { if (e && e.target !== document.getElementById('followersPopup')) return; document.getElementById('followersPopup').classList.remove('open'); }
     function closeFollowersPopupForce() { document.getElementById('followersPopup').classList.remove('open'); }
 
+    // ════════════════════════════════════════════════════════
     // SOCKET
+    // ════════════════════════════════════════════════════════
     const socket = io();
     socket.on('connect', () => { socket.emit('join'); });
     socket.on('new_video', () => { if (feedOffset > 0) loadFeed(true); });
@@ -2722,70 +3727,87 @@
     socket.on('new_comment', data => { if (currentVideoId && data.video_id === currentVideoId) appendComment({ username: data.username, text: data.text, time: 'сейчас' }); });
     socket.on('video_deleted', data => { removeVideoFromUI(data.video_id); });
 
+    // ════════════════════════════════════════════════════════
     // FEED
+    // ════════════════════════════════════════════════════════
     let feedOffset = 0, feedLoading = false, currentTab = 'foryou', currentVideoId = null, globalObserver = null, lastSlideObserver = null;
+
     document.querySelectorAll('.topbar-tabs button').forEach(btn => {
       btn.addEventListener('click', () => {
+        if (btn.classList.contains('active')) return; // уже активна — не делаем ничего
         document.querySelectorAll('.topbar-tabs button').forEach(b => b.classList.remove('active'));
-        btn.classList.add('active'); currentTab = btn.dataset.tab; feedOffset = 0; loadFeed(true);
+        btn.classList.add('active');
+        currentTab = btn.dataset.tab;
+        feedOffset = 0;
+        feedLoading = false; // сбрасываем флаг блокировки
+        loadFeed(true);
       });
     });
+
     async function loadFeed(reset = false) {
-      if (feedLoading) return; feedLoading = true;
-      if (reset) { feedOffset = 0; destroyObservers(); document.getElementById('feed').innerHTML = '<div class="slide"><div class="feed-loading"><div class="spinner"></div></div></div>'; }
+      if (reset) {
+        feedLoading = false;
+        feedOffset = 0;
+        destroyObservers();
+        document.getElementById('feed').innerHTML = '<div class="slide"><div class="feed-loading"><div class="spinner"></div></div></div>';
+      }
+      if (feedLoading) return;
+      feedLoading = true;
       try {
         const res = await fetch(`/api/feed?tab=${currentTab}&offset=${feedOffset}`);
         if (!res.ok) throw new Error('Feed error');
         const videos = await res.json();
         if (reset) document.getElementById('feed').innerHTML = '';
         videos.forEach(v => appendSlide(v));
-        feedOffset += videos.length; setupObservers();
+        feedOffset += videos.length;
+        setupObservers();
       } catch (e) { console.error(e); }
       feedLoading = false;
     }
-    function applyMuteToAll() { document.querySelectorAll('#feed video').forEach(v => { v.muted = globalMuted; }); }
+
     function appendSlide(v) {
-      const slide = document.createElement('div'); slide.className = 'slide'; slide.dataset.id = v.id;
+      const slide = document.createElement('div'); slide.className = 'slide'; slide.dataset.id = v.id; slide.dataset.owner = v.user_id ? parseInt(v.user_id) : '';
       const likedClass = v.user_liked ? 'liked' : '', repostedClass = v.user_reposted ? 'reposted' : '';
       const videoSrc = v.video_url || `/video/${v.id}`;
-      const muteIconVisible = globalMuted
+      const muteIcon = globalMuted
         ? `<svg viewBox="0 0 24 24"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><line x1="23" y1="9" x2="17" y2="15"/><line x1="17" y1="9" x2="23" y2="15"/></svg>`
         : `<svg viewBox="0 0 24 24"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"/></svg>`;
       slide.innerHTML = `
-        <video src="${escapeHTML(videoSrc)}" loop playsinline preload="metadata" ${globalMuted ? 'muted' : ''}></video>
-        <div class="play-icon"><svg viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"/></svg></div>
-        <div class="progress" id="prog-${v.id}"></div>
-        <div class="meta">
-          <div class="uname">@${escapeHTML(v.username)}</div>
-          <div class="caption">${formatCaption(escapeHTML(v.caption))}</div>
-        </div>
-        <div class="actions">
-          <div class="action-btn like-btn ${likedClass}" data-id="${v.id}" onclick="toggleLike(this)">
-            <svg viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
-            <span id="likes-${v.id}">${fmtNum(v.likes)}</span>
-          </div>
-          <div class="action-btn" onclick="openComments(${v.id})">
-            <svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
-            <span id="cmts-${v.id}">${fmtNum(v.comments)}</span>
-          </div>
-          <div class="action-btn repost-btn ${repostedClass}" data-id="${v.id}" onclick="toggleRepost(this)">
-            <svg viewBox="0 0 24 24"><polyline points="17 1 21 5 17 9"/><path d="M3 11V9a4 4 0 0 1 4-4h14"/><polyline points="7 23 3 19 7 15"/><path d="M21 13v2a4 4 0 0 1-4 4H3"/></svg>
-            <span id="reposts-${v.id}">${fmtNum(v.reposts)}</span>
-          </div>
-          <div class="action-btn" onclick="shareVideo(${v.id},'${escapeHTML(v.username)}')">
-            <svg viewBox="0 0 24 24"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
-            <span>Отправить</span>
-          </div>
-          <div class="action-btn mute-btn${globalMuted ? ' muted' : ''}" id="mute-${v.id}" onclick="toggleMute()">
-            ${muteIconVisible}
-            <span>${globalMuted ? 'Звук' : 'Тихо'}</span>
-          </div>
-        </div>
-        <div class="heart-burst" id="hb-${v.id}">❤️</div>`;
+    <video src="${escapeHTML(videoSrc)}" loop playsinline preload="metadata" ${globalMuted ? 'muted' : ''}></video>
+    <div class="play-icon"><svg viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"/></svg></div>
+    <div class="progress" id="prog-${v.id}"></div>
+    <div class="meta">
+      <div class="uname" onclick="openUserProfile('${escapeHTML(v.username)}')">@${escapeHTML(v.username)}</div>
+      <div class="caption">${formatCaption(escapeHTML(v.caption))}</div>
+    </div>
+    <div class="actions">
+      <div class="action-btn like-btn ${likedClass}" data-id="${v.id}" onclick="toggleLike(this)">
+        <svg viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+        <span id="likes-${v.id}">${fmtNum(v.likes)}</span>
+      </div>
+      <div class="action-btn" onclick="openComments(${v.id})">
+        <svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+        <span id="cmts-${v.id}">${fmtNum(v.comments)}</span>
+      </div>
+      <div class="action-btn repost-btn ${repostedClass}" data-id="${v.id}" onclick="toggleRepost(this)">
+        <svg viewBox="0 0 24 24"><polyline points="17 1 21 5 17 9"/><path d="M3 11V9a4 4 0 0 1 4-4h14"/><polyline points="7 23 3 19 7 15"/><path d="M21 13v2a4 4 0 0 1-4 4H3"/></svg>
+        <span id="reposts-${v.id}">${fmtNum(v.reposts)}</span>
+      </div>
+      <div class="action-btn" onclick="shareVideo(${v.id},'${escapeHTML(v.username)}')">
+        <svg viewBox="0 0 24 24"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+        <span>Отправить</span>
+      </div>
+      <div class="action-btn mute-btn${globalMuted ? ' muted' : ''}" id="mute-${v.id}" onclick="toggleMute(event)">
+        ${muteIcon}
+        <span>${globalMuted ? 'Звук' : 'Без звука'}</span>
+      </div>
+    </div>
+    <div class="heart-burst" id="hb-${v.id}">❤️</div>`;
+
       const video = slide.querySelector('video');
       let clickCount = 0, clickTimer = null;
       slide.addEventListener('click', e => {
-        if (e.target.closest('.actions')) return;
+        if (e.target.closest('.actions') || e.target.closest('.uname')) return;
         clickCount++;
         if (clickCount === 1) {
           clickTimer = setTimeout(() => {
@@ -2794,39 +3816,101 @@
             else { video.pause(); slide.classList.add('paused'); }
           }, 280);
         } else if (clickCount === 2) {
-          clearTimeout(clickTimer);
-          clickCount = 0;
+          clearTimeout(clickTimer); clickCount = 0;
           const btn = slide.querySelector('.like-btn');
           if (!btn.classList.contains('liked')) toggleLike(btn);
           showHeart(slide, e, v.id);
         }
       });
-      video.addEventListener('contextmenu', e => { e.preventDefault(); showVideoContextMenu(e.clientX, e.clientY, v.id, slide); });
+
+      // Правый клик — умное меню
+      slide.addEventListener('contextmenu', e => {
+        e.preventDefault();
+        showVideoContextMenu(e.clientX, e.clientY, v.id, v.user_id, v.username);
+      });
+
       document.getElementById('feed').appendChild(slide);
       if (globalObserver) globalObserver.observe(slide);
     }
-    function toggleMute() {
-      globalMuted = !globalMuted; applyMuteToAll();
-      document.querySelectorAll('.mute-btn').forEach(btn => {
-        const isMuted = globalMuted;
-        btn.classList.toggle('muted', isMuted);
-        btn.innerHTML = `
-          ${isMuted
-            ? `<svg viewBox="0 0 24 24" width="30" height="30" fill="none" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="filter:drop-shadow(0 1px 5px rgba(0,0,0,.6))"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><line x1="23" y1="9" x2="17" y2="15"/><line x1="17" y1="9" x2="23" y2="15"/></svg>`
-            : `<svg viewBox="0 0 24 24" width="30" height="30" fill="none" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="filter:drop-shadow(0 1px 5px rgba(0,0,0,.6))"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"/></svg>`
+
+    // ── ESCAPE — пауза/воспроизведение с небольшой задержкой ──
+    document.addEventListener('keydown', e => {
+      if (e.key !== ' ') return;
+      e.preventDefault();
+
+      // Проверяем что ни одна панель не открыта
+      const anyPanelOpen = document.querySelector(
+        '#searchPanel.open, #notifPanel.open, #commentsPanel.open, ' +
+        '#profilePanel.open, #dmPanel.open, #chatPanel.open, ' +
+        '#adminPanel.open, #userProfilePanel.open'
+      );
+      if (anyPanelOpen) return;
+
+      // Проверяем что ни один модал не открыт
+      const anyModalOpen = document.querySelector(
+        '#uploadModal.open, #statModal.open, #shareOverlay.open, ' +
+        '.followers-popup-overlay.open'
+      );
+      if (anyModalOpen) return;
+
+      setTimeout(() => {
+        const slides = document.querySelectorAll('.slide');
+        let current = null;
+        for (const s of slides) {
+          const rect = s.getBoundingClientRect();
+          if (rect.top >= -50 && rect.top < window.innerHeight * 0.5) {
+            current = s; break;
           }
-          <span style="font-size:11.5px;font-weight:600;text-shadow:0 1px 5px rgba(0,0,0,.5)">${isMuted ? 'Звук' : 'Тихо'}</span>`;
+        }
+        if (!current) return;
+        const video = current.querySelector('video');
+        if (!video) return;
+        if (video.paused) {
+          video.play().catch(() => { });
+          current.classList.remove('paused');
+        } else {
+          video.pause();
+          current.classList.add('paused');
+        }
+      }, 150);
+    });
+    // ════════════════════════════════════════════════════════
+    // MUTE — FIX: только muted, НЕ останавливает видео
+    // ════════════════════════════════════════════════════════
+    function toggleMute(e) {
+      if (e) e.stopPropagation();
+      globalMuted = !globalMuted;
+      // Только меняем .muted — не трогаем play/pause
+      document.querySelectorAll('#feed video').forEach(v => { v.muted = globalMuted; });
+      document.querySelectorAll('.mute-btn').forEach(btn => {
+        btn.classList.toggle('muted', globalMuted);
+        const icon = globalMuted
+          ? `<svg viewBox="0 0 24 24" width="30" height="30" fill="none" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="filter:drop-shadow(0 1px 5px rgba(0,0,0,.6))"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><line x1="23" y1="9" x2="17" y2="15"/><line x1="17" y1="9" x2="23" y2="15"/></svg>`
+          : `<svg viewBox="0 0 24 24" width="30" height="30" fill="none" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="filter:drop-shadow(0 1px 5px rgba(0,0,0,.6))"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"/></svg>`;
+        btn.innerHTML = `${icon}<span style="font-size:11.5px;font-weight:600;text-shadow:0 1px 5px rgba(0,0,0,.5)">${globalMuted ? 'Звук' : 'Без Звук'}</span>`;
         btn.onclick = toggleMute;
       });
     }
+
     function setupObservers() {
       if (globalObserver) globalObserver.disconnect();
       if (lastSlideObserver) lastSlideObserver.disconnect();
       globalObserver = new IntersectionObserver(entries => {
         entries.forEach(entry => {
           const video = entry.target.querySelector('video'); if (!video) return;
-          if (entry.isIntersecting) { video.muted = globalMuted; video.play().catch(() => { }); entry.target.classList.remove('paused'); currentVideoId = parseInt(entry.target.dataset.id) || null; startProgress(video, entry.target.dataset.id); }
-          else video.pause();
+          if (entry.isIntersecting) {
+            video.muted = globalMuted;
+            // Не трогаем если пользователь поставил паузу вручную
+            if (!entry.target.classList.contains('paused')) {
+              video.play().catch(() => { });
+            }
+            currentVideoId = parseInt(entry.target.dataset.id) || null;
+            startProgress(video, entry.target.dataset.id);
+          } else {
+            video.pause();
+            // Снимаем паузу только если слайд ушёл с экрана — при возврате запустится снова
+            entry.target.classList.remove('paused');
+          }
         });
       }, { threshold: 0.7 });
       const slides = document.querySelectorAll('.slide');
@@ -2836,6 +3920,7 @@
         lastSlideObserver.observe(slides[slides.length - 1]);
       }
     }
+
     function showHeart(slide, e, id) {
       const hb = document.getElementById('hb-' + id);
       const rect = slide.getBoundingClientRect();
@@ -2848,7 +3933,9 @@
       video.addEventListener('timeupdate', () => { if (video.duration) bar.style.width = (video.currentTime / video.duration * 100) + '%'; });
     }
 
+    // ════════════════════════════════════════════════════════
     // LIKE / REPOST
+    // ════════════════════════════════════════════════════════
     async function toggleLike(btn) {
       const id = btn.dataset.id;
       try { const res = await fetch(`/api/like/${id}`, { method: 'POST' }); const data = await res.json(); if (data.ok) { document.getElementById('likes-' + id).textContent = fmtNum(data.count); btn.classList.toggle('liked', data.liked); } } catch (e) { }
@@ -2858,7 +3945,9 @@
       try { const res = await fetch(`/api/repost/${id}`, { method: 'POST' }); const data = await res.json(); if (data.ok) { document.getElementById('reposts-' + id).textContent = fmtNum(data.count); btn.classList.toggle('reposted', data.reposted); } } catch (e) { }
     }
 
+    // ════════════════════════════════════════════════════════
     // COMMENTS
+    // ════════════════════════════════════════════════════════
     function openComments(videoId) { currentVideoId = videoId; openPanel('comments'); loadComments(videoId); }
     async function loadComments(videoId) {
       const list = document.getElementById('commentsList'); list.innerHTML = '<div class="comment-empty">Загрузка...</div>';
@@ -2875,33 +3964,172 @@
     document.getElementById('commentInput').addEventListener('keydown', e => { if (e.key === 'Enter') sendComment(); });
     async function sendComment() {
       const input = document.getElementById('commentInput'); const text = input.value.trim(); if (!text || !currentVideoId) return; input.value = '';
-      try { const res = await fetch(`/api/comments/${currentVideoId}`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ text }) }); const data = await res.json(); if (data.ok) { const span = document.getElementById('cmts-' + currentVideoId); if (span) span.textContent = fmtNum(parseInt(span.textContent || 0) + 1); } else showToast(data.error || 'Ошибка отправки', 'error'); } catch (e) { }
+      try { const res = await fetch(`/api/comments/${currentVideoId}`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ text }) }); const data = await res.json(); if (data.ok) { const span = document.getElementById('cmts-' + currentVideoId); if (span) span.textContent = fmtNum(parseInt(span.textContent || 0) + 1); } else showToast(data.error || 'Ошибка', 'error'); } catch (e) { }
     }
 
+    // ════════════════════════════════════════════════════════
     // SHARE
-    function shareVideo(videoId, username) { window.location.href = `/messages?share=${videoId}&from=${encodeURIComponent(username)}`; }
+    // ════════════════════════════════════════════════════════
+    let _shareVideoId = null;
+    let _shareSearchTimer = null;
 
-    // NOTIFICATIONS
-    async function loadNotifications() {
-      const list = document.getElementById('notifList'); list.innerHTML = '<div class="notif-empty">Загрузка...</div>';
+    function shareVideo(videoId, username) {
+      _shareVideoId = videoId;
+      document.getElementById('shareSearchInput').value = '';
+      document.getElementById('shareOverlay').classList.add('open');
+      loadShareList('');
+    }
+
+    function closeShareModal(e) {
+      if (e && e.target !== document.getElementById('shareOverlay')) return;
+      document.getElementById('shareOverlay').classList.remove('open');
+      _shareVideoId = null;
+    }
+
+    async function loadShareList(query) {
+      const list = document.getElementById('shareList');
+      list.innerHTML = '<div class="share-loading">Загрузка...</div>';
+
       try {
-        const res = await fetch('/api/notifications'); const data = await res.json();
-        list.innerHTML = ''; if (!data.length) { list.innerHTML = '<div class="notif-empty">Уведомлений нет</div>'; return; }
-        const icons = { like: '❤️', comment: '💬', repost: '🔁' };
-        data.forEach(n => {
-          const div = document.createElement('div'); div.className = 'notif-item' + (n.is_read ? '' : ' unread');
-          let text = ''; if (n.type === 'like') text = 'лайкнул ваше видео'; else if (n.type === 'comment') { const ct = typeof n.comment === 'string' ? n.comment : ''; text = `прокомментировал ваше видео: "${escapeHTML(ct)}"`; } else if (n.type === 'repost') text = 'репостнул ваше видео'; else text = escapeHTML(n.type);
-          div.innerHTML = `<div class="notif-avatar">${escapeHTML((n.from_username || '?')[0]).toUpperCase()}</div><div class="notif-text"><strong>@${escapeHTML(n.from_username)}</strong><p>${icons[n.type] || ''} ${text}</p></div><div class="notif-time">${escapeHTML(n.time)}</div>`;
-          list.appendChild(div);
+        let users = [];
+
+        if (query.trim()) {
+          // Поиск по всем пользователям
+          const res = await fetch(`/api/users/search?q=${encodeURIComponent(query.trim())}`);
+          users = await res.json();
+        } else {
+          // Показываем и подписчиков и подписки без дублей
+          const res = await fetch('/api/profile');
+          const data = await res.json();
+          const seen = new Set();
+          const combined = [...(data.followers || []), ...(data.following || [])];
+          users = combined.filter(u => {
+            if (seen.has(u.username)) return false;
+            seen.add(u.username);
+            return true;
+          }).map(u => ({ username: u.username }));
+        }
+
+        list.innerHTML = '';
+
+        if (!users.length) {
+          list.innerHTML = `<div class="share-empty">${query.trim() ? 'Никого не найдено' : 'Нет подписчиков и подписок — найди через поиск'}</div>`;
+          return;
+        }
+
+        users.forEach(u => {
+          const row = document.createElement('div');
+          row.className = 'share-user-row';
+          row.innerHTML = `
+        <div class="share-user-avatar">${escapeHTML(u.username[0].toUpperCase())}</div>
+        <div>
+          <div class="share-user-name">@${escapeHTML(u.username)}</div>
+          <div class="share-user-sub">Нажми чтобы отправить</div>
+        </div>`;
+          row.onclick = () => sendShareDM(u.username);
+          list.appendChild(row);
         });
+      } catch (e) {
+        list.innerHTML = '<div class="share-empty">Ошибка загрузки</div>';
+      }
+    }
+
+    async function sendShareDM(toUsername) {
+      if (!_shareVideoId) return;
+
+      try {
+        // Получаем user_id по username
+        const searchRes = await fetch(`/api/users/search?q=${encodeURIComponent(toUsername)}`);
+        const users = await searchRes.json();
+        const target = users.find(u => u.username === toUsername);
+        if (!target) { showToast('Пользователь не найден', 'error'); return; }
+
+        const text = `📹 Видео: ${location.origin}/video/${_shareVideoId}`;
+        const res = await fetch('/api/dm/send', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ to_user_id: target.id, text })
+        });
+        const data = await res.json();
+
+        if (data.ok) {
+          document.getElementById('shareOverlay').classList.remove('open');
+          _shareVideoId = null;
+          showToast('Отправлено ✓', 'success');
+        } else {
+          showToast(data.error || 'Ошибка', 'error');
+        }
+      } catch (e) {
+        showToast('Ошибка отправки', 'error');
+      }
+    }
+
+    // Поиск в share modal
+    document.getElementById('shareSearchInput').addEventListener('input', e => {
+      clearTimeout(_shareSearchTimer);
+      _shareSearchTimer = setTimeout(() => loadShareList(e.target.value), 350);
+    });
+
+    // ════════════════════════════════════════════════════════
+    // NOTIFICATIONS
+    // ════════════════════════════════════════════════════════
+    async function loadNotifications() {
+      const list = document.getElementById('notifList');
+      list.innerHTML = '<div class="notif-empty">Загрузка...</div>';
+      try {
+        const res = await fetch('/api/notifications');
+        const data = await res.json();
+        list.innerHTML = '';
+        if (!data.length) {
+          list.innerHTML = '<div class="notif-empty">Уведомлений нет</div>';
+          return;
+        }
+        const icons = { like: '❤️', comment: '💬', repost: '🔁', follow: '👤' };
+        const LIMIT = 15;
+
+        function renderNotif(n) {
+          const div = document.createElement('div');
+          div.className = 'notif-item' + (n.is_read ? '' : ' unread');
+          let text = '';
+          if (n.type === 'like') text = 'лайкнул ваше видео';
+          else if (n.type === 'comment') { const ct = typeof n.comment === 'string' ? n.comment : ''; text = 'прокомментировал ваше видео' + (ct ? `: "${escapeHTML(ct)}"` : ''); }
+          else if (n.type === 'repost') text = 'репостнул ваше видео';
+          else if (n.type === 'follow') text = 'подписался на вас';
+          else text = escapeHTML(n.type);
+          div.innerHTML = `<div class="notif-avatar">${escapeHTML((n.from_username || '?')[0]).toUpperCase()}</div><div class="notif-text"><strong>@${escapeHTML(n.from_username)}</strong><p>${icons[n.type] || ''} ${text}</p></div><div class="notif-time">${escapeHTML(n.time)}</div>`;
+          div.onclick = () => openUserProfile(n.from_username);
+          return div;
+        }
+
+        // Показываем первые 15
+        const visible = data.slice(0, LIMIT);
+        const hidden = data.slice(LIMIT);
+        visible.forEach(n => list.appendChild(renderNotif(n)));
+
+        // Кнопка «Показать все» если есть скрытые
+        if (hidden.length > 0) {
+          const showAllBtn = document.createElement('div');
+          showAllBtn.style.cssText = 'text-align:center;padding:14px;cursor:pointer;font-size:13px;color:var(--blue);font-weight:600;border-top:1px solid rgba(255,255,255,.06);';
+          showAllBtn.textContent = `Показать ещё ${hidden.length}`;
+          showAllBtn.onclick = () => {
+            hidden.forEach(n => list.insertBefore(renderNotif(n), showAllBtn));
+            showAllBtn.remove();
+          };
+          list.appendChild(showAllBtn);
+        }
+
         document.getElementById('notifBadge').classList.remove('show');
-      } catch (e) { list.innerHTML = '<div class="notif-empty">Ошибка загрузки</div>'; }
+      } catch (e) {
+        list.innerHTML = '<div class="notif-empty">Ошибка загрузки</div>';
+      }
     }
     async function loadUnread() {
       try { const res = await fetch('/api/notifications/unread'); const data = await res.json(); const badge = document.getElementById('notifBadge'); if (data.count > 0) { badge.textContent = data.count; badge.classList.add('show'); } else badge.classList.remove('show'); } catch (e) { }
     }
 
+    // ════════════════════════════════════════════════════════
     // DMs
+    // ════════════════════════════════════════════════════════
     let currentDmUser = null;
     async function loadDMs() {
       const list = document.getElementById('dmList'); let threads = [];
@@ -2913,7 +4141,6 @@
         div.innerHTML = `<div class="dm-thread-avatar">${escapeHTML(thread.username[0].toUpperCase())}${thread.online ? '<div class="dm-thread-online"></div>' : ''}</div><div class="dm-thread-info"><div class="dm-thread-name">@${escapeHTML(thread.username)}</div><div class="dm-thread-last">${escapeHTML(thread.last_message || 'Нет сообщений')}</div></div><div class="dm-thread-meta"><div class="dm-thread-time">${escapeHTML(thread.time || '')}</div>${thread.unread ? `<div class="dm-unread">${thread.unread}</div>` : ''}</div>`;
         div.onclick = () => openChat(thread.username, thread.user_id); list.appendChild(div);
       });
-      if (window._pendingShare) { const ps = window._pendingShare; window._pendingShare = null; const hint = document.createElement('div'); hint.style.cssText = 'padding:12px 16px;background:rgba(74,144,217,.1);border-radius:12px;margin:8px 16px;font-size:13px;color:rgba(255,255,255,.7);border:1px solid rgba(74,144,217,.2);'; hint.innerHTML = `📹 Видео от @${escapeHTML(ps.username)} — выбери получателя ниже`; list.insertBefore(hint, list.firstChild); }
     }
     function openChat(username, userId) { currentDmUser = { username, userId }; document.getElementById('chatName').textContent = '@' + username; document.getElementById('chatAvatar').textContent = username[0].toUpperCase(); document.getElementById('chatMessages').innerHTML = ''; openPanel('chat'); loadChatHistory(userId || username); }
     async function loadChatHistory(userId) { try { const res = await fetch(`/api/dm/messages/${userId}`); if (!res.ok) return; const msgs = await res.json(); msgs.forEach(m => appendChatMsg(m.text, m.is_mine, m.time)); } catch (e) { } }
@@ -2922,7 +4149,9 @@
     document.getElementById('chatInput').addEventListener('keydown', e => { if (e.key === 'Enter') sendChatMsg(); });
     async function sendChatMsg() { const input = document.getElementById('chatInput'); const text = input.value.trim(); if (!text || !currentDmUser) return; input.value = ''; appendChatMsg(text, true, 'сейчас'); try { await fetch('/api/dm/send', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ to_user_id: currentDmUser.userId, text }) }); } catch (e) { } }
 
-    // PROFILE
+    // ════════════════════════════════════════════════════════
+    // MY PROFILE
+    // ════════════════════════════════════════════════════════
     let _profileData = null;
     async function loadProfile() {
       try {
@@ -2932,7 +4161,7 @@
         document.getElementById('profileAvatarBig').textContent = first;
         document.getElementById('profileUsername').textContent = data.username;
         document.getElementById('profileSub').textContent = '@' + data.username;
-        document.getElementById('profileJoinedChip').textContent = 'участник с ' + data.joined;
+        document.getElementById('profileJoinedChip').textContent = '📅 участник с ' + data.joined;
         document.getElementById('statVideos').textContent = data.video_count;
         document.getElementById('statReposts').textContent = data.repost_count;
         const followersCount = data.followers_count || 0, followingCount = data.following_count || 0;
@@ -2946,8 +4175,8 @@
         if (!data.videos.length) { grid.innerHTML = '<div class="profile-empty"><span class="profile-empty-icon">🎬</span>Нет видео</div>'; return; }
         data.videos.forEach(v => {
           const div = document.createElement('div'); div.className = 'profile-thumb'; div.dataset.id = v.id;
-          const videoSrc = v.video_url || `/video/${v.id}`;
-          div.innerHTML = `<video src="${escapeHTML(videoSrc)}" muted playsinline preload="none"></video><div class="profile-thumb-overlay"></div><div class="profile-thumb-likes">❤ ${fmtNum(v.likes)}</div>${v.is_reposted ? '<div class="profile-thumb-repost">РЕПОСТ</div>' : ''}`;
+          const src = v.video_url || `/video/${v.id}`;
+          div.innerHTML = `<video src="${escapeHTML(src)}" muted playsinline preload="none"></video><div class="profile-thumb-overlay"></div><div class="profile-thumb-likes">❤ ${fmtNum(v.likes)}</div>`;
           div.addEventListener('mouseenter', () => div.querySelector('video').play().catch(() => { }));
           div.addEventListener('mouseleave', () => { const vv = div.querySelector('video'); vv.pause(); vv.currentTime = 0; });
           div.onclick = () => { closePanel('profile'); scrollToVideo(v.id); }; grid.appendChild(div);
@@ -2964,86 +4193,455 @@
     }
     function closeStatModal(e) { if (!e || e.target === document.getElementById('statModal')) document.getElementById('statModal').classList.remove('open'); }
 
+    // ════════════════════════════════════════════════════════
     // UPLOAD
+    // ════════════════════════════════════════════════════════
     let selectedFile = null;
     document.getElementById('navUpload').addEventListener('click', () => document.getElementById('uploadModal').classList.add('open'));
     document.getElementById('uploadModal').addEventListener('click', e => { if (e.target === document.getElementById('uploadModal')) { document.getElementById('uploadModal').classList.remove('open'); resetUploadUI(); } });
     const fileInput = document.getElementById('fileInput'), dropZone = document.getElementById('dropZone');
-    fileInput.addEventListener('change', () => { if (fileInput.files[0]) handleFile(fileInput.files[0]); });
+    fileInput.addEventListener('change', function () {
+      console.log('file selected:', this.files);
+      if (this.files && this.files[0]) handleFile(this.files[0]);
+    });
     dropZone.addEventListener('dragover', e => { e.preventDefault(); dropZone.classList.add('drag-over'); });
     dropZone.addEventListener('dragleave', () => dropZone.classList.remove('drag-over'));
     dropZone.addEventListener('drop', e => { e.preventDefault(); dropZone.classList.remove('drag-over'); if (e.dataTransfer.files[0]) handleFile(e.dataTransfer.files[0]); });
     function handleFile(file) {
       const allowed = ['video/mp4', 'video/webm', 'video/mov', 'video/quicktime'];
       const err = document.getElementById('uploadError');
-      if (!allowed.includes(file.type)) { err.textContent = 'Неверный тип файла (только MP4, WebM, MOV)'; err.style.display = 'block'; return; }
-      if (file.size > 200 * 1024 * 1024) { err.textContent = 'Файл слишком большой (макс 200 МБ)'; err.style.display = 'block'; return; }
+
+      // Проверка типа — менее строгая (некоторые браузеры дают пустой type)
+      if (file.type && !allowed.includes(file.type)) {
+        err.textContent = 'Неверный тип файла (только MP4, WebM, MOV)';
+        err.style.display = 'block';
+        return;
+      }
+
+      if (file.size > 200 * 1024 * 1024) {
+        err.textContent = 'Файл слишком большой (макс 200 МБ)';
+        err.style.display = 'block';
+        return;
+      }
+
+      err.style.display = 'none';
+      selectedFile = file;
+
+      const objectUrl = URL.createObjectURL(file);
+      const pv = document.getElementById('previewVideo');
+      pv.src = objectUrl;
+
+      dropZone.classList.add('hidden');
+      document.getElementById('uploadPreview').style.display = 'block';
+      document.getElementById('uploadSubmit').disabled = false;
+
+      pv.play().catch(() => { });
+
+      // Проверка длины — если не загружается метадата, всё равно разрешаем
       const tempVideo = document.createElement('video');
       tempVideo.preload = 'metadata';
-      tempVideo.src = URL.createObjectURL(file);
+      tempVideo.src = objectUrl;
       tempVideo.onloadedmetadata = () => {
+        if (tempVideo.duration > 60) {
+          err.textContent = 'Видео слишком длинное (макс 60 секунд)';
+          err.style.display = 'block';
+          selectedFile = null;
+          document.getElementById('uploadPreview').style.display = 'none';
+          document.getElementById('uploadSubmit').disabled = true;
+          dropZone.classList.remove('hidden');
+        }
         URL.revokeObjectURL(tempVideo.src);
-        if (tempVideo.duration > 60) { err.textContent = 'Видео слишком длинное (макс 60 секунд)'; err.style.display = 'block'; return; }
-        err.style.display = 'none';
-        selectedFile = file;
-        dropZone.classList.add('hidden');
-        const pv = document.getElementById('previewVideo');
-        pv.src = URL.createObjectURL(file);
-        document.getElementById('uploadPreview').style.display = 'block';
-        pv.play().catch(() => { });
-        document.getElementById('uploadSubmit').disabled = false;
       };
     }
     document.getElementById('removeVideo').addEventListener('click', () => {
-      selectedFile = null;
-      document.getElementById('previewVideo').src = '';
+      selectedFile = null; document.getElementById('previewVideo').src = '';
       document.getElementById('uploadPreview').style.display = 'none';
-      document.getElementById('uploadSubmit').disabled = true;
-      fileInput.value = '';
-      dropZone.classList.remove('hidden');
+      document.getElementById('uploadSubmit').disabled = true; fileInput.value = ''; dropZone.classList.remove('hidden');
     });
     document.getElementById('uploadSubmit').addEventListener('click', async () => {
       if (!selectedFile) return;
-      const btn = document.getElementById('uploadSubmit');
-      const prog = document.getElementById('uploadProgress');
-      const fill = document.getElementById('progressFill');
-      const label = document.getElementById('progressLabel');
-      const err = document.getElementById('uploadError');
+      const btn = document.getElementById('uploadSubmit'), prog = document.getElementById('uploadProgress'), fill = document.getElementById('progressFill'), label = document.getElementById('progressLabel'), err = document.getElementById('uploadError');
       btn.disabled = true; prog.style.display = 'block'; err.style.display = 'none';
-      const fd = new FormData();
-      fd.append('video', selectedFile);
-      fd.append('caption', document.getElementById('captionInput').value.trim());
+      const fd = new FormData(); fd.append('video', selectedFile); fd.append('caption', document.getElementById('captionInput').value.trim());
       try {
         await new Promise((resolve, reject) => {
-          const xhr = new XMLHttpRequest();
-          xhr.open('POST', '/upload-video');
+          const xhr = new XMLHttpRequest(); xhr.open('POST', '/upload-video');
           xhr.upload.onprogress = e => { if (e.lengthComputable) { const pct = Math.round(e.loaded / e.total * 100); fill.style.width = pct + '%'; label.textContent = 'Загрузка... ' + pct + '%'; } };
           xhr.onload = () => { try { const data = JSON.parse(xhr.responseText); if (data.ok) resolve(data); else reject(new Error(data.error || 'Ошибка')); } catch (e) { reject(e); } };
-          xhr.onerror = () => reject(new Error('Ошибка сети'));
-          xhr.send(fd);
+          xhr.onerror = () => reject(new Error('Ошибка сети')); xhr.send(fd);
         });
         fill.style.width = '100%'; label.textContent = 'Опубликовано! ✓';
         setTimeout(() => {
-          document.getElementById('uploadModal').classList.remove('open');
-          resetUploadUI(); btn.disabled = false;
-          document.getElementById('removeVideo').click();
-          document.getElementById('captionInput').value = '';
+          document.getElementById('uploadModal').classList.remove('open'); resetUploadUI(); btn.disabled = false;
+          document.getElementById('removeVideo').click(); document.getElementById('captionInput').value = '';
           setTimeout(() => loadFeed(true), 500);
         }, 1200);
       } catch (e) { err.textContent = e.message || 'Ошибка загрузки'; err.style.display = 'block'; prog.style.display = 'none'; btn.disabled = false; }
     });
 
     // TUTORIAL
-    const tutorialKey = 'pardon_tutorial_seen_v2', tutOverlay = document.getElementById('tutorialOverlay');
+    const tutorialKey = 'pardon_tutorial_seen_v3';
+    const tutOverlay = document.getElementById('tutorialOverlay');
+
     document.getElementById('tutorialSkip').addEventListener('click', hideTutorial);
     tutOverlay.addEventListener('click', e => { if (e.target === tutOverlay) hideTutorial(); });
-    function hideTutorial() { tutOverlay.classList.remove('show'); localStorage.setItem(tutorialKey, '1'); }
-    if (localStorage.getItem(tutorialKey) !== '1') { setTimeout(() => tutOverlay.classList.add('show'), 800); setTimeout(hideTutorial, 5000); }
 
+    function hideTutorial() {
+      tutOverlay.classList.remove('show');
+      localStorage.setItem(tutorialKey, '1');
+    }
+
+    function runSwipeAnimation() {
+      const slide1 = tutOverlay.querySelector('.tut-slide-1');
+      const slide2 = tutOverlay.querySelector('.tut-slide-2');
+      if (!slide1 || !slide2) return;
+
+      // Сброс
+      slide1.classList.remove('swiping-out');
+      slide2.classList.remove('swiping-in');
+      slide1.style.transform = 'translateY(0)';
+      slide2.style.transform = 'translateY(100%)';
+
+      setTimeout(() => {
+        // Запускаем свайп
+        slide1.classList.add('swiping-out');
+        slide2.classList.add('swiping-in');
+      }, 1200);
+
+      setTimeout(() => {
+        // Сброс обратно для петли
+        slide1.classList.remove('swiping-out');
+        slide2.classList.remove('swiping-in');
+        slide1.style.transition = 'none';
+        slide2.style.transition = 'none';
+        slide1.style.transform = 'translateY(0)';
+        slide2.style.transform = 'translateY(100%)';
+        setTimeout(() => {
+          slide1.style.transition = '';
+          slide2.style.transition = '';
+        }, 50);
+      }, 2800);
+    }
+
+    if (localStorage.getItem(tutorialKey) !== '1') {
+      setTimeout(() => {
+        tutOverlay.classList.add('show');
+        runSwipeAnimation();
+        // Повторяем анимацию каждые 3.5 сек
+        const tutInterval = setInterval(() => {
+          if (!tutOverlay.classList.contains('show')) {
+            clearInterval(tutInterval);
+            return;
+          }
+          runSwipeAnimation();
+        }, 3500);
+        // Авто-скрыть через 6 секунд
+        setTimeout(hideTutorial, 6000);
+      }, 1000);
+    }
+    // ════════════════════════════════════════════════════════
+    // БАН ПЕРЕХВАТ
+    // ════════════════════════════════════════════════════════
+    const _originalFetch = window.fetch;
+    window.fetch = async function (...args) {
+      const response = await _originalFetch(...args);
+      const clone = response.clone();
+      try {
+        if (response.headers.get('content-type')?.includes('application/json')) {
+          const data = await clone.json();
+          if (data.banned === true) {
+            showToast('Аккаунт заблокирован: ' + (data.error || ''), 'error');
+            setTimeout(() => { window.location.href = '/home/login'; }, 2000);
+          }
+        }
+      } catch (e) { }
+      return response;
+    };
+
+    // ════════════════════════════════════════════════════════
     // INIT
+    // ════════════════════════════════════════════════════════
     window.addEventListener('load', () => {
+      // Проверяем бан при загрузке
+      fetch('/api/feed?tab=foryou&offset=0').then(async r => {
+        if (r.status === 403) { const data = await r.json().catch(() => ({})); if (data.banned) { window.location.href = '/home/login'; return; } }
+      });
       loadFeed(true); loadUnread();
-      fetch('/api/profile').then(r => r.json()).then(d => { document.getElementById('userAvatar').textContent = d.username[0].toUpperCase(); }).catch(() => { });
+      checkAdmin().then(() => {
+        if (isAdmin) {
+          // Добавляем кнопку ⚙️ в топбар
+          const topbar = document.querySelector('.topbar');
+          const adminBtn = document.createElement('button');
+          adminBtn.innerHTML = '😈';
+          adminBtn.style.cssText = 'background:none;border:none;font-size:22px;cursor:pointer;position:absolute;left:14px;top:50%;transform:translateY(-50%);';
+          adminBtn.onclick = openAdminPanel;
+          topbar.appendChild(adminBtn);
+        }
+      });
+      fetch('/api/profile').then(r => r.json()).then(d => {
+        document.getElementById('userAvatar').textContent = d.username[0].toUpperCase();
+        myUsername = d.username;
+        myUserId = parseInt(d.id);
+      }).catch(() => { });
+    });
+    // Открыть видео из DM по хэшу #video-<id>
+    (function checkVideoHash() {
+      const hash = location.hash;
+      if (!hash.startsWith('#video-')) return;
+      const videoId = parseInt(hash.replace('#video-', ''));
+      if (!videoId) return;
+      history.replaceState(null, '', location.pathname); // убираем хэш из URL
+      // Ждём пока лента загрузится, потом скроллим
+      const tryScroll = (attempts = 0) => {
+        const slide = document.querySelector(`.slide[data-id="${videoId}"]`);
+        if (slide) {
+          slide.scrollIntoView({ behavior: 'instant' });
+        } else if (attempts < 20) {
+          setTimeout(() => tryScroll(attempts + 1), 300);
+        }
+      };
+      // Даём ленте время загрузиться
+      setTimeout(() => tryScroll(), 800);
+    })();
+
+    // ════════════════════════════════════════════════════════
+    // ADMIN PANEL
+    // ════════════════════════════════════════════════════════
+    let isAdmin = false;
+    let admCurrentTab = 'stats';
+    let _admSearchTimer = null;
+
+    async function checkAdmin() {
+      try {
+        const res = await fetch('/api/admin/check');
+        const data = await res.json();
+        isAdmin = data.is_admin;
+      } catch (e) { }
+    }
+
+    function admTab(el, tab) {
+      document.querySelectorAll('.adm-tab').forEach(t => t.classList.remove('active'));
+      el.classList.add('active');
+      admCurrentTab = tab;
+      loadAdmTab(tab);
+    }
+
+    function loadAdmTab(tab, q = '') {
+      const content = document.getElementById('admContent');
+      content.innerHTML = '<div class="adm-empty">Загрузка...</div>';
+      if (tab === 'stats') loadAdmStats();
+      else if (tab === 'users') loadAdmUsers(q);
+      else if (tab === 'videos') loadAdmVideos(q);
+      else if (tab === 'reports') loadAdmReports();
+      else if (tab === 'dms') loadAdmDMs(q);
+      else if (tab === 'broadcast') loadAdmBroadcast();
+    }
+
+    async function loadAdmStats() {
+      const content = document.getElementById('admContent');
+      try {
+        const res = await fetch('/api/admin/stats');
+        const d = await res.json();
+        content.innerHTML = `
+      <div class="adm-stat-grid">
+        <div class="adm-stat-card"><div class="adm-stat-num">${d.users}</div><div class="adm-stat-label">Пользователей</div></div>
+        <div class="adm-stat-card"><div class="adm-stat-num">${d.videos}</div><div class="adm-stat-label">Видео</div></div>
+        <div class="adm-stat-card"><div class="adm-stat-num" style="color:var(--pink)">${d.banned}</div><div class="adm-stat-label">Заблокировано</div></div>
+        <div class="adm-stat-card"><div class="adm-stat-num" style="color:#f59e0b">${d.reports}</div><div class="adm-stat-label">Жалоб</div></div>
+        <div class="adm-stat-card" style="grid-column:span 2"><div class="adm-stat-num" style="color:var(--purple)">${d.dms}</div><div class="adm-stat-label">Сообщений</div></div>
+      </div>
+      <div style="font-size:12px;color:rgba(255,255,255,.3);text-align:center;">Добро пожаловать, Armen_Admin 👑</div>`;
+      } catch (e) { content.innerHTML = '<div class="adm-empty">Ошибка</div>'; }
+    }
+
+    async function loadAdmUsers(q = '') {
+      const content = document.getElementById('admContent');
+      content.innerHTML = `
+    <div class="adm-search">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,.4)" stroke-width="1.8" stroke-linecap="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+      <input id="admUserSearch" placeholder="Поиск по имени..." value="${escapeHTML(q)}" oninput="clearTimeout(_admSearchTimer);_admSearchTimer=setTimeout(()=>loadAdmUsers(this.value),400)" />
+    </div>
+    <div id="admUserList"><div class="adm-empty">Загрузка...</div></div>`;
+      try {
+        const res = await fetch(`/api/admin/users?q=${encodeURIComponent(q)}`);
+        const users = await res.json();
+        const list = document.getElementById('admUserList');
+        if (!list) return;
+        if (!users.length) { list.innerHTML = '<div class="adm-empty">Пусто</div>'; return; }
+        list.innerHTML = '';
+        users.forEach(u => {
+          const row = document.createElement('div');
+          row.className = 'adm-row';
+          row.innerHTML = `
+        <div class="adm-avatar">${u.username[0].toUpperCase()}</div>
+        <div class="adm-row-info">
+          <div class="adm-row-name">@${escapeHTML(u.username)} ${u.is_banned ? '<span class="adm-badge-ban">БАН</span>' : ''}</div>
+          <div class="adm-row-sub">${escapeHTML(u.email)} · ${escapeHTML(u.created_at)}</div>
+          ${u.ban_reason ? `<div style="font-size:11px;color:var(--pink);margin-top:2px;">Причина: ${escapeHTML(u.ban_reason)}</div>` : ''}
+        </div>
+        <div style="display:flex;flex-direction:column;gap:5px;flex-shrink:0;">
+          ${u.is_banned
+              ? `<button class="adm-btn adm-btn-green" onclick="admUnban(${u.id},this)">Разбан</button>`
+              : `<button class="adm-btn adm-btn-red" onclick="admBanPrompt(${u.id},'${escapeHTML(u.username)}')">Бан</button>`
+            }
+        </div>`;
+          list.appendChild(row);
+        });
+      } catch (e) { const l = document.getElementById('admUserList'); if (l) l.innerHTML = '<div class="adm-empty">Ошибка</div>'; }
+    }
+
+    async function admBanPrompt(userId, username) {
+      const reason = prompt(`Причина бана для @${username}:`, 'нарушение правил');
+      if (!reason) return;
+      try {
+        const res = await fetch(`/api/admin/ban/${userId}`, {
+          method: 'POST', headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ reason })
+        });
+        const data = await res.json();
+        if (data.ok) { showToast(`@${username} заблокирован`, 'success'); loadAdmUsers(); }
+        else showToast(data.error || 'Ошибка', 'error');
+      } catch (e) { showToast('Ошибка', 'error'); }
+    }
+
+    async function admUnban(userId, btn) {
+      try {
+        const res = await fetch(`/api/admin/unban/${userId}`, { method: 'POST' });
+        const data = await res.json();
+        if (data.ok) { showToast('Разблокирован', 'success'); loadAdmUsers(); }
+        else showToast(data.error || 'Ошибка', 'error');
+      } catch (e) { showToast('Ошибка', 'error'); }
+    }
+
+    async function loadAdmVideos(q = '') {
+      const content = document.getElementById('admContent');
+      content.innerHTML = `
+    <div class="adm-search">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,.4)" stroke-width="1.8" stroke-linecap="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+      <input id="admVideoSearch" placeholder="Поиск по автору/подписи..." value="${escapeHTML(q)}" oninput="clearTimeout(_admSearchTimer);_admSearchTimer=setTimeout(()=>loadAdmVideos(this.value),400)" />
+    </div>
+    <div id="admVideoList"><div class="adm-empty">Загрузка...</div></div>`;
+      try {
+        const res = await fetch(`/api/admin/videos?q=${encodeURIComponent(q)}`);
+        const videos = await res.json();
+        const list = document.getElementById('admVideoList');
+        if (!list) return;
+        if (!videos.length) { list.innerHTML = '<div class="adm-empty">Пусто</div>'; return; }
+        list.innerHTML = '';
+        videos.forEach(v => {
+          const row = document.createElement('div');
+          row.className = 'adm-row';
+          row.innerHTML = `
+        <div class="adm-avatar" style="border-radius:8px;background:rgba(255,255,255,.08);font-size:20px;">🎬</div>
+        <div class="adm-row-info">
+          <div class="adm-row-name">${escapeHTML(v.caption || '(без подписи)')}</div>
+          <div class="adm-row-sub">@${escapeHTML(v.username)} · ❤ ${v.likes} · ${escapeHTML(v.created_at)}</div>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:5px;flex-shrink:0;">
+          <button class="adm-btn adm-btn-blue" onclick="window.open('/video/${v.id}','_blank')">Смотреть</button>
+          <button class="adm-btn adm-btn-red" onclick="admDeleteVideo(${v.id},this)">Удалить</button>
+        </div>`;
+          list.appendChild(row);
+        });
+      } catch (e) { const l = document.getElementById('admVideoList'); if (l) l.innerHTML = '<div class="adm-empty">Ошибка</div>'; }
+    }
+
+    async function admDeleteVideo(videoId, btn) {
+      if (!confirm('Удалить это видео?')) return;
+      try {
+        const res = await fetch(`/api/admin/delete-video/${videoId}`, { method: 'DELETE' });
+        const data = await res.json();
+        if (data.ok) { showToast('Видео удалено', 'success'); btn.closest('.adm-row').remove(); }
+        else showToast(data.error || 'Ошибка', 'error');
+      } catch (e) { showToast('Ошибка', 'error'); }
+    }
+
+    async function loadAdmReports() {
+      const content = document.getElementById('admContent');
+      try {
+        const res = await fetch('/api/admin/reports');
+        const reports = await res.json();
+        if (!reports.length) { content.innerHTML = '<div class="adm-empty">Жалоб нет 🎉</div>'; return; }
+        content.innerHTML = '';
+        reports.forEach(r => {
+          const row = document.createElement('div');
+          row.className = 'adm-row' + (r.is_read ? '' : ' adm-report-unread');
+          row.innerHTML = `
+        <div class="adm-avatar" style="background:rgba(255,45,85,.2);color:var(--pink);">⚠️</div>
+        <div class="adm-row-info">
+          <div class="adm-row-name">@${escapeHTML(r.from_username)} ${!r.is_read ? '<span class="adm-badge-ban">НОВАЯ</span>' : ''}</div>
+          <div class="adm-row-sub">${escapeHTML(r.reason)}</div>
+          <div style="font-size:11px;color:rgba(255,255,255,.3);margin-top:2px;">${escapeHTML(r.created_at)} ${r.video_id ? `· Видео #${r.video_id}` : ''}</div>
+        </div>
+        ${r.video_id ? `<button class="adm-btn adm-btn-red" onclick="admDeleteVideo(${r.video_id},this)">Удалить видео</button>` : ''}`;
+          content.appendChild(row);
+        });
+      } catch (e) { content.innerHTML = '<div class="adm-empty">Ошибка</div>'; }
+    }
+
+    async function loadAdmDMs(q = '') {
+      const content = document.getElementById('admContent');
+      content.innerHTML = `
+    <div class="adm-search">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,.4)" stroke-width="1.8" stroke-linecap="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+      <input id="admDmSearch" placeholder="Поиск по имени..." value="${escapeHTML(q)}" oninput="clearTimeout(_admSearchTimer);_admSearchTimer=setTimeout(()=>loadAdmDMs(this.value),400)" />
+    </div>
+    <div id="admDmList"><div class="adm-empty">Загрузка...</div></div>`;
+      try {
+        const res = await fetch(`/api/admin/dms?q=${encodeURIComponent(q)}`);
+        const dms = await res.json();
+        const list = document.getElementById('admDmList');
+        if (!list) return;
+        if (!dms.length) { list.innerHTML = '<div class="adm-empty">Пусто</div>'; return; }
+        list.innerHTML = '';
+        dms.forEach(d => {
+          const row = document.createElement('div');
+          row.className = 'adm-row';
+          row.innerHTML = `
+        <div class="adm-row-info">
+          <div class="adm-row-name" style="font-size:12px;">@${escapeHTML(d.from)} → @${escapeHTML(d.to)}</div>
+          <div class="adm-row-sub" style="white-space:normal;font-size:13px;color:rgba(255,255,255,.7);">${escapeHTML(d.text)}</div>
+          <div style="font-size:10px;color:rgba(255,255,255,.3);margin-top:3px;">${escapeHTML(d.time)}</div>
+        </div>`;
+          list.appendChild(row);
+        });
+      } catch (e) { const l = document.getElementById('admDmList'); if (l) l.innerHTML = '<div class="adm-empty">Ошибка</div>'; }
+    }
+
+    function loadAdmBroadcast() {
+      document.getElementById('admContent').innerHTML = `
+    <div style="margin-bottom:14px;">
+      <div style="font-family:'Bebas Neue',sans-serif;font-size:22px;color:#fff;margin-bottom:6px;">📢 Рассылка всем</div>
+      <div style="font-size:13px;color:rgba(255,255,255,.4);margin-bottom:14px;">Сообщение придёт всем незаблокированным пользователям в DM</div>
+      <textarea class="adm-broadcast-input" id="broadcastText" placeholder="Текст сообщения..."></textarea>
+      <button class="adm-broadcast-btn" onclick="sendBroadcast()">Отправить всем</button>
+    </div>`;
+    }
+
+    async function sendBroadcast() {
+      const text = document.getElementById('broadcastText')?.value.trim();
+      if (!text) { showToast('Введи текст', 'error'); return; }
+      if (!confirm(`Отправить сообщение ВСЕМ пользователям?`)) return;
+      try {
+        const res = await fetch('/api/admin/broadcast', {
+          method: 'POST', headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ text })
+        });
+        const data = await res.json();
+        if (data.ok) { showToast(`Отправлено ${data.sent_to} пользователям ✓`, 'success'); document.getElementById('broadcastText').value = ''; }
+        else showToast(data.error || 'Ошибка', 'error');
+      } catch (e) { showToast('Ошибка', 'error'); }
+    }
+
+    // Открыть админ панель
+    function openAdminPanel() {
+      document.getElementById('adminPanel').classList.add('open');
+      loadAdmTab('stats');
+    }
+
+    // Socket — уведомление о новой жалобе
+    socket.on('admin_report', data => {
+      if (isAdmin) showToast(`⚠️ Новая жалоба на видео #${data.video_id}`, 'error');
     });
   </script>
 </body>

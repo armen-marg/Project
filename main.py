@@ -1,3 +1,40 @@
+"""
+╔══════════════════════════════════════════════════════════════════════════════╗
+║                    PARDON SOCIAL - ULTIMATE EDITION v1.0                     ║
+╠══════════════════════════════════════════════════════════════════════════════╣
+║  __Modern Social Media Platfor__                                             ║
+║                                                                              ║
+║  FEATURES:                                                                   ║
+║  • User Authentication & Profiles                                            ║
+║  • Short Video Feed                                                          ║
+║  • Likes, Comments & Shares                                                  ║
+║  • Real-Time Direct Messages (DM)                                            ║
+║  • Notifications System                                                      ║
+║  • Follow / Unfollow Users                                                   ║
+║  • Hashtags & Search                                                         ║
+║  • Content Moderation & Profanity Filter                                     ║
+║  • Media Uploads (Images & Videos)                                           ║
+║  • Socket.IO Real-Time Communication                                         ║
+║  • MySQL Database Backend                                                    ║
+║  • Cloudinary Media Storage                                                  ║
+║                                                                              ║
+║  TECHNOLOGIES:                                                               ║
+║  • Python 3.14                                                               ║
+║  • Flask                                                                     ║
+║  • Flask-SocketIO                                                            ║
+║  • MySQL                                                                     ║
+║  • Cloudinary                                                                ║
+║  • HTML / CSS / JavaScript                                                   ║
+║                                                                              ║
+║  DEVELOPER: Armen Margaryan , Arshak Tonoyan                                 ║
+║  STUDIO: Pardon Studio                                                       ║
+║  VERSION: 1.0                                                                ║
+║                                                                              ║
+║  © 2026 Pardon Studio. All Rights Reserved.                                  ║
+╚══════════════════════════════════════════════════════════════════════════════╝
+"""
+
+
 from flask import (Flask, render_template, request, redirect,
                    url_for, flash, session, jsonify, Response, send_file, abort)
 from flask_socketio import SocketIO, emit, join_room, leave_room
@@ -74,17 +111,22 @@ BANNED_USERNAMES: set[str] = {
     "support", "official", "pardon", "system", "root",
     "superuser", "staff", "help", "service", "bot",
     "null", "undefined", "anonymous", "anon", "guest",
+    "test", "tester", "demo", "unknown", "owner", "developer",
+    "dev", "manager", "operator", "staffs", "team", "security",
+    "securityteam", "helpdesk", "contact", "info", "mail",
+    "webmaster", "postmaster", "noreply", "no-reply",
+    "rootuser", "sysadmin", "administrator1", "admin1",
 }
 
 # Запрещённые подстроки в именах пользователей (case-insensitive)
 BANNED_USERNAME_SUBSTRINGS: list[str] = [
     # English slurs / severe profanity
     "nigger", "nigga", "niga", "n1gger", "n1gga",
-    "faggot", "fagg0t", "fag","GITLER",'Gitler'
+    "faggot", "fagg0t", "fag", "GITLER", "Gitler",
     "hitler", "nazi", "n4zi",
     "chink", "spic", "kike", "wetback", "gook", "raghead",
     "cunt", "c0nt",
-    "whore", "wh0re",'Trans'
+    "whore", "wh0re", "Trans",
     "bitch", "b1tch",
     "retard", "ret4rd",
     "rape", "r4pe",
@@ -92,6 +134,30 @@ BANNED_USERNAME_SUBSTRINGS: list[str] = [
     "nonce",
     "tranny",
     "kkk",
+
+    # more English profanity / toxic words
+    "fuck", "fck", "fuk", "fvck", "phuck",
+    "motherfucker", "mothafucka", "mf", "mfer",
+    "shit", "sh1t", "shitt", "shithead", "shitheads",
+    "asshole", "assh0le", "arsehole",
+    "dick", "d1ck", "dickhead",
+    "pussy", "pussi", "pussi0",
+    "slut", "slutty",
+    "whore", "slag",
+    "bastard", "b4stard",
+    "idiot", "moron", "loser", "trash",
+    "suck", "sux", "suxx", "sucker",
+    "stupid", "dumb", "ugly",
+    "porn", "porno", "sex", "sexy", "nude", "nudity",
+    "xxx", "18+", "nsfw",
+
+    # scam / spam / impersonation
+    "free money", "giveaway", "airdrop", "crypto scam", "scam",
+    "hack", "hacker", "phish", "phishing", "stealer",
+    "spam", "bot", "boost", "followers", "followback",
+    "onlyfans", "telegram", "whatsapp", "discord",
+    "cashapp", "paypal", "bitcoin", "btc", "usdt",
+
     # Russian slurs / severe profanity (transliterated)
     "huy", "khuy", "hui", "хуй",
     "pizda", "пизда",
@@ -112,6 +178,20 @@ BANNED_USERNAME_SUBSTRINGS: list[str] = [
     "чурка", "churka",
     "хохол", "hohkol",
     "кацап", "katsap",
+
+    # extra Russian profanity / toxic variants
+    "сукин", "сукинс", "sukin",
+    "сволочь", "svoloch",
+    "дебил", "debil",
+    "кретин", "cretin",
+    "идиот", "idiot",
+    "тупой", "tupoy",
+    "мудач", "mudach",
+    "пидр", "пидора",
+    "бля", "blya",
+    "ебан", "yeban",
+    "хуе", "khuye",
+    "хуйн", "huyn",
 ]
 
 # Запрещённые слова в подписях/комментариях/DM (подстрока, case-insensitive)
@@ -136,12 +216,51 @@ BANNED_CONTENT_WORDS: list[str] = [
     "asshole", "assh0le",
     "dickhead",
     "fuckface",
+
+    # ── more English profanity / variants ────────────────────────────────
+    "fuck", "fck", "fuk", "fvck", "phuck",
+    "fucked", "fucking", "fucker", "fuckers",
+    "shit", "sh1t", "shitty", "shittiest",
+    "piss", "pissed", "pissing",
+    "damn", "dammit", "hell",
+    "bastard", "b4stard",
+    "dick", "d1ck", "dickhead",
+    "pussy", "pussies",
+    "slut", "slutty",
+    "whore", "whores",
+    "ass", "a55", "arse",
+    "moron", "idiot", "stupid", "dumb",
+    "loser", "trash", "garbage",
+    "nutsack", "ballsack",
+    "porn", "porno", "pornhub", "xvideos", "xhamster",
+    "sex", "sexy", "nude", "nudity", "nsfw", "18+",
+
     # ── English spam / dangerous ──────────────────────────────────────────
     "onlyfans.com",
     "pornhub.com",
     "xvideos.com",
     "xhamster.com",
     "cam4.com",
+    "onlyfans",
+    "escort",
+    "escorts",
+    "adultfriendfinder",
+    "camgirl",
+    "webcam",
+    "giveaway",
+    "free followers",
+    "free money",
+    "airdrop",
+    "crypto scam",
+    "scam",
+    "phishing",
+    "hack",
+    "hacking",
+    "stealer",
+    "malware",
+    "virus",
+    "botnet",
+
     # ── Russian severe profanity (Cyrillic) ───────────────────────────────
     "хуй", "хуя", "хуев", "хуйня",
     "пизда", "пизды", "пиздец",
@@ -160,6 +279,7 @@ BANNED_CONTENT_WORDS: list[str] = [
     "чурка", "чурки",
     "хохол", "хохлы",
     "кацап",
+
     # ── Russian severe profanity (transliterated) ─────────────────────────
     "huy", "khuy", "hui",
     "pizda", "pizdets",
@@ -176,6 +296,16 @@ BANNED_CONTENT_WORDS: list[str] = [
     "churka",
     "hohkol",
     "katsap",
+
+    # ── extra Russian toxic / spam / 18+ ─────────────────────────────────
+    "секс", "порно", "голый", "обнаж",
+    "дроч", "дрочить", "дрочер",
+    "ебан", "ебуч", "хуе", "хуета",
+    "мразота", "сволочь", "дебил", "кретин", "идиот",
+    "тупой", "лох", "клоун", "чмо",
+    "спам", "скам", "мошен",
+    "телеграм", "вацап", "whatsapp",
+    "бот", "накрутка"
 ]
 
 # Запрещённые email-домены (дополнительно к DISPOSABLE_DOMAINS)
@@ -191,6 +321,16 @@ EXTRA_BANNED_EMAIL_DOMAINS: set[str] = {
     "ashleymadison.com", "fling.com", "alt.com",
     "flirt4free.com", "livejasmin.com", "imlive.com",
     "streamate.com", "bongacams.com", "stripchat.com", "camsoda.com",
+
+    # extra adult / spam / impersonation domains
+    "onlyfans.net", "onlyfans.org",
+    "xhamster.net", "xvideos.net",
+    "pornhub.net", "pornhub.org",
+    "camgirls.com", "webcamsex.com",
+    "fuckbook.com", "adultsearch.com",
+    "sexsearch.com", "dirtyroulette.com",
+    "freelancehentai.com",
+
     # ── Временные / одноразовые ───────────────────────────────────────────
     "guerrillamail.com", "sharklasers.com", "mailinator.com",
     "10minutemail.com", "10minutemail.net", "10minutemail.org",
@@ -204,6 +344,11 @@ EXTRA_BANNED_EMAIL_DOMAINS: set[str] = {
     "simplelogin.co", "simplelogin.io", "anonaddy.com",
     "privaterelay.appleid.com",
 
+    # extra disposable / relay
+    "mail.tm", "getairmail.com", "sharklasers.net",
+    "trashmail.net", "tempmail.xyz", "disposablemail.com",
+    "fake-mail.net", "spambox.us", "tempinbox.com",
+    "mailnull.com", "mailnesia.org", "spamex.com",
 }
 
 
@@ -228,6 +373,36 @@ def contains_banned_content(text: str) -> bool:
     if profanity.contains_profanity(text):
         return True
     return False
+
+def censor_text(text: str) -> str:
+    """Заменяет запрещённые слова на *** в тексте сообщений."""
+    if not text:
+        return text
+
+    # better_profanity цензура
+    censored = profanity.censor(text)
+
+    # Нормализуем для поиска но заменяем в оригинале
+    normalized = unicodedata.normalize("NFKC", censored).casefold()
+
+    leet_map = str.maketrans({
+        "0": "o", "1": "i", "3": "e", "4": "a",
+        "5": "s", "7": "t", "@": "a", "$": "s",
+        "!": "i", "|": "i",
+    })
+    decoded = normalized.translate(leet_map)
+
+    result = censored
+
+    for word in BANNED_CONTENT_WORDS:
+        w = word.casefold()
+        if w not in normalized and w not in decoded:
+            continue
+        # Заменяем в оригинальном тексте без учёта регистра
+        pattern = re.compile(re.escape(word), re.IGNORECASE)
+        result = pattern.sub("****", result)
+
+    return result
 
 def is_username_banned(username: str) -> tuple[bool, str]:
     """
@@ -553,6 +728,17 @@ def init_db():
                 )
             """)
             cur.execute("""
+                CREATE TABLE IF NOT EXISTS reports (
+                    id         INT AUTO_INCREMENT PRIMARY KEY,
+                    from_user  INT NOT NULL,
+                    video_id   INT,
+                    reason     TEXT NOT NULL,
+                    is_read    TINYINT(1) DEFAULT 0,
+                    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                    FOREIGN KEY (from_user) REFERENCES users(id) ON DELETE CASCADE
+                )
+            """)
+            cur.execute("""
                 CREATE TABLE IF NOT EXISTS video_reposts (
                     id         INT AUTO_INCREMENT PRIMARY KEY,
                     user_id    INT NOT NULL,
@@ -598,6 +784,30 @@ def init_db():
                     created_at TIMESTAMP    DEFAULT CURRENT_TIMESTAMP
                 )
             """)
+            cur.execute("""
+                CREATE TABLE IF NOT EXISTS follows (
+                    id         INT AUTO_INCREMENT PRIMARY KEY,
+                    follower_id INT NOT NULL,
+                    following_id INT NOT NULL,
+                    created_at  TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                    UNIQUE KEY unique_follow (follower_id, following_id),
+                    FOREIGN KEY (follower_id)  REFERENCES users(id) ON DELETE CASCADE,
+                    FOREIGN KEY (following_id) REFERENCES users(id) ON DELETE CASCADE
+                )
+            """)
+            cur.execute("""
+                CREATE TABLE IF NOT EXISTS direct_messages (
+                    id          INT AUTO_INCREMENT PRIMARY KEY,
+                    from_user   INT NOT NULL,
+                    to_user     INT NOT NULL,
+                    text        TEXT NOT NULL,
+                    is_read     TINYINT(1) DEFAULT 0,
+                    created_at  TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                    FOREIGN KEY (from_user) REFERENCES users(id) ON DELETE CASCADE,
+                    FOREIGN KEY (to_user)   REFERENCES users(id) ON DELETE CASCADE
+                )
+            """)
+            
             _add_column_if_missing(cur, "videos",  "video_url",  "TEXT")
             _add_column_if_missing(cur, "videos",  "is_hidden",  "TINYINT(1) DEFAULT 0")
             _add_column_if_missing(cur, "users",   "is_banned",  "TINYINT(1) DEFAULT 0")
@@ -744,12 +954,23 @@ def not_banned(f):
         if session.get("is_banned"):
             reason = session.get("ban_reason", "нарушение правил")
             if request.is_json or request.path.startswith("/api/"):
-                return jsonify({"ok": False, "error": f"Аккаунт заблокирован: {reason}"}), 403
+                return jsonify({"ok": False, "error": f"Аккаунт заблокирован: {reason}", "banned": True}), 403
             flash(f"Аккаунт заблокирован: {reason}")
             return redirect(url_for("login"))
         return f(*args, **kwargs)
     return decorated
 
+ADMIN_USERNAMES = {"Armen_Admin"}
+
+def admin_required(f):
+    @wraps(f)
+    def decorated(*args, **kwargs):
+        if "username" not in session or session["username"] not in ADMIN_USERNAMES:
+            if request.is_json or request.path.startswith("/api/"):
+                return jsonify({"ok": False, "error": "Нет доступа"}), 403
+            return redirect(url_for("login"))
+        return f(*args, **kwargs)
+    return decorated
 
 # ── УТИЛИТЫ ───────────────────────────────────────────────────────────────────
 def time_ago(dt: datetime) -> str:
@@ -1113,10 +1334,15 @@ def upload_video():
     tmp_dir   = tempfile.gettempdir()
     safe_name = secure_filename(file.filename)
     tmp_path  = os.path.join(tmp_dir, f"{secrets.token_hex(8)}_{safe_name}")
+    file_size = 0
 
     try:
+        file.stream.seek(0)
         file.save(tmp_path)
         file_size = os.path.getsize(tmp_path)
+
+        if file_size == 0:
+            return jsonify({"ok": False, "error": "Файл пустой — попробуй ещё раз"})
 
         if file_size > MAX_VIDEO_SIZE:
             return jsonify({
@@ -1124,22 +1350,18 @@ def upload_video():
                 "error": f"Файл слишком большой (макс {MAX_VIDEO_SIZE // 1024 // 1024} МБ)"
             })
 
-        result = cloudinary.uploader.upload_large(
+        logger.info(f"Загружаем файл: {tmp_path}, размер: {file_size} байт")
+
+        result = cloudinary.uploader.upload(
             tmp_path,
             resource_type="video",
-            eager=[{"width": 1080, "height": 1920, "crop": "fill", "gravity": "center"}],
-            eager_async=True,
+            folder="pardon_videos",
         )
 
-        duration = result.get("duration", 0)
-        if duration and float(duration) > 62:
-            cloudinary.uploader.destroy(result["public_id"], resource_type="video")
-            return jsonify({"ok": False, "error": "Видео длиннее 60 секунд"})
+        if not result:
+            raise Exception("Cloudinary вернул пустой ответ")
 
-        video_url = result["secure_url"].replace(
-            "/upload/",
-            "/upload/w_1080,h_1920,c_fill,g_center,q_auto/"
-        )
+        video_url = result["secure_url"]
 
         with get_db() as (conn, cur):
             cur.execute("""
@@ -1154,38 +1376,84 @@ def upload_video():
         return jsonify({"ok": True, "video_id": video_id, "video_url": video_url})
 
     except Exception as e:
-        logger.error(f"Ошибка загрузки: {e}")
-        return jsonify({"ok": False, "error": "Ошибка сервера при сохранении"})
+        import traceback
+        logger.error(f"Ошибка загрузки: {traceback.format_exc()}")
+        return jsonify({"ok": False, "error": str(e)})
     finally:
         if os.path.exists(tmp_path):
-            try: os.remove(tmp_path)
-            except: pass
+            try:
+                os.remove(tmp_path)
+            except:
+                pass
 
 
 # ── СТРИМИНГ ВИДЕО ────────────────────────────────────────────────────────────
 @app.route("/video/<int:video_id>")
-@login_required
 def serve_video(video_id):
+    # Если не авторизован — редирект на логин
+    if "user_id" not in session:
+        return redirect(url_for("login"))
+
     with get_db() as (conn, cur):
-        cur.execute(
-            "SELECT content_type, video_url FROM videos WHERE id=%s AND is_hidden=0",
-            (video_id,)
-        )
+        cur.execute("""
+            SELECT v.content_type, v.video_url, v.caption, u.username
+            FROM videos v
+            JOIN users u ON u.id = v.user_id
+            WHERE v.id=%s AND v.is_hidden=0
+        """, (video_id,))
         row = cur.fetchone()
 
     if not row or not row["video_url"]:
-        return Response("Not found", status=404)
+        return Response("Видео не найдено", status=404)
 
+    # Отдаём HTML-страницу с плеером
     video_url = row["video_url"]
-    parsed    = urlparse(video_url)
+    caption   = row["caption"] or ""
+    username  = row["username"]
 
-    if parsed.scheme in ("http", "https"):
-        return redirect(video_url, code=302)
+    html = f"""<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>@{username} — Pardon</title>
+  <meta property="og:type"         content="video.other"/>
+  <meta property="og:url"          content="{request.url}"/>
+  <meta property="og:video"        content="{video_url}"/>
+  <meta property="og:video:type"   content="{row['content_type']}"/>
+  <meta property="og:title"        content="@{username} на Pardon"/>
+  <meta property="og:description"  content="{caption}"/>
+  <style>
+    *{{margin:0;padding:0;box-sizing:border-box}}
+    body{{background:#000;display:flex;flex-direction:column;align-items:center;
+          justify-content:center;min-height:100vh;font-family:sans-serif;color:#fff}}
+    .wrap{{width:100%;max-width:420px;position:relative}}
+    video{{width:100%;max-height:90vh;display:block;border-radius:0}}
+    .info{{padding:14px 16px;background:#111}}
+    .uname{{font-weight:700;font-size:15px;color:#4a90d9;margin-bottom:4px;
+            text-decoration:none;display:block}}
+    .uname:hover{{text-decoration:underline}}
+    .caption{{font-size:13px;color:rgba(255,255,255,.75);line-height:1.5}}
+    .back{{display:inline-block;margin-top:14px;padding:10px 24px;
+           background:linear-gradient(135deg,#4a90d9,#7b5cfa);
+           border-radius:20px;text-decoration:none;color:#fff;
+           font-size:13px;font-weight:600}}
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <video src="{video_url}" controls autoplay playsinline loop
+           preload="auto" controlsList="nodownload"></video>
+    <div class="info">
+      <a class="uname" href="/start">@{username}</a>
+      <div class="caption">{caption}</div>
+      <a class="back" href="/start">← Открыть Pardon</a>
+    </div>
+  </div>
+</body>
+</html>"""
 
-    if os.path.isfile(video_url):
-        return send_file(video_url, mimetype=row["content_type"], conditional=True)
-
-    return Response("Not found", status=404)
+    return Response(html, mimetype="text/html")
 
 
 # ── ФИД ───────────────────────────────────────────────────────────────────────
@@ -1194,7 +1462,7 @@ def serve_video(video_id):
 @not_banned
 def api_feed():
     user_id = session["user_id"]
-    tab     = request.args.get("tab", "foryou")
+    tab = request.args.get("tab", "foryou")
     try:
         offset = max(0, int(request.args.get("offset", 0)))
     except ValueError:
@@ -1202,23 +1470,58 @@ def api_feed():
     limit = 10
 
     with get_db() as (conn, cur):
-        cur.execute("""
-            SELECT v.id, v.caption, v.likes, v.comments, v.reposts,
-                   v.content_type, v.video_url, v.created_at, u.username,
-                   (SELECT COUNT(*) FROM video_likes   vl WHERE vl.video_id=v.id AND vl.user_id=%s) AS user_liked,
-                   (SELECT COUNT(*) FROM video_reposts vr WHERE vr.video_id=v.id AND vr.user_id=%s) AS user_reposted
-            FROM videos v
-            JOIN users u ON u.id=v.user_id
-            WHERE v.is_hidden=0 AND u.is_banned=0
-            ORDER BY v.created_at DESC
-            LIMIT %s OFFSET %s
-        """, (user_id, user_id, limit, offset))
+        if tab == "following":
+            # Только видео тех, на кого подписан. Свои НЕ показываем.
+            cur.execute("""
+                SELECT
+                    v.id, v.caption, v.likes, v.comments, v.reposts,
+                    v.content_type, v.video_url, v.created_at,
+                    u.username, u.id AS user_id,
+                    MAX(CASE WHEN vl.user_id = %s THEN 1 ELSE 0 END) AS user_liked,
+                    MAX(CASE WHEN vr.user_id = %s THEN 1 ELSE 0 END) AS user_reposted
+                FROM videos v
+                JOIN users u ON u.id = v.user_id
+                JOIN follows f ON f.following_id = v.user_id AND f.follower_id = %s
+                LEFT JOIN video_likes vl ON vl.video_id = v.id AND vl.user_id = %s
+                LEFT JOIN video_reposts vr ON vr.video_id = v.id AND vr.user_id = %s
+                WHERE v.is_hidden = 0
+                  AND u.is_banned = 0
+                  AND v.user_id != %s
+                GROUP BY v.id, v.caption, v.likes, v.comments, v.reposts,
+                         v.content_type, v.video_url, v.created_at,
+                         u.username, u.id
+                ORDER BY v.created_at DESC
+                LIMIT %s OFFSET %s
+            """, (user_id, user_id, user_id, user_id, user_id, user_id, limit, offset))
+        else:
+            # For You — все видео кроме своих
+            cur.execute("""
+                SELECT
+                    v.id, v.caption, v.likes, v.comments, v.reposts,
+                    v.content_type, v.video_url, v.created_at,
+                    u.username, u.id AS user_id,
+                    MAX(CASE WHEN vl.user_id = %s THEN 1 ELSE 0 END) AS user_liked,
+                    MAX(CASE WHEN vr.user_id = %s THEN 1 ELSE 0 END) AS user_reposted
+                FROM videos v
+                JOIN users u ON u.id = v.user_id
+                LEFT JOIN video_likes vl ON vl.video_id = v.id AND vl.user_id = %s
+                LEFT JOIN video_reposts vr ON vr.video_id = v.id AND vr.user_id = %s
+                WHERE v.is_hidden = 0
+                  AND u.is_banned = 0
+                GROUP BY v.id, v.caption, v.likes, v.comments, v.reposts,
+                         v.content_type, v.video_url, v.created_at,
+                         u.username, u.id
+                ORDER BY v.created_at DESC
+                LIMIT %s OFFSET %s
+            """, (user_id, user_id, user_id, user_id, limit, offset))
+
         videos = cur.fetchall()
 
     return jsonify([{
         "id":            v["id"],
         "caption":       v["caption"] or "",
         "username":      v["username"],
+        "user_id":       v["user_id"],
         "likes":         v["likes"],
         "comments":      v["comments"],
         "reposts":       v["reposts"],
@@ -1228,7 +1531,6 @@ def api_feed():
         "video_url":     v["video_url"],
         "content_type":  v["content_type"],
     } for v in videos])
-
 
 # ── ЛАЙК ──────────────────────────────────────────────────────────────────────
 @app.route("/api/like/<int:video_id>", methods=["POST"])
@@ -1380,10 +1682,11 @@ def get_notifications():
             FROM notifications n
             JOIN users u ON u.id=n.from_user
             WHERE n.user_id=%s
-            ORDER BY n.created_at DESC LIMIT 30
-        """, (user_id,))
+            ORDER BY n.created_at DESC LIMIT 200
+    """, (user_id,))
         rows = cur.fetchall()
-        cur.execute("UPDATE notifications SET is_read=1 WHERE user_id=%s", (user_id,))
+        # Помечаем как прочитанные (но НЕ удаляем)
+        cur.execute("UPDATE notifications SET is_read=1 WHERE user_id=%s AND is_read=0", (user_id,))
         conn.commit()
 
     return jsonify([{
@@ -1454,7 +1757,7 @@ def delete_video(video_id):
 def profile_data():
     user_id = session["user_id"]
     with get_db() as (conn, cur):
-        cur.execute("SELECT id,username,created_at FROM users WHERE id=%s", (user_id,))
+        cur.execute("SELECT id, username, created_at FROM users WHERE id=%s", (user_id,))
         user = cur.fetchone()
 
         cur.execute("SELECT COUNT(*) AS c FROM videos WHERE user_id=%s AND is_hidden=0", (user_id,))
@@ -1467,6 +1770,30 @@ def profile_data():
         """, (user_id,))
         repost_count = cur.fetchone()["c"]
 
+        # ── НОВОЕ: подписчики и подписки ──
+        cur.execute("SELECT COUNT(*) AS c FROM follows WHERE following_id=%s", (user_id,))
+        followers_count = cur.fetchone()["c"]
+
+        cur.execute("SELECT COUNT(*) AS c FROM follows WHERE follower_id=%s", (user_id,))
+        following_count = cur.fetchone()["c"]
+
+        # Список для попапа
+        cur.execute("""
+            SELECT u.username FROM follows f
+            JOIN users u ON u.id = f.follower_id
+            WHERE f.following_id=%s AND u.is_banned=0
+            ORDER BY f.created_at DESC LIMIT 100
+        """, (user_id,))
+        followers = cur.fetchall()
+
+        cur.execute("""
+            SELECT u.username FROM follows f
+            JOIN users u ON u.id = f.following_id
+            WHERE f.follower_id=%s AND u.is_banned=0
+            ORDER BY f.created_at DESC LIMIT 100
+        """, (user_id,))
+        following = cur.fetchall()
+
         cur.execute("""
             SELECT v.id, v.caption, v.likes, v.video_url, v.created_at,
                    (SELECT COUNT(*) FROM video_reposts WHERE video_id=v.id AND user_id=%s) AS is_reposted
@@ -1477,10 +1804,15 @@ def profile_data():
         videos = cur.fetchall()
 
     return jsonify({
-        "username":     user["username"],
-        "joined":       user["created_at"].strftime("%B %Y"),
-        "video_count":  video_count,
-        "repost_count": repost_count,
+        "id":              user["id"],
+        "username":        user["username"],
+        "joined":          user["created_at"].strftime("%B %Y"),
+        "video_count":     video_count,
+        "repost_count":    repost_count,
+        "followers_count": followers_count,
+        "following_count": following_count,
+        "followers":       [{"username": r["username"]} for r in followers],
+        "following":       [{"username": r["username"]} for r in following],
         "videos": [{
             "id":          v["id"],
             "likes":       v["likes"],
@@ -1490,32 +1822,159 @@ def profile_data():
     })
 
 
-# ── DM ────────────────────────────────────────────────────────────────────────
+# ── DM THREADS ────────────────────────────────────────────────────────────────
 @app.route("/api/dm/threads")
 @login_required
 def dm_threads():
-    return jsonify([])    # TODO DMS
+    my_id = session["user_id"]
+    with get_db() as (conn, cur):
+        cur.execute("""
+            SELECT
+                u.id AS user_id,
+                u.username,
+                dm.text AS last_message,
+                dm.created_at,
+                dm.from_user,
+                SUM(CASE WHEN dm2.is_read=0 AND dm2.to_user=%s THEN 1 ELSE 0 END) AS unread
+            FROM (
+                SELECT
+                    CASE WHEN from_user=%s THEN to_user ELSE from_user END AS other_id,
+                    MAX(id) AS last_id
+                FROM direct_messages
+                WHERE from_user=%s OR to_user=%s
+                GROUP BY other_id
+            ) latest
+            JOIN direct_messages dm ON dm.id = latest.last_id
+            JOIN users u ON u.id = latest.other_id
+            LEFT JOIN direct_messages dm2
+                ON dm2.from_user = latest.other_id AND dm2.to_user=%s
+            WHERE u.is_banned=0
+            GROUP BY u.id, u.username, dm.text, dm.created_at, dm.from_user
+            ORDER BY dm.created_at DESC
+        """, (my_id, my_id, my_id, my_id, my_id))
+        threads = cur.fetchall()
+
+    return jsonify([{
+        "user_id":      t["user_id"],
+        "username":     t["username"],
+        "last_message": t["last_message"] or "",
+        "time":         time_ago(t["created_at"]) if t["created_at"] else "",
+        "unread":       int(t["unread"] or 0),
+        "online":       False,
+    } for t in threads])
 
 
-@app.route("/api/dm/messages/<user_id>")
+# ── DM MESSAGES ───────────────────────────────────────────────────────────────
+@app.route("/api/dm/messages/<int:other_id>")
 @login_required
-def dm_messages(user_id):
-    return jsonify([])
+def dm_messages(other_id):
+    my_id = session["user_id"]
+    with get_db() as (conn, cur):
+        cur.execute("""
+            SELECT id, from_user, to_user, text, is_read, created_at
+            FROM direct_messages
+            WHERE (from_user=%s AND to_user=%s)
+               OR (from_user=%s AND to_user=%s)
+            ORDER BY created_at ASC
+            LIMIT 100
+        """, (my_id, other_id, other_id, my_id))
+        msgs = cur.fetchall()
+
+        # Пометить как прочитанные
+        cur.execute("""
+            UPDATE direct_messages SET is_read=1
+            WHERE from_user=%s AND to_user=%s AND is_read=0
+        """, (other_id, my_id))
+        conn.commit()
+
+    VIDEO_LINK_RE = re.compile(r'.*/video/(\d+).*')
+
+    result = []
+    for m in msgs:
+        msg_date = m["created_at"].strftime("%d %B %Y") if m["created_at"] else ""
+        text = m["text"] or ""
+        # Определяем тип сообщения
+        vm = VIDEO_LINK_RE.match(text.strip())
+        msg_type = "video" if vm else "text"
+        video_id = int(vm.group(1)) if vm else None
+
+        result.append({
+            "id":       m["id"],
+            "text":     text,
+            "is_mine":  m["from_user"] == my_id,
+            "time":     time_ago(m["created_at"]) if m["created_at"] else "",
+            "date":     msg_date,
+            "type":     msg_type,
+            "video_id": video_id,
+        })
+    return jsonify(result)
 
 
+# ── DM SEND ───────────────────────────────────────────────────────────────────
 @app.route("/api/dm/send", methods=["POST"])
 @login_required
 @not_banned
 def dm_send():
-    data = request.get_json(silent=True) or {}
-    text = sanitize_text(data.get("text", ""), 1000)
+    my_id = session["user_id"]
+    data  = request.get_json(silent=True) or {}
+    text  = sanitize_text(data.get("text", ""), 1000)
+    to_id = data.get("to_user_id")
 
-    # ✅ Check DM text for banned content (uses enhanced contains_banned_content)
-    if contains_banned_content(text):
-        return jsonify({"ok": False, "error": "Сообщение содержит недопустимые слова"})
+    if not text:
+        return jsonify({"ok": False, "error": "Пустое сообщение"})
 
-    return jsonify({"ok": True})
+    text = censor_text(text)
 
+    if not to_id:
+        return jsonify({"ok": False, "error": "Получатель не указан"})
+
+    try:
+        to_id = int(to_id)
+    except (ValueError, TypeError):
+        return jsonify({"ok": False, "error": "Неверный получатель"})
+
+    if to_id == my_id:
+        return jsonify({"ok": False, "error": "Нельзя писать себе"})
+
+    with get_db() as (conn, cur):
+        cur.execute("SELECT id FROM users WHERE id=%s AND is_banned=0", (to_id,))
+        if not cur.fetchone():
+            return jsonify({"ok": False, "error": "Пользователь не найден"})
+
+        cur.execute(
+            "INSERT INTO direct_messages (from_user, to_user, text) VALUES (%s,%s,%s)",
+            (my_id, to_id, text)
+        )
+        conn.commit()
+        msg_id = cur.lastrowid
+
+    socketio.emit("new_message", {
+        "from_user_id": my_id,
+        "username":     session["username"],
+        "text":         text,
+        "time":         "сейчас",
+    }, room=f"user_{to_id}")
+
+    logger.info(f"DM | from={my_id} to={to_id} len={len(text)}")
+    return jsonify({"ok": True, "id": msg_id})
+
+# ── ПОИСК ПОЛЬЗОВАТЕЛЕЙ ДЛЯ DM ───────────────────────────────────────────────
+@app.route("/api/users/search")
+@login_required
+@not_banned
+def users_search():
+    q = (request.args.get("q") or "").strip()
+    if not q or len(q) < 1:
+        return jsonify([])
+    my_id = session["user_id"]
+    with get_db() as (conn, cur):
+        cur.execute("""
+            SELECT id, username FROM users
+            WHERE username LIKE %s AND is_banned=0 AND id != %s
+            ORDER BY username LIMIT 20
+        """, (f"%{q}%", my_id))
+        users = cur.fetchall()
+    return jsonify([{"id": u["id"], "username": u["username"]} for u in users])
 
 # ── SOCKET.IO ─────────────────────────────────────────────────────────────────
 @socketio.on("join")
@@ -1524,6 +1983,480 @@ def on_join(data=None):
     if user_id:
         join_room(f"user_{user_id}")
 
+
+# ── ПОИСК ─────────────────────────────────────────────────────────────────────
+@app.route("/api/search")
+@login_required
+@not_banned
+def api_search():
+    q = (request.args.get("q") or "").strip()
+    if not q or len(q) < 2:
+        return jsonify({"videos": [], "users": []})
+
+    like = f"%{q}%"
+    user_id = session["user_id"]
+
+    with get_db() as (conn, cur):
+        # Поиск видео по подписи
+        cur.execute("""
+            SELECT v.id, v.caption, v.likes, v.video_url, u.username, u.id AS user_id
+            FROM videos v
+            JOIN users u ON u.id = v.user_id
+            WHERE v.is_hidden = 0
+              AND u.is_banned = 0
+              AND v.caption LIKE %s
+            ORDER BY v.likes DESC
+            LIMIT 20
+        """, (like,))
+        videos = cur.fetchall()
+
+        # Поиск пользователей по имени
+        cur.execute("""
+            SELECT u.id, u.username,
+                   (SELECT COUNT(*) FROM videos WHERE user_id = u.id AND is_hidden = 0) AS video_count
+            FROM users u
+            WHERE u.is_banned = 0
+              AND u.username LIKE %s
+              AND u.id != %s
+            ORDER BY video_count DESC
+            LIMIT 10
+        """, (like, user_id))
+        users = cur.fetchall()
+
+    return jsonify({
+        "videos": [{
+            "id":        v["id"],
+            "caption":   v["caption"] or "",
+            "likes":     v["likes"],
+            "video_url": v["video_url"],
+            "username":  v["username"],
+            "user_id":   v["user_id"],
+        } for v in videos],
+        "users": [{
+            "id":          u["id"],
+            "username":    u["username"],
+            "video_count": u["video_count"],
+        } for u in users],
+    })
+
+
+# ── ПРОФИЛЬ ДРУГОГО ПОЛЬЗОВАТЕЛЯ ──────────────────────────────────────────────
+@app.route("/api/user/<username>")
+@login_required
+@not_banned
+def api_user_profile(username):
+    my_id = session["user_id"]
+
+    with get_db() as (conn, cur):
+        cur.execute(
+            "SELECT id, username, created_at FROM users WHERE username=%s AND is_banned=0",
+            (username,)
+        )
+        user = cur.fetchone()
+        if not user:
+            return jsonify({"error": "Пользователь не найден"}), 404
+
+        uid = user["id"]
+
+        # Видео пользователя
+        cur.execute("""
+            SELECT id, caption, likes, video_url, created_at
+            FROM videos
+            WHERE user_id=%s AND is_hidden=0
+            ORDER BY created_at DESC LIMIT 30
+        """, (uid,))
+        videos = cur.fetchall()
+
+        # Количество репостов
+        cur.execute("""
+            SELECT COUNT(*) AS c FROM video_reposts vr
+            JOIN videos v ON v.id = vr.video_id
+            WHERE vr.user_id=%s AND v.is_hidden=0
+        """, (uid,))
+        repost_count = cur.fetchone()["c"]
+
+        # Подписчики / подписки
+        cur.execute("SELECT COUNT(*) AS c FROM follows WHERE following_id=%s", (uid,))
+        followers_count = cur.fetchone()["c"]
+
+        cur.execute("SELECT COUNT(*) AS c FROM follows WHERE follower_id=%s", (uid,))
+        following_count = cur.fetchone()["c"]
+
+        # Подписан ли текущий пользователь
+        cur.execute(
+            "SELECT id FROM follows WHERE follower_id=%s AND following_id=%s",
+            (my_id, uid)
+        )
+        is_following = cur.fetchone() is not None
+
+    return jsonify({
+        "id":              uid,
+        "username":        user["username"],
+        "joined":          user["created_at"].strftime("%B %Y"),
+        "video_count":     len(videos),
+        "repost_count":    repost_count,
+        "followers_count": followers_count,
+        "following_count": following_count,
+        "is_following":    is_following,
+        "videos": [{
+            "id":        v["id"],
+            "likes":     v["likes"],
+            "video_url": v["video_url"] or f"/video/{v['id']}",
+        } for v in videos],
+    })
+
+
+# ── ПОДПИСКИ / ФОЛЛОВЕРЫ ──────────────────────────────────────────────────────
+@app.route("/api/follow/<username>", methods=["POST"])
+@login_required
+@not_banned
+def toggle_follow(username):
+    my_id = session["user_id"]
+
+    with get_db() as (conn, cur):
+        cur.execute(
+            "SELECT id FROM users WHERE username=%s AND is_banned=0",
+            (username,)
+        )
+        target = cur.fetchone()
+        if not target:
+            return jsonify({"ok": False, "error": "Пользователь не найден"}), 404
+
+        target_id = target["id"]
+        if target_id == my_id:
+            return jsonify({"ok": False, "error": "Нельзя подписаться на себя"}), 400
+
+        cur.execute(
+            "SELECT id FROM follows WHERE follower_id=%s AND following_id=%s",
+            (my_id, target_id)
+        )
+        existing = cur.fetchone()
+
+        if existing:
+            # Отписаться
+            cur.execute(
+                "DELETE FROM follows WHERE follower_id=%s AND following_id=%s",
+                (my_id, target_id)
+            )
+            following = False
+        else:
+            # Подписаться
+            cur.execute(
+                "INSERT INTO follows (follower_id, following_id) VALUES (%s, %s)",
+                (my_id, target_id)
+            )
+            # Уведомление
+            cur.execute(
+                "INSERT INTO notifications (user_id, from_user, type) VALUES (%s, %s, 'follow')",
+                (target_id, my_id)
+            )
+            socketio.emit("notification", {"type": "follow"}, room=f"user_{target_id}")
+            following = True
+
+        conn.commit()
+
+    logger.info(f"FOLLOW | user={my_id} → {username} | following={following}")
+    return jsonify({"ok": True, "following": following})
+
+
+# ── ДАННЫЕ ДЛЯ ПРОФИЛЯ (обновлённый — теперь с followers/following) ───────────
+@app.route("/api/profile/extended")
+@login_required
+def profile_extended():
+    user_id = session["user_id"]
+    with get_db() as (conn, cur):
+        cur.execute("SELECT COUNT(*) AS c FROM follows WHERE following_id=%s", (user_id,))
+        followers_count = cur.fetchone()["c"]
+
+        cur.execute("SELECT COUNT(*) AS c FROM follows WHERE follower_id=%s", (user_id,))
+        following_count = cur.fetchone()["c"]
+
+        # Список подписчиков
+        cur.execute("""
+            SELECT u.username FROM follows f
+            JOIN users u ON u.id = f.follower_id
+            WHERE f.following_id=%s AND u.is_banned=0
+            ORDER BY f.created_at DESC LIMIT 100
+        """, (user_id,))
+        followers = cur.fetchall()
+
+        # Список подписок
+        cur.execute("""
+            SELECT u.username FROM follows f
+            JOIN users u ON u.id = f.following_id
+            WHERE f.follower_id=%s AND u.is_banned=0
+            ORDER BY f.created_at DESC LIMIT 100
+        """, (user_id,))
+        following = cur.fetchall()
+
+    return jsonify({
+        "followers_count": followers_count,
+        "following_count": following_count,
+        "followers":       [{"username": r["username"]} for r in followers],
+        "following":       [{"username": r["username"]} for r in following],
+    })
+
+# ___DM-VIDEO____________________________________
+@app.route("/api/video/url/<int:video_id>")
+@login_required
+def api_video_url(video_id):
+    with get_db() as (conn, cur):
+        cur.execute(
+            "SELECT video_url FROM videos WHERE id=%s AND is_hidden=0",
+            (video_id,)
+        )
+        row = cur.fetchone()
+    if not row or not row["video_url"]:
+        return jsonify({"ok": False}), 404
+    return jsonify({"ok": True, "url": row["video_url"]})
+
+# ── ADMIN API ─────────────────────────────────────────────────────────────────
+
+@app.route("/api/admin/check")
+@login_required
+def admin_check():
+    is_admin = session.get("username") in ADMIN_USERNAMES
+    return jsonify({"is_admin": is_admin})
+
+@app.route("/api/admin/stats")
+@login_required
+@admin_required
+def admin_stats():
+    with get_db() as (conn, cur):
+        cur.execute("SELECT COUNT(*) AS c FROM users")
+        users_count = cur.fetchone()["c"]
+        cur.execute("SELECT COUNT(*) AS c FROM videos WHERE is_hidden=0")
+        videos_count = cur.fetchone()["c"]
+        cur.execute("SELECT COUNT(*) AS c FROM users WHERE is_banned=1")
+        banned_count = cur.fetchone()["c"]
+        cur.execute("SELECT COUNT(*) AS c FROM reports WHERE is_read=0")
+        reports_count = cur.fetchone()["c"]
+        cur.execute("SELECT COUNT(*) AS c FROM direct_messages")
+        dm_count = cur.fetchone()["c"]
+    return jsonify({
+        "users": users_count,
+        "videos": videos_count,
+        "banned": banned_count,
+        "reports": reports_count,
+        "dms": dm_count
+    })
+
+@app.route("/api/admin/users")
+@login_required
+@admin_required
+def admin_users():
+    q = request.args.get("q", "").strip()
+    with get_db() as (conn, cur):
+        if q:
+            cur.execute("""
+                SELECT id, username, email, is_banned, ban_reason, created_at
+                FROM users WHERE username LIKE %s OR email LIKE %s
+                ORDER BY created_at DESC LIMIT 50
+            """, (f"%{q}%", f"%{q}%"))
+        else:
+            cur.execute("""
+                SELECT id, username, email, is_banned, ban_reason, created_at
+                FROM users ORDER BY created_at DESC LIMIT 100
+            """)
+        users = cur.fetchall()
+    return jsonify([{
+        "id": u["id"],
+        "username": u["username"],
+        "email": u["email"],
+        "is_banned": bool(u["is_banned"]),
+        "ban_reason": u["ban_reason"] or "",
+        "created_at": u["created_at"].strftime("%d.%m.%Y")
+    } for u in users])
+
+@app.route("/api/admin/ban/<int:user_id>", methods=["POST"])
+@login_required
+@admin_required
+def admin_ban(user_id):
+    data = request.get_json(silent=True) or {}
+    reason = sanitize_text(data.get("reason", "нарушение правил"), 255)
+    with get_db() as (conn, cur):
+        cur.execute("SELECT username FROM users WHERE id=%s", (user_id,))
+        u = cur.fetchone()
+        if not u:
+            return jsonify({"ok": False, "error": "Пользователь не найден"}), 404
+        if u["username"] in ADMIN_USERNAMES:
+            return jsonify({"ok": False, "error": "Нельзя заблокировать админа"}), 403
+        cur.execute(
+            "UPDATE users SET is_banned=1, ban_reason=%s WHERE id=%s",
+            (reason, user_id)
+        )
+        conn.commit()
+    logger.info(f"ADMIN BAN | user={user_id} reason={reason}")
+    return jsonify({"ok": True})
+
+@app.route("/api/admin/unban/<int:user_id>", methods=["POST"])
+@login_required
+@admin_required
+def admin_unban(user_id):
+    with get_db() as (conn, cur):
+        cur.execute("UPDATE users SET is_banned=0, ban_reason=NULL WHERE id=%s", (user_id,))
+        conn.commit()
+    logger.info(f"ADMIN UNBAN | user={user_id}")
+    return jsonify({"ok": True})
+
+@app.route("/api/admin/delete-video/<int:video_id>", methods=["DELETE"])
+@login_required
+@admin_required
+def admin_delete_video(video_id):
+    with get_db() as (conn, cur):
+        cur.execute("SELECT id FROM videos WHERE id=%s", (video_id,))
+        if not cur.fetchone():
+            return jsonify({"ok": False, "error": "Видео не найдено"}), 404
+        cur.execute("DELETE FROM video_likes   WHERE video_id=%s", (video_id,))
+        cur.execute("DELETE FROM video_reposts WHERE video_id=%s", (video_id,))
+        cur.execute("DELETE FROM comments      WHERE video_id=%s", (video_id,))
+        cur.execute("DELETE FROM notifications WHERE video_id=%s", (video_id,))
+        cur.execute("DELETE FROM videos        WHERE id=%s", (video_id,))
+        conn.commit()
+    socketio.emit("video_deleted", {"video_id": video_id})
+    logger.info(f"ADMIN DELETE VIDEO | video={video_id}")
+    return jsonify({"ok": True})
+
+@app.route("/api/admin/videos")
+@login_required
+@admin_required
+def admin_videos():
+    q = request.args.get("q", "").strip()
+    with get_db() as (conn, cur):
+        if q:
+            cur.execute("""
+                SELECT v.id, v.caption, v.likes, v.created_at, u.username, u.id AS user_id
+                FROM videos v JOIN users u ON u.id=v.user_id
+                WHERE v.is_hidden=0 AND (u.username LIKE %s OR v.caption LIKE %s)
+                ORDER BY v.created_at DESC LIMIT 50
+            """, (f"%{q}%", f"%{q}%"))
+        else:
+            cur.execute("""
+                SELECT v.id, v.caption, v.likes, v.created_at, u.username, u.id AS user_id
+                FROM videos v JOIN users u ON u.id=v.user_id
+                WHERE v.is_hidden=0
+                ORDER BY v.created_at DESC LIMIT 100
+            """)
+        videos = cur.fetchall()
+    return jsonify([{
+        "id": v["id"],
+        "caption": v["caption"] or "",
+        "likes": v["likes"],
+        "username": v["username"],
+        "user_id": v["user_id"],
+        "created_at": v["created_at"].strftime("%d.%m.%Y")
+    } for v in videos])
+
+@app.route("/api/admin/reports")
+@login_required
+@admin_required
+def admin_reports():
+    with get_db() as (conn, cur):
+        cur.execute("""
+            SELECT r.id, r.reason, r.is_read, r.created_at,
+                   u.username AS from_username, r.video_id
+            FROM reports r
+            JOIN users u ON u.id=r.from_user
+            ORDER BY r.created_at DESC LIMIT 100
+        """)
+        reports = cur.fetchall()
+        cur.execute("UPDATE reports SET is_read=1 WHERE is_read=0")
+        conn.commit()
+    return jsonify([{
+        "id": r["id"],
+        "reason": r["reason"],
+        "is_read": bool(r["is_read"]),
+        "from_username": r["from_username"],
+        "video_id": r["video_id"],
+        "created_at": r["created_at"].strftime("%d.%m.%Y %H:%M")
+    } for r in reports])
+
+@app.route("/api/admin/report", methods=["POST"])
+@login_required
+@not_banned
+def submit_report():
+    """Пользователь отправляет жалобу на видео."""
+    data = request.get_json(silent=True) or {}
+    video_id = data.get("video_id")
+    reason = sanitize_text(data.get("reason", ""), 500)
+    if not reason:
+        return jsonify({"ok": False, "error": "Укажите причину"})
+    with get_db() as (conn, cur):
+        cur.execute(
+            "INSERT INTO reports (from_user, video_id, reason) VALUES (%s,%s,%s)",
+            (session["user_id"], video_id, reason)
+        )
+        conn.commit()
+    # Уведомление админу через socket
+    socketio.emit("admin_report", {"video_id": video_id, "reason": reason})
+    return jsonify({"ok": True})
+
+@app.route("/api/admin/dms")
+@login_required
+@admin_required
+def admin_dms():
+    q = request.args.get("q", "").strip()
+    with get_db() as (conn, cur):
+        if q:
+            cur.execute("""
+                SELECT dm.id, dm.text, dm.created_at,
+                       u1.username AS from_username,
+                       u2.username AS to_username
+                FROM direct_messages dm
+                JOIN users u1 ON u1.id=dm.from_user
+                JOIN users u2 ON u2.id=dm.to_user
+                WHERE u1.username LIKE %s OR u2.username LIKE %s
+                ORDER BY dm.created_at DESC LIMIT 100
+            """, (f"%{q}%", f"%{q}%"))
+        else:
+            cur.execute("""
+                SELECT dm.id, dm.text, dm.created_at,
+                       u1.username AS from_username,
+                       u2.username AS to_username
+                FROM direct_messages dm
+                JOIN users u1 ON u1.id=dm.from_user
+                JOIN users u2 ON u2.id=dm.to_user
+                ORDER BY dm.created_at DESC LIMIT 200
+            """)
+        dms = cur.fetchall()
+    return jsonify([{
+        "id": d["id"],
+        "text": d["text"],
+        "from": d["from_username"],
+        "to": d["to_username"],
+        "time": d["created_at"].strftime("%d.%m.%Y %H:%M")
+    } for d in dms])
+
+@app.route("/api/admin/broadcast", methods=["POST"])
+@login_required
+@admin_required
+def admin_broadcast():
+    """Отправить сообщение всем пользователям от имени системы."""
+    data = request.get_json(silent=True) or {}
+    text = sanitize_text(data.get("text", ""), 1000)
+    if not text:
+        return jsonify({"ok": False, "error": "Пустое сообщение"})
+    admin_id = session["user_id"]
+    with get_db() as (conn, cur):
+        cur.execute(
+            "SELECT id FROM users WHERE is_banned=0 AND id != %s",
+            (admin_id,)
+        )
+        users = cur.fetchall()
+        for u in users:
+            cur.execute(
+                "INSERT INTO direct_messages (from_user, to_user, text) VALUES (%s,%s,%s)",
+                (admin_id, u["id"], f"📢 {text}")
+            )
+            socketio.emit("new_message", {
+                "from_user_id": admin_id,
+                "username": "Armen_Admin",
+                "text": f"📢 {text}",
+                "time": "сейчас"
+            }, room=f"user_{u['id']}")
+        conn.commit()
+    logger.info(f"ADMIN BROADCAST | len={len(users)} msg={text[:50]}")
+    return jsonify({"ok": True, "sent_to": len(users)})
 
 # ── ЗАПУСК ────────────────────────────────────────────────────────────────────
 if __name__ == "__main__":
