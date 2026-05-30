@@ -10,6 +10,18 @@
     rel="stylesheet" />
   <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
   <style>
+    html,
+    body {
+      width: 100%;
+      height: 100%;
+    }
+
+    #profilePanel,
+    .profile-scroll,
+    .profile-videos {
+      width: 100% !important;
+    }
+
     :root {
       --blue: #4a90d9;
       --purple: #7b5cfa;
@@ -148,9 +160,7 @@
       width: 100%;
       height: 100%;
       object-fit: cover;
-      cursor: pointer;
-      will-change: transform;
-      transform: translateZ(0);
+      object-position: center center;
     }
 
     .slide::after {
@@ -507,12 +517,15 @@
     .panel {
       position: fixed;
       inset: 0;
+      width: 100%;
+      height: 100%;
       z-index: 400;
       background: var(--dark);
       display: flex;
       flex-direction: column;
       transform: translateY(100%);
       transition: transform .32s cubic-bezier(.32, .72, 0, 1);
+      overflow: hidden;
     }
 
     .panel.open {
@@ -872,9 +885,11 @@
       stroke-linecap: round;
     }
 
+    /* FIX: profile-scroll must fill full width */
     .profile-scroll {
       flex: 1;
       overflow-y: auto;
+      width: 100%;
       height: 100%;
       background: radial-gradient(circle at top, #96c0d2 0%, #f3f5f9 55%, #83b9c0 100%);
     }
@@ -888,12 +903,11 @@
       position: relative;
       height: 220px;
       overflow: visible;
-      /* allow avatar to overflow */
       flex-shrink: 0;
       background: transparent;
+      width: 100%;
     }
 
-    /* animated mesh gradient */
     .profile-hero-bg {
       position: absolute;
       inset: 0;
@@ -914,7 +928,6 @@
       }
     }
 
-    /* grid lines overlay */
     .profile-hero-grid {
       position: absolute;
       inset: 0;
@@ -925,9 +938,6 @@
       pointer-events: none;
     }
 
-    /* REMOVED bottom fade line — no ::after on hero */
-
-    /* ── AVATAR — centered vertically in hero ── */
     .profile-avatar-wrap {
       position: absolute;
       top: 50%;
@@ -986,6 +996,7 @@
       flex-direction: column;
       align-items: center;
       text-align: center;
+      width: 100%;
     }
 
     .profile-name {
@@ -1055,6 +1066,7 @@
       justify-content: center;
       gap: 6px;
       padding: 0 20px 20px;
+      width: 100%;
     }
 
     .follow-stat-btn {
@@ -1100,6 +1112,7 @@
       grid-template-columns: repeat(3, 1fr);
       gap: 8px;
       padding: 0 16px 16px;
+      width: 100%;
     }
 
     .stat-card {
@@ -1169,6 +1182,7 @@
       display: flex;
       gap: 8px;
       padding: 0 16px 10px;
+      width: 100%;
     }
 
     .profile-action-btn {
@@ -1238,10 +1252,8 @@
       stroke-linecap: round;
     }
 
-    /* ── VIDEOS SECTION HEADER ── */
     .profile-divider {
       display: none;
-      /* REMOVED divider line */
     }
 
     .profile-section-header {
@@ -1249,6 +1261,7 @@
       align-items: center;
       justify-content: space-between;
       padding: 0 16px 10px;
+      width: 100%;
     }
 
     .profile-section-title {
@@ -1266,11 +1279,12 @@
       font-weight: 500;
     }
 
-    /* ── VIDEO GRID ── */
+    /* ── VIDEO GRID — FIX: full width, no gaps ── */
     .profile-videos {
       display: grid;
       grid-template-columns: repeat(3, 1fr);
       gap: 2px;
+      width: 100%;
       padding: 0 0 80px;
     }
 
@@ -1281,7 +1295,6 @@
       position: relative;
       overflow: hidden;
       cursor: pointer;
-      border-radius: 4px;
       background: rgba(150, 192, 210, .2);
     }
 
@@ -2286,13 +2299,13 @@
         </svg>
       </div>
     </div>
-    <button class="nav-btn" id="navDm" onclick="openPanel('dm')">
+    <a class="nav-btn" id="navDm" href="/messages" style="text-decoration:none;">
       <svg viewBox="0 0 24 24">
         <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
       </svg>
       <span>Сообщения</span>
       <div class="notif-badge" id="dmBadge"></div>
-    </button>
+    </a>
     <button class="nav-btn" id="navNotif" onclick="openPanel('notif')">
       <svg viewBox="0 0 24 24">
         <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9" />
@@ -2513,7 +2526,7 @@
           onclick="closePanel('profile');document.getElementById('navUpload').click()">+ Загрузить</button>
       </div>
 
-      <button class="profile-dm-btn" onclick="openPanel('dm')">
+      <button class="profile-dm-btn" onclick="window.location.href='/messages'">
         <svg viewBox="0 0 24 24">
           <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
         </svg>
@@ -2592,7 +2605,7 @@
     // ═══════════════════════════════════════════════
     // GLOBAL MUTE STATE
     // ═══════════════════════════════════════════════
-    let globalMuted = true;
+    let globalMuted = false;
 
     let _toastTimer = null;
     function showToast(msg, type = '') {
@@ -2770,19 +2783,23 @@
         </div>
         <div class="heart-burst" id="hb-${v.id}">❤️</div>`;
       const video = slide.querySelector('video');
-      let lastTapTime = 0;
+      let clickCount = 0, clickTimer = null;
       slide.addEventListener('click', e => {
         if (e.target.closest('.actions')) return;
-        const now = performance.now();
-        const isDoubleTap = (now - lastTapTime) < 280;
-        lastTapTime = now;
-        if (isDoubleTap) {
+        clickCount++;
+        if (clickCount === 1) {
+          clickTimer = setTimeout(() => {
+            clickCount = 0;
+            if (video.paused) { video.play().catch(() => { }); slide.classList.remove('paused'); }
+            else { video.pause(); slide.classList.add('paused'); }
+          }, 280);
+        } else if (clickCount === 2) {
+          clearTimeout(clickTimer);
+          clickCount = 0;
           const btn = slide.querySelector('.like-btn');
           if (!btn.classList.contains('liked')) toggleLike(btn);
-          showHeart(slide, e, v.id); return;
+          showHeart(slide, e, v.id);
         }
-        if (video.paused) { video.play().catch(() => { }); slide.classList.remove('paused'); }
-        else { video.pause(); slide.classList.add('paused'); }
       });
       video.addEventListener('contextmenu', e => { e.preventDefault(); showVideoContextMenu(e.clientX, e.clientY, v.id, slide); });
       document.getElementById('feed').appendChild(slide);
@@ -2862,7 +2879,7 @@
     }
 
     // SHARE
-    function shareVideo(videoId, username) { openPanel('dm'); window._pendingShare = { videoId, username }; }
+    function shareVideo(videoId, username) { window.location.href = `/messages?share=${videoId}&from=${encodeURIComponent(username)}`; }
 
     // NOTIFICATIONS
     async function loadNotifications() {
@@ -2961,26 +2978,58 @@
       const err = document.getElementById('uploadError');
       if (!allowed.includes(file.type)) { err.textContent = 'Неверный тип файла (только MP4, WebM, MOV)'; err.style.display = 'block'; return; }
       if (file.size > 200 * 1024 * 1024) { err.textContent = 'Файл слишком большой (макс 200 МБ)'; err.style.display = 'block'; return; }
-      err.style.display = 'none'; selectedFile = file; dropZone.classList.add('hidden');
-      const pv = document.getElementById('previewVideo'); pv.src = URL.createObjectURL(file);
-      document.getElementById('uploadPreview').style.display = 'block'; pv.play().catch(() => { });
-      document.getElementById('uploadSubmit').disabled = false;
+      const tempVideo = document.createElement('video');
+      tempVideo.preload = 'metadata';
+      tempVideo.src = URL.createObjectURL(file);
+      tempVideo.onloadedmetadata = () => {
+        URL.revokeObjectURL(tempVideo.src);
+        if (tempVideo.duration > 60) { err.textContent = 'Видео слишком длинное (макс 60 секунд)'; err.style.display = 'block'; return; }
+        err.style.display = 'none';
+        selectedFile = file;
+        dropZone.classList.add('hidden');
+        const pv = document.getElementById('previewVideo');
+        pv.src = URL.createObjectURL(file);
+        document.getElementById('uploadPreview').style.display = 'block';
+        pv.play().catch(() => { });
+        document.getElementById('uploadSubmit').disabled = false;
+      };
     }
-    document.getElementById('removeVideo').addEventListener('click', () => { selectedFile = null; document.getElementById('previewVideo').src = ''; document.getElementById('uploadPreview').style.display = 'none'; document.getElementById('uploadSubmit').disabled = true; fileInput.value = ''; dropZone.classList.remove('hidden'); });
+    document.getElementById('removeVideo').addEventListener('click', () => {
+      selectedFile = null;
+      document.getElementById('previewVideo').src = '';
+      document.getElementById('uploadPreview').style.display = 'none';
+      document.getElementById('uploadSubmit').disabled = true;
+      fileInput.value = '';
+      dropZone.classList.remove('hidden');
+    });
     document.getElementById('uploadSubmit').addEventListener('click', async () => {
       if (!selectedFile) return;
-      const btn = document.getElementById('uploadSubmit'), prog = document.getElementById('uploadProgress'), fill = document.getElementById('progressFill'), label = document.getElementById('progressLabel'), err = document.getElementById('uploadError');
+      const btn = document.getElementById('uploadSubmit');
+      const prog = document.getElementById('uploadProgress');
+      const fill = document.getElementById('progressFill');
+      const label = document.getElementById('progressLabel');
+      const err = document.getElementById('uploadError');
       btn.disabled = true; prog.style.display = 'block'; err.style.display = 'none';
-      const fd = new FormData(); fd.append('video', selectedFile); fd.append('caption', document.getElementById('captionInput').value.trim());
+      const fd = new FormData();
+      fd.append('video', selectedFile);
+      fd.append('caption', document.getElementById('captionInput').value.trim());
       try {
         await new Promise((resolve, reject) => {
-          const xhr = new XMLHttpRequest(); xhr.open('POST', '/upload-video');
+          const xhr = new XMLHttpRequest();
+          xhr.open('POST', '/upload-video');
           xhr.upload.onprogress = e => { if (e.lengthComputable) { const pct = Math.round(e.loaded / e.total * 100); fill.style.width = pct + '%'; label.textContent = 'Загрузка... ' + pct + '%'; } };
           xhr.onload = () => { try { const data = JSON.parse(xhr.responseText); if (data.ok) resolve(data); else reject(new Error(data.error || 'Ошибка')); } catch (e) { reject(e); } };
-          xhr.onerror = () => reject(new Error('Ошибка сети')); xhr.send(fd);
+          xhr.onerror = () => reject(new Error('Ошибка сети'));
+          xhr.send(fd);
         });
         fill.style.width = '100%'; label.textContent = 'Опубликовано! ✓';
-        setTimeout(() => { document.getElementById('uploadModal').classList.remove('open'); resetUploadUI(); btn.disabled = false; document.getElementById('removeVideo').click(); document.getElementById('captionInput').value = ''; setTimeout(() => loadFeed(true), 500); }, 1200);
+        setTimeout(() => {
+          document.getElementById('uploadModal').classList.remove('open');
+          resetUploadUI(); btn.disabled = false;
+          document.getElementById('removeVideo').click();
+          document.getElementById('captionInput').value = '';
+          setTimeout(() => loadFeed(true), 500);
+        }, 1200);
       } catch (e) { err.textContent = e.message || 'Ошибка загрузки'; err.style.display = 'block'; prog.style.display = 'none'; btn.disabled = false; }
     });
 

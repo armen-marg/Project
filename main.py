@@ -12,6 +12,7 @@ from better_profanity import profanity
 from urllib.parse import urlparse
 from datetime import datetime, timedelta
 from dotenv import load_dotenv
+from functools import wraps 
 from pyngrok import ngrok
 import dns.resolver
 import dns.exception
@@ -25,7 +26,6 @@ import io
 import tempfile
 import cloudinary
 import cloudinary.uploader
-from functools import wraps
 import unicodedata
 
 load_dotenv()
@@ -80,11 +80,11 @@ BANNED_USERNAMES: set[str] = {
 BANNED_USERNAME_SUBSTRINGS: list[str] = [
     # English slurs / severe profanity
     "nigger", "nigga", "niga", "n1gger", "n1gga",
-    "faggot", "fagg0t", "fag",
+    "faggot", "fagg0t", "fag","GITLER",'Gitler'
     "hitler", "nazi", "n4zi",
     "chink", "spic", "kike", "wetback", "gook", "raghead",
     "cunt", "c0nt",
-    "whore", "wh0re",
+    "whore", "wh0re",'Trans'
     "bitch", "b1tch",
     "retard", "ret4rd",
     "rape", "r4pe",
@@ -793,6 +793,10 @@ def index():
     if "user_id" in session: return redirect(url_for("start"))
     return render_template("index.html")
 
+@app.route('/messages')
+@login_required  # если используешь login_required
+def messages_page():
+    return render_template('messages.html')
 
 @app.route("/home/login", methods=["GET", "POST"])
 def login():
@@ -1098,7 +1102,6 @@ def upload_video():
     file    = request.files["video"]
     caption = sanitize_text(request.form.get("caption", ""), 300)
 
-    # ✅ Check caption for banned content (uses enhanced contains_banned_content)
     if contains_banned_content(caption):
         logger.warning(f"Запрещённый контент в подписи: user={user_id}")
         return jsonify({"ok": False, "error": "Подпись содержит недопустимые слова"})
@@ -1121,8 +1124,22 @@ def upload_video():
                 "error": f"Файл слишком большой (макс {MAX_VIDEO_SIZE // 1024 // 1024} МБ)"
             })
 
-        result    = cloudinary.uploader.upload_large(tmp_path, resource_type="video")
-        video_url = result["secure_url"]
+        result = cloudinary.uploader.upload_large(
+            tmp_path,
+            resource_type="video",
+            eager=[{"width": 1080, "height": 1920, "crop": "fill", "gravity": "center"}],
+            eager_async=True,
+        )
+
+        duration = result.get("duration", 0)
+        if duration and float(duration) > 62:
+            cloudinary.uploader.destroy(result["public_id"], resource_type="video")
+            return jsonify({"ok": False, "error": "Видео длиннее 60 секунд"})
+
+        video_url = result["secure_url"].replace(
+            "/upload/",
+            "/upload/w_1080,h_1920,c_fill,g_center,q_auto/"
+        )
 
         with get_db() as (conn, cur):
             cur.execute("""
